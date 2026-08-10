@@ -1,0 +1,4890 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-10T16:40:24.193Z",
+  "source": "Arbitra artifact index",
+  "families": [
+    {
+      "id": "able",
+      "name": "Able",
+      "description": "Central bounded migration spec for the historical Able family.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 8
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 15
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 8
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 13
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 7,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 12,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 7
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 13
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "abraham",
+      "name": "Abraham",
+      "description": "Central bounded migration spec for the historical Abraham family.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 9
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 16
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 17
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 8,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 13,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 8
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 15
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "adam",
+      "name": "Adam",
+      "description": "Migration representation of the existing Adam mixed-indicator model.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 7
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 43
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 9
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "round_decimals": 4,
+            "window": 6
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "round_decimals": 4,
+            "window": 35
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 33
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "chatty",
+      "name": "Chatty",
+      "description": "Composite model using the two highest-total-cover non-reference features from each completed seven-model sweep, followed by balanced reference-relative pruning.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 7
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 6,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 12,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 7
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 13,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 8
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 15,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 9
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 17,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 11
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 11,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 14,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 21
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "david",
+      "name": "David",
+      "description": "First ARB-051 family combining short-window conventional and regression candidates.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.williams_r.value",
+          "parameters": {
+            "window": 6
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.position",
+          "parameters": {
+            "window": 6
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.force_index.value",
+          "parameters": {
+            "window": 6
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.price.rolling_v1",
+          "parameters": {
+            "source": "close",
+            "regression_window": 5,
+            "forecast_horizon": 1,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "rsi",
+            "source_window": 7,
+            "regression_window": 5,
+            "forecast_horizon": 1,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "rsi",
+            "source_window": 14,
+            "regression_window": 5,
+            "forecast_horizon": 1,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator_pair.directed_angle_v1",
+          "parameters": {
+            "family": "rsi",
+            "short_source_window": 7,
+            "long_source_window": 14,
+            "regression_window": 5,
+            "output": "signed_degrees",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.obv.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        },
+        {
+          "featureId": "volume.accumulation_distribution.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        }
+      ],
+      "coverage": "full",
+      "cellCount": 24
+    },
+    {
+      "id": "deborah",
+      "name": "Deborah",
+      "description": "Third ARB-051 family combining long-window conventional and regression candidates.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.williams_r.value",
+          "parameters": {
+            "window": 24
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.position",
+          "parameters": {
+            "window": 24
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.force_index.value",
+          "parameters": {
+            "window": 24
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.price.rolling_v1",
+          "parameters": {
+            "source": "low",
+            "regression_window": 14,
+            "forecast_horizon": 2,
+            "output": "forecast_return",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "atr",
+            "source_window": 7,
+            "regression_window": 14,
+            "forecast_horizon": 2,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "atr",
+            "source_window": 14,
+            "regression_window": 14,
+            "forecast_horizon": 2,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator_pair.directed_angle_v1",
+          "parameters": {
+            "family": "atr",
+            "short_source_window": 7,
+            "long_source_window": 14,
+            "regression_window": 14,
+            "output": "signed_degrees",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.obv.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        },
+        {
+          "featureId": "volume.accumulation_distribution.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        }
+      ],
+      "coverage": "full",
+      "cellCount": 24
+    },
+    {
+      "id": "esther",
+      "name": "Esther",
+      "description": "Fourth second-generation family using a disjoint multi-horizon conventional-indicator basket.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.position",
+          "parameters": {
+            "window": 40
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.width",
+          "parameters": {
+            "window": 5
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.aroon.spread",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.williams_r.value",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.roc.value",
+          "parameters": {
+            "window": 40
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.force_index.value",
+          "parameters": {
+            "window": 5
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.vwap.distance",
+          "parameters": {
+            "window": 10
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "eve-evolved",
+      "name": "Eve Evolved",
+      "description": "Central bounded migration spec for the historical Eve-Evolved family.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 17
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 11
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 18
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 9,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 15,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 9
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 16
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "hagar",
+      "name": "Hagar",
+      "description": "Central bounded migration spec for the historical Hagar family.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 11
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 18
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 12
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 19
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 10,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 17,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 17
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "ichimoku",
+      "name": "Ichimoku",
+      "description": "Compact lineage-backed successor with six historical Ichimoku survivors, calendar context, and two protected volume references.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ichimoku.component",
+          "parameters": {
+            "base_window": 6,
+            "scale": 1,
+            "component": "tenkan"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ichimoku.component",
+          "parameters": {
+            "base_window": 6,
+            "scale": 2,
+            "component": "kijun"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ichimoku.component",
+          "parameters": {
+            "base_window": 8,
+            "scale": 1,
+            "component": "tenkan"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ichimoku.component",
+          "parameters": {
+            "base_window": 8,
+            "scale": 1,
+            "component": "kijun"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ichimoku.component",
+          "parameters": {
+            "base_window": 8,
+            "scale": 2,
+            "component": "kijun"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ichimoku.component",
+          "parameters": {
+            "base_window": 10,
+            "scale": 2,
+            "component": "kijun"
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "registry",
+      "cellCount": 0
+    },
+    {
+      "id": "jacob",
+      "name": "Jacob",
+      "description": "Residual conditional-hazard ladder that boosts from a frozen analytic barrier-touch offset.",
+      "mode": "hazard",
+      "candidates": [
+        {
+          "category": "volatility",
+          "featureId": "volatility.sigma_ratio",
+          "parameters": {
+            "fast": 5,
+            "slow": 20
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.sigma_ratio",
+          "parameters": {
+            "fast": 20,
+            "slow": 60
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.range_asymmetry",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.semivariance_ratio",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.sigma_dispersion",
+          "parameters": {
+            "window": 20,
+            "estimator_window": 5
+          }
+        },
+        {
+          "category": "analytic",
+          "featureId": "analytic.residual",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "analytic",
+          "featureId": "analytic.residual",
+          "parameters": {
+            "window": 30
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "ladder",
+      "cellCount": 24
+    },
+    {
+      "id": "jose",
+      "name": "Jose",
+      "description": "Central bounded migration spec for the historical Jose family.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 12
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 19
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 14
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 11,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 18,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 11
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 18
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "joshua",
+      "name": "Joshua",
+      "description": "Fourth ARB-051 family combining extended-window conventional and regression candidates.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.roc.value",
+          "parameters": {
+            "window": 36
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.width",
+          "parameters": {
+            "window": 36
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.vwap.distance",
+          "parameters": {
+            "window": 36
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.price.rolling_v1",
+          "parameters": {
+            "source": "midpoint",
+            "regression_window": 20,
+            "forecast_horizon": 2,
+            "output": "forecast_delta",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "mfi",
+            "source_window": 7,
+            "regression_window": 20,
+            "forecast_horizon": 2,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "mfi",
+            "source_window": 14,
+            "regression_window": 20,
+            "forecast_horizon": 2,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator_pair.directed_angle_v1",
+          "parameters": {
+            "family": "mfi",
+            "short_source_window": 7,
+            "long_source_window": 14,
+            "regression_window": 20,
+            "output": "wrapped_degrees",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.obv.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        },
+        {
+          "featureId": "volume.accumulation_distribution.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        }
+      ],
+      "coverage": "full",
+      "cellCount": 24
+    },
+    {
+      "id": "mary",
+      "name": "Mary",
+      "description": "Central bounded migration spec for the historically inconsistent Mary descriptor family.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 13
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.rsi.value",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 15
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.mfi.value",
+          "parameters": {
+            "window": 21
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 14,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.ema.price_ratio",
+          "parameters": {
+            "window": 19,
+            "round_decimals": 4
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 12
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.atr.value",
+          "parameters": {
+            "window": 19
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "moses",
+      "name": "Moses",
+      "description": "Second second-generation family using a disjoint multi-horizon conventional-indicator basket.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.position",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.width",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.aroon.spread",
+          "parameters": {
+            "window": 40
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.williams_r.value",
+          "parameters": {
+            "window": 5
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.roc.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.force_index.value",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.vwap.distance",
+          "parameters": {
+            "window": 40
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "noah",
+      "name": "Noah",
+      "description": "First second-generation family using a disjoint multi-horizon conventional-indicator basket.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.position",
+          "parameters": {
+            "window": 5
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.width",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.aroon.spread",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.williams_r.value",
+          "parameters": {
+            "window": 40
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.roc.value",
+          "parameters": {
+            "window": 5
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.force_index.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.vwap.distance",
+          "parameters": {
+            "window": 20
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "ruth",
+      "name": "Ruth",
+      "description": "Third second-generation family using a disjoint multi-horizon conventional-indicator basket.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.position",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.width",
+          "parameters": {
+            "window": 40
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "trend.aroon.spread",
+          "parameters": {
+            "window": 5
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.williams_r.value",
+          "parameters": {
+            "window": 10
+          }
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.roc.value",
+          "parameters": {
+            "window": 20
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.force_index.value",
+          "parameters": {
+            "window": 40
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.vwap.distance",
+          "parameters": {
+            "window": 5
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.accumulation_distribution.value",
+          "parameters": {}
+        },
+        {
+          "featureId": "volume.obv.value",
+          "parameters": {}
+        }
+      ],
+      "coverage": "historical",
+      "cellCount": 4
+    },
+    {
+      "id": "solomon",
+      "name": "Solomon",
+      "description": "Second ARB-051 family combining medium-window conventional and regression candidates.",
+      "mode": "binary",
+      "candidates": [
+        {
+          "category": "calendar",
+          "featureId": "calendar.day_of_week.value",
+          "parameters": {}
+        },
+        {
+          "category": "momentum",
+          "featureId": "momentum.roc.value",
+          "parameters": {
+            "window": 12
+          }
+        },
+        {
+          "category": "volatility",
+          "featureId": "volatility.donchian.width",
+          "parameters": {
+            "window": 12
+          }
+        },
+        {
+          "category": "volume",
+          "featureId": "volume.vwap.distance",
+          "parameters": {
+            "window": 12
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.price.rolling_v1",
+          "parameters": {
+            "source": "high",
+            "regression_window": 7,
+            "forecast_horizon": 1,
+            "output": "forecast_return",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "ema",
+            "source_window": 7,
+            "regression_window": 7,
+            "forecast_horizon": 1,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator.rolling_v1",
+          "parameters": {
+            "family": "ema",
+            "source_window": 21,
+            "regression_window": 7,
+            "forecast_horizon": 1,
+            "output": "slope",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        },
+        {
+          "category": "trend",
+          "featureId": "regression.indicator_pair.directed_angle_v1",
+          "parameters": {
+            "family": "ema",
+            "short_source_window": 7,
+            "long_source_window": 21,
+            "regression_window": 7,
+            "output": "signed_degrees",
+            "normalization": "mean_scaled",
+            "denominator_epsilon": 1e-12,
+            "candle_interval": "1d"
+          }
+        }
+      ],
+      "references": [
+        {
+          "featureId": "volume.obv.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        },
+        {
+          "featureId": "volume.accumulation_distribution.rolling_mean_ratio_v1",
+          "parameters": {
+            "window": 20,
+            "denominator_epsilon": 1e-12
+          }
+        }
+      ],
+      "coverage": "full",
+      "cellCount": 24
+    }
+  ],
+  "cells": [
+    {
+      "family": "able",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.66991341991342,
+      "balancedAccuracy": 0.6715686274509804,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=15",
+        "volume.mfi.value?window=8",
+        "volume.mfi.value?window=13",
+        "trend.ema.price_ratio?round_decimals=4&window=7",
+        "trend.ema.price_ratio?round_decimals=4&window=12",
+        "volatility.atr.value?window=7",
+        "volatility.atr.value?window=13",
+        "momentum.rsi.value?lag_days=1&window=8",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "1e4f4d2281d44a05916eabd813399da3"
+    },
+    {
+      "family": "able",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.660734149054505,
+      "balancedAccuracy": 0.6490641711229946,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volume.mfi.value?window=8",
+        "volume.mfi.value?window=13",
+        "trend.ema.price_ratio?round_decimals=4&window=7",
+        "trend.ema.price_ratio?round_decimals=4&window=12",
+        "volatility.atr.value?window=7",
+        "momentum.rsi.value?lag_days=1&window=8",
+        "momentum.rsi.value?lag_days=1&window=15",
+        "volatility.atr.value?lag_days=1&window=13",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "88876a75759547bbb3a11503e4d7f472"
+    },
+    {
+      "family": "able",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.46840958605664484,
+      "balancedAccuracy": 0.4736559139784946,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volume.mfi.value?window=8",
+        "volume.mfi.value?window=13",
+        "trend.ema.price_ratio?round_decimals=4&window=7",
+        "volatility.atr.value?window=7",
+        "volatility.atr.value?window=13",
+        "momentum.rsi.value?lag_days=1&window=8",
+        "momentum.rsi.value?lag_days=1&window=15",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=12",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "2b4b745215074aa587bcddf8a4768ce2"
+    },
+    {
+      "family": "able",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5408009635651911,
+      "balancedAccuracy": 0.5404761904761904,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=8",
+        "momentum.rsi.value?window=15",
+        "volume.mfi.value?window=8",
+        "volume.mfi.value?window=13",
+        "trend.ema.price_ratio?round_decimals=4&window=7",
+        "trend.ema.price_ratio?round_decimals=4&window=12",
+        "volatility.atr.value?window=7",
+        "volatility.atr.value?lag_days=1&window=13",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "d01fb421ddbc4551a1701e8389c51d5a"
+    },
+    {
+      "family": "abraham",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5114609223971278,
+      "balancedAccuracy": 0.5125272331154684,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=9",
+        "momentum.rsi.value?window=16",
+        "volume.mfi.value?window=10",
+        "volume.mfi.value?window=17",
+        "trend.ema.price_ratio?round_decimals=4&window=8",
+        "volatility.atr.value?window=8",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=13",
+        "volatility.atr.value?lag_days=1&window=15",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "aaa84e4f54d3450abc461289ff47fe1d"
+    },
+    {
+      "family": "abraham",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5665374677002584,
+      "balancedAccuracy": 0.5695187165775402,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=16",
+        "volume.mfi.value?window=17",
+        "trend.ema.price_ratio?round_decimals=4&window=8",
+        "trend.ema.price_ratio?round_decimals=4&window=13",
+        "volatility.atr.value?window=8",
+        "volatility.atr.value?window=15",
+        "momentum.rsi.value?lag_days=1&window=9",
+        "volume.mfi.value?lag_days=1&window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "3097698018c8461f8c661f5ba0fa5193"
+    },
+    {
+      "family": "abraham",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.549630844954881,
+      "balancedAccuracy": 0.5553763440860215,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=9",
+        "momentum.rsi.value?window=16",
+        "volume.mfi.value?window=10",
+        "trend.ema.price_ratio?round_decimals=4&window=8",
+        "trend.ema.price_ratio?round_decimals=4&window=13",
+        "volatility.atr.value?window=8",
+        "volume.mfi.value?lag_days=1&window=17",
+        "volatility.atr.value?lag_days=1&window=15",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "77de2ef4e8c34806ac62723fe7a3828e"
+    },
+    {
+      "family": "abraham",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.46991978609625673,
+      "balancedAccuracy": 0.48273809523809524,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=9",
+        "momentum.rsi.value?window=16",
+        "volume.mfi.value?window=10",
+        "volume.mfi.value?window=17",
+        "trend.ema.price_ratio?round_decimals=4&window=8",
+        "trend.ema.price_ratio?round_decimals=4&window=13",
+        "volatility.atr.value?window=8",
+        "volatility.atr.value?lag_days=1&window=15",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "aa8764283a6c4578944ac8526f7c56dd"
+    },
+    {
+      "family": "adam",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5569007263922519,
+      "balancedAccuracy": 0.5610021786492374,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 8,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=7",
+        "momentum.rsi.value?window=43",
+        "trend.ema.price_ratio?round_decimals=4&window=6",
+        "trend.ema.price_ratio?round_decimals=4&window=35",
+        "volatility.atr.value?window=33",
+        "volume.mfi.value?lag_days=1&window=9",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "4a9c7e6b50654d5ab95e07eee06ea594"
+    },
+    {
+      "family": "adam",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.419047619047619,
+      "balancedAccuracy": 0.4197860962566845,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 8,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volume.mfi.value?window=9",
+        "trend.ema.price_ratio?round_decimals=4&window=35",
+        "volatility.atr.value?window=33",
+        "momentum.rsi.value?lag_days=1&window=7",
+        "momentum.rsi.value?lag_days=1&window=43",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=6",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "0ec74373adf54b3c91366e5e69b27419"
+    },
+    {
+      "family": "adam",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5736559139784947,
+      "balancedAccuracy": 0.5736559139784947,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 8,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=43",
+        "volume.mfi.value?window=9",
+        "trend.ema.price_ratio?round_decimals=4&window=35",
+        "volatility.atr.value?window=33",
+        "momentum.rsi.value?lag_days=1&window=7",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=6",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "205c3f41a4c14f4dbce7d00ea8412f9d"
+    },
+    {
+      "family": "adam",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4266917293233083,
+      "balancedAccuracy": 0.43273809523809526,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 8,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=7",
+        "volume.mfi.value?window=9",
+        "trend.ema.price_ratio?round_decimals=4&window=6",
+        "momentum.rsi.value?lag_days=1&window=43",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=35",
+        "volatility.atr.value?lag_days=1&window=33",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "b4dd78d5631341af840188f51ed0a197"
+    },
+    {
+      "family": "chatty",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.7288888888888889,
+      "balancedAccuracy": 0.7265795206971677,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.atr.value?window=7",
+        "volatility.atr.value?window=8",
+        "trend.ema.price_ratio?round_decimals=4&window=15",
+        "volume.mfi.value?window=21",
+        "momentum.rsi.value?lag_days=1&window=7",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=6",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=17",
+        "volatility.atr.value?lag_days=1&window=11",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "7f59878a0dde495bb9ea0f9b45c1d674"
+    },
+    {
+      "family": "chatty",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5891527827011698,
+      "balancedAccuracy": 0.5855614973262032,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "trend.ema.price_ratio?round_decimals=4&window=6",
+        "volatility.atr.value?window=8",
+        "trend.ema.price_ratio?round_decimals=4&window=15",
+        "trend.ema.price_ratio?round_decimals=4&window=17",
+        "volatility.atr.value?window=11",
+        "momentum.rsi.value?lag_days=1&window=7",
+        "volatility.atr.value?lag_days=1&window=7",
+        "volume.mfi.value?lag_days=1&window=21",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "487efb89073946aa8f90ac4773999913"
+    },
+    {
+      "family": "chatty",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.524078557976863,
+      "balancedAccuracy": 0.5241935483870968,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=7",
+        "trend.ema.price_ratio?round_decimals=4&window=6",
+        "volatility.atr.value?window=7",
+        "trend.ema.price_ratio?round_decimals=4&window=15",
+        "trend.ema.price_ratio?round_decimals=4&window=17",
+        "volatility.atr.value?window=11",
+        "volume.mfi.value?window=21",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=13",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "1720dd9d787d4b0282745f425ff4b388"
+    },
+    {
+      "family": "chatty",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5598845598845599,
+      "balancedAccuracy": 0.5630952380952381,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 12,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=7",
+        "trend.ema.price_ratio?round_decimals=4&window=6",
+        "volatility.atr.value?window=7",
+        "volatility.atr.value?window=11",
+        "volume.mfi.value?window=21",
+        "volatility.atr.value?lag_days=1&window=8",
+        "volatility.atr.value?lag_days=1&window=9",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=17",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value",
+        "regression.indicator_pair.directed_angle_v1?candle_interval='1d'&family='atr'&long_source_window=11&normalization='mean_scaled'&output='signed_degrees'&regression_window=7&short_source_window=7",
+        "regression.indicator_pair.directed_angle_v1?candle_interval='1d'&family='atr'&lag_days=1&long_source_window=9&normalization='mean_scaled'&output='signed_degrees'&regression_window=7&short_source_window=8"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "a66a3a0bee7e4a74a8108964e8871cff"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5031328320802004,
+      "balancedAccuracy": 0.5036585365853659,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "e7dad4c957b9400286b8bf9e75db84dd"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5425,
+      "balancedAccuracy": 0.5462662337662337,
+      "validationRows": 122,
+      "positiveRows": 66,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "ab0d61208e0b4e13870ffb4fdb1ffbed"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5182461873638344,
+      "balancedAccuracy": 0.5197459265396299,
+      "validationRows": 122,
+      "positiveRows": 51,
+      "negativeRows": 71,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "b2fb3176d6c94cdc85cd9f485f96ff28"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.459993190330269,
+      "balancedAccuracy": 0.4742547425474255,
+      "validationRows": 122,
+      "positiveRows": 41,
+      "negativeRows": 81,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "a2a7314814034c9aba692b2cbab7af57"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4374176548089591,
+      "balancedAccuracy": 0.4608294930875576,
+      "validationRows": 122,
+      "positiveRows": 31,
+      "negativeRows": 91,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "5108637d171c4d73abfade88c95d54bf"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4577777777777778,
+      "balancedAccuracy": 0.47685185185185186,
+      "validationRows": 122,
+      "positiveRows": 14,
+      "negativeRows": 108,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "7d0e0cd2f3be4b898341b21105ca3ff8"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4631765749778172,
+      "balancedAccuracy": 0.47857142857142854,
+      "validationRows": 121,
+      "positiveRows": 91,
+      "negativeRows": 30,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "d3fafe421aab4267834f442b41c87249"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5267275097783573,
+      "balancedAccuracy": 0.5291693088142042,
+      "validationRows": 121,
+      "positiveRows": 83,
+      "negativeRows": 38,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "dea1b781f72e45ffab5f86104ccaa579"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.46056577774175245,
+      "balancedAccuracy": 0.480879815986199,
+      "validationRows": 121,
+      "positiveRows": 74,
+      "negativeRows": 47,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "12508a64b5ea4df580c6e876db9b0d7e"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4546478873239437,
+      "balancedAccuracy": 0.46071428571428574,
+      "validationRows": 121,
+      "positiveRows": 65,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "54fd8781fbe84a2dbb5d02d1fc2cd65d"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4337500873087937,
+      "balancedAccuracy": 0.4336134453781513,
+      "validationRows": 121,
+      "positiveRows": 51,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "9565839814fa45c5b29f23764268393b"
+    },
+    {
+      "family": "david",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4755713159968479,
+      "balancedAccuracy": 0.4806451612903226,
+      "validationRows": 121,
+      "positiveRows": 31,
+      "negativeRows": 90,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "6f64ae1301214acf83e17569f9ae7cfc"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.46651323360184116,
+      "balancedAccuracy": 0.46676829268292686,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "228e284f4ff54f3a96788cb65334dcc5"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5547751841905942,
+      "balancedAccuracy": 0.5546896363139184,
+      "validationRows": 122,
+      "positiveRows": 69,
+      "negativeRows": 53,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "3225ed7c1e394ea7aa1b5c1c40615c50"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4577777777777778,
+      "balancedAccuracy": 0.4700026903416734,
+      "validationRows": 122,
+      "positiveRows": 59,
+      "negativeRows": 63,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "fbfdb1ed6388465fbe3dcaddd6fe9cef"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4443064182194617,
+      "balancedAccuracy": 0.49587912087912084,
+      "validationRows": 122,
+      "positiveRows": 52,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "480d0df4017c443cbb4cccd226b84add"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5177865612648221,
+      "balancedAccuracy": 0.5520543713314798,
+      "validationRows": 122,
+      "positiveRows": 39,
+      "negativeRows": 83,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "9da67dee257a4ff6b90792f37270b7a9"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.44949670253384244,
+      "balancedAccuracy": 0.44453781512605045,
+      "validationRows": 122,
+      "positiveRows": 17,
+      "negativeRows": 105,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "f4826851bd354989ba712c06e5398ba9"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4587015821058374,
+      "balancedAccuracy": 0.4675499231950845,
+      "validationRows": 121,
+      "positiveRows": 93,
+      "negativeRows": 28,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "74a966d0c938417bab605e456501d7f8"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4363354037267081,
+      "balancedAccuracy": 0.48536036036036034,
+      "validationRows": 121,
+      "positiveRows": 84,
+      "negativeRows": 37,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "473360373354412ca80a5b814d26178e"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4476825842696629,
+      "balancedAccuracy": 0.4772727272727273,
+      "validationRows": 121,
+      "positiveRows": 77,
+      "negativeRows": 44,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "8de4fa8235d54abaacdf7031557273d5"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4987009339231795,
+      "balancedAccuracy": 0.49873949579831933,
+      "validationRows": 121,
+      "positiveRows": 70,
+      "negativeRows": 51,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "dfb69973d7bc44a496dac237105ae7ee"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5145061728395062,
+      "balancedAccuracy": 0.543939393939394,
+      "validationRows": 121,
+      "positiveRows": 55,
+      "negativeRows": 66,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "98bdc2b330f64301bb79eac13a6dae17"
+    },
+    {
+      "family": "david",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4941176470588235,
+      "balancedAccuracy": 0.5068627450980392,
+      "validationRows": 121,
+      "positiveRows": 36,
+      "negativeRows": 85,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "7daad06f1ef54c4385ff8193cb7740a0"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5192118226600986,
+      "balancedAccuracy": 0.5216463414634147,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "a49650c872d2406ea9fb799fcc0ea018"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.514010989010989,
+      "balancedAccuracy": 0.5159632034632035,
+      "validationRows": 122,
+      "positiveRows": 66,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "d24fc2b0bb4f4031b3aa850180df675c"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5325670498084292,
+      "balancedAccuracy": 0.5325876829605082,
+      "validationRows": 122,
+      "positiveRows": 51,
+      "negativeRows": 71,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "182542f090db499a80215224fe194c01"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.480762683009874,
+      "balancedAccuracy": 0.4926227040048178,
+      "validationRows": 122,
+      "positiveRows": 41,
+      "negativeRows": 81,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "e7ac439245054b96b689627c4414ed86"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4465979381443299,
+      "balancedAccuracy": 0.46047500886210563,
+      "validationRows": 122,
+      "positiveRows": 31,
+      "negativeRows": 91,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "8b72bd0753e3478691604244274ead05"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5378787878787878,
+      "balancedAccuracy": 0.5343915343915344,
+      "validationRows": 122,
+      "positiveRows": 14,
+      "negativeRows": 108,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "d72283f86ff24717a7aeeacfd15d3e92"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5815376429901569,
+      "balancedAccuracy": 0.5846153846153846,
+      "validationRows": 121,
+      "positiveRows": 91,
+      "negativeRows": 30,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "6880585d882c495386f148072883535c"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.48921200750469046,
+      "balancedAccuracy": 0.48922003804692454,
+      "validationRows": 121,
+      "positiveRows": 83,
+      "negativeRows": 38,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "b0107fab0bdd40ef8cf21d966a8a3626"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.450653069777188,
+      "balancedAccuracy": 0.4521276595744681,
+      "validationRows": 121,
+      "positiveRows": 74,
+      "negativeRows": 47,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "138f3869e0044618855ecfbc2f1c8025"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5205422314911365,
+      "balancedAccuracy": 0.521978021978022,
+      "validationRows": 121,
+      "positiveRows": 65,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "95e4e249b67b4dbcb65520758767df34"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5110089186176143,
+      "balancedAccuracy": 0.511204481792717,
+      "validationRows": 121,
+      "positiveRows": 51,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "c54328c8a1f245f3a90cd84928a7aea0"
+    },
+    {
+      "family": "deborah",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5530597983428172,
+      "balancedAccuracy": 0.5512544802867383,
+      "validationRows": 121,
+      "positiveRows": 31,
+      "negativeRows": 90,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "d8090f5c2f2f4f98b11282ce0978dd6b"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4178595773687798,
+      "balancedAccuracy": 0.4173780487804878,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "3a4679ebf8f14ded8899470bc9ce3641"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5033921302578019,
+      "balancedAccuracy": 0.5039649986327591,
+      "validationRows": 122,
+      "positiveRows": 69,
+      "negativeRows": 53,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "6de084f809b24eedb611e62e1e472597"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4748453053537799,
+      "balancedAccuracy": 0.4748453053537799,
+      "validationRows": 122,
+      "positiveRows": 59,
+      "negativeRows": 63,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "514cbc7a16ef4c30a89d42043247f007"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4609720176730486,
+      "balancedAccuracy": 0.4634615384615385,
+      "validationRows": 122,
+      "positiveRows": 52,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "79dfcf6329d149309a21a79d6ee6b27c"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5005847953216374,
+      "balancedAccuracy": 0.5227062094531973,
+      "validationRows": 122,
+      "positiveRows": 39,
+      "negativeRows": 83,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "0970e70b39a643aaa00ee72c36a79a5f"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4916666666666667,
+      "balancedAccuracy": 0.5008403361344538,
+      "validationRows": 122,
+      "positiveRows": 17,
+      "negativeRows": 105,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "74ad5143f1d54ecf950c29426b948694"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5101214574898786,
+      "balancedAccuracy": 0.51036866359447,
+      "validationRows": 121,
+      "positiveRows": 93,
+      "negativeRows": 28,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "ac74c6f29c8c4f53976242b8e54a2755"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4791666666666667,
+      "balancedAccuracy": 0.4831081081081081,
+      "validationRows": 121,
+      "positiveRows": 84,
+      "negativeRows": 37,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "408a284f1b8945448b1b7b545bbb6c81"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.48945147679324896,
+      "balancedAccuracy": 0.4902597402597403,
+      "validationRows": 121,
+      "positiveRows": 77,
+      "negativeRows": 44,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "7ed45c3f65804c4d998035ce534778c8"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.44523688232297504,
+      "balancedAccuracy": 0.4515406162464986,
+      "validationRows": 121,
+      "positiveRows": 70,
+      "negativeRows": 51,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "e0f2116296104f21afd8356db32044ab"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.46153846153846156,
+      "balancedAccuracy": 0.4666666666666667,
+      "validationRows": 121,
+      "positiveRows": 55,
+      "negativeRows": 66,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "257e1504931845a1b3b6cda975f63bf5"
+    },
+    {
+      "family": "deborah",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.42380952380952386,
+      "balancedAccuracy": 0.48447712418300654,
+      "validationRows": 121,
+      "positiveRows": 36,
+      "negativeRows": 85,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "6c33cb6777e94a37988dcd0ed58bbeff"
+    },
+    {
+      "family": "esther",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5246753246753246,
+      "balancedAccuracy": 0.5953159041394336,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=5",
+        "trend.aroon.spread?window=10",
+        "momentum.roc.value?window=40",
+        "volume.vwap.distance?window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "2cbb242445dc4ba0b7694df4adf2f633"
+    },
+    {
+      "family": "esther",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5026586316908898,
+      "balancedAccuracy": 0.5040106951871658,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=5",
+        "trend.aroon.spread?window=10",
+        "volume.vwap.distance?window=10",
+        "momentum.williams_r.value?lag_days=1&window=20",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "9484333541104b488f1c5bb6ef37d527"
+    },
+    {
+      "family": "esther",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.45668016194331984,
+      "balancedAccuracy": 0.46021505376344085,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=5",
+        "trend.aroon.spread?window=10",
+        "momentum.roc.value?lag_days=1&window=40",
+        "volume.force_index.value?lag_days=1&window=5",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "b0ab463c8c9640c79d63436a4f93659d"
+    },
+    {
+      "family": "esther",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4214432989690721,
+      "balancedAccuracy": 0.48630952380952386,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=5",
+        "trend.aroon.spread?lag_days=1&window=10",
+        "momentum.roc.value?lag_days=1&window=40",
+        "volume.vwap.distance?lag_days=1&window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "82922e66dcc943c1a041e577ec16cf8c"
+    },
+    {
+      "family": "eve-evolved",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5901639344262295,
+      "balancedAccuracy": 0.5980392156862745,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 12,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=10",
+        "momentum.rsi.value?window=17",
+        "volume.mfi.value?window=11",
+        "trend.ema.price_ratio?round_decimals=4&window=9",
+        "trend.ema.price_ratio?round_decimals=4&window=15",
+        "volatility.atr.value?window=9",
+        "volume.mfi.value?lag_days=1&window=18",
+        "volatility.atr.value?lag_days=1&window=16",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value",
+        "regression.indicator_pair.directed_angle_v1?candle_interval='1d'&family='rsi'&long_source_window=17&normalization='mean_scaled'&output='signed_degrees'&regression_window=7&short_source_window=10",
+        "regression.indicator_pair.directed_angle_v1?candle_interval='1d'&family='ema'&long_source_window=15&normalization='mean_scaled'&output='signed_degrees'&regression_window=7&short_source_window=9"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "5040f38f731f42f588e9138180318eed"
+    },
+    {
+      "family": "eve-evolved",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.6510087323095453,
+      "balancedAccuracy": 0.6758021390374331,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=17",
+        "volume.mfi.value?window=11",
+        "volume.mfi.value?window=18",
+        "trend.ema.price_ratio?round_decimals=4&window=9",
+        "trend.ema.price_ratio?round_decimals=4&window=15",
+        "volatility.atr.value?window=9",
+        "volatility.atr.value?window=16",
+        "momentum.rsi.value?lag_days=1&window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "c270d35906574ea1bbcb164a3dd107d4"
+    },
+    {
+      "family": "eve-evolved",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.524078557976863,
+      "balancedAccuracy": 0.5252688172043011,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=10",
+        "volume.mfi.value?window=11",
+        "volume.mfi.value?window=18",
+        "trend.ema.price_ratio?round_decimals=4&window=15",
+        "volatility.atr.value?window=9",
+        "volatility.atr.value?window=16",
+        "momentum.rsi.value?lag_days=1&window=17",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=9",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "432d55ba09c74a07be22df060ae9fad3"
+    },
+    {
+      "family": "eve-evolved",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.45425685425685425,
+      "balancedAccuracy": 0.4541666666666666,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=10",
+        "volume.mfi.value?window=11",
+        "volume.mfi.value?window=18",
+        "trend.ema.price_ratio?round_decimals=4&window=9",
+        "volatility.atr.value?window=9",
+        "volatility.atr.value?window=16",
+        "momentum.rsi.value?lag_days=1&window=17",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=15",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "5fc716e3124c4212b100c548c82e597b"
+    },
+    {
+      "family": "hagar",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5398706896551724,
+      "balancedAccuracy": 0.542483660130719,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=11",
+        "momentum.rsi.value?window=18",
+        "volume.mfi.value?window=12",
+        "volume.mfi.value?window=19",
+        "trend.ema.price_ratio?round_decimals=4&window=10",
+        "trend.ema.price_ratio?round_decimals=4&window=17",
+        "volatility.atr.value?lag_days=1&window=10",
+        "volatility.atr.value?lag_days=1&window=17",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "4634b5f0915a4f058085d02cc0d748c7"
+    },
+    {
+      "family": "hagar",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4792682926829268,
+      "balancedAccuracy": 0.4832887700534759,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volume.mfi.value?window=12",
+        "trend.ema.price_ratio?round_decimals=4&window=10",
+        "trend.ema.price_ratio?round_decimals=4&window=17",
+        "volatility.atr.value?window=17",
+        "momentum.rsi.value?lag_days=1&window=11",
+        "momentum.rsi.value?lag_days=1&window=18",
+        "volume.mfi.value?lag_days=1&window=19",
+        "volatility.atr.value?lag_days=1&window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "9a2599c34e8340398acafd681a74928b"
+    },
+    {
+      "family": "hagar",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.3828274541974296,
+      "balancedAccuracy": 0.3956989247311828,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=11",
+        "volume.mfi.value?window=12",
+        "trend.ema.price_ratio?round_decimals=4&window=10",
+        "volatility.atr.value?window=10",
+        "momentum.rsi.value?lag_days=1&window=18",
+        "volume.mfi.value?lag_days=1&window=19",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=17",
+        "volatility.atr.value?lag_days=1&window=17",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "d5e3ccbafc024e92aed5cdcdf9b0428e"
+    },
+    {
+      "family": "hagar",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.42375168690958165,
+      "balancedAccuracy": 0.4494047619047619,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=11",
+        "momentum.rsi.value?window=18",
+        "volume.mfi.value?window=19",
+        "trend.ema.price_ratio?round_decimals=4&window=10",
+        "trend.ema.price_ratio?round_decimals=4&window=17",
+        "volatility.atr.value?window=10",
+        "volume.mfi.value?lag_days=1&window=12",
+        "volatility.atr.value?lag_days=1&window=17",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "4990553c4781486495c3f77d2516ca55"
+    },
+    {
+      "family": "jose",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.6392473118279569,
+      "balancedAccuracy": 0.6459694989106755,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=12",
+        "volume.mfi.value?window=20",
+        "trend.ema.price_ratio?round_decimals=4&window=11",
+        "volatility.atr.value?window=11",
+        "volatility.atr.value?window=18",
+        "momentum.rsi.value?lag_days=1&window=19",
+        "volume.mfi.value?lag_days=1&window=14",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=18",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "2ece521f49584f97af98f2d4c404747b"
+    },
+    {
+      "family": "jose",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.7347826086956522,
+      "balancedAccuracy": 0.7192513368983957,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=19",
+        "volume.mfi.value?window=14",
+        "trend.ema.price_ratio?round_decimals=4&window=11",
+        "trend.ema.price_ratio?round_decimals=4&window=18",
+        "volatility.atr.value?window=11",
+        "momentum.rsi.value?lag_days=1&window=12",
+        "volume.mfi.value?lag_days=1&window=20",
+        "volatility.atr.value?lag_days=1&window=18",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "66522a943a19428681cf9c7f92d0fc14"
+    },
+    {
+      "family": "jose",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4777685722176195,
+      "balancedAccuracy": 0.489247311827957,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=12",
+        "volume.mfi.value?window=14",
+        "trend.ema.price_ratio?round_decimals=4&window=18",
+        "volatility.atr.value?window=11",
+        "volatility.atr.value?window=18",
+        "momentum.rsi.value?lag_days=1&window=19",
+        "volume.mfi.value?lag_days=1&window=20",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=11",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "1a46c8556ec547f689d6c05cf627c174"
+    },
+    {
+      "family": "jose",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5459057071960298,
+      "balancedAccuracy": 0.5565476190476191,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=19",
+        "trend.ema.price_ratio?round_decimals=4&window=11",
+        "trend.ema.price_ratio?round_decimals=4&window=18",
+        "volatility.atr.value?window=18",
+        "momentum.rsi.value?lag_days=1&window=12",
+        "volume.mfi.value?lag_days=1&window=14",
+        "volume.mfi.value?lag_days=1&window=20",
+        "volatility.atr.value?lag_days=1&window=11",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "2e3be1514f8e4897a72f40d94b2423d3"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4644808743169399,
+      "balancedAccuracy": 0.48353658536585364,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "1cba9728872545b9a991d8032e661cb3"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5211733112993183,
+      "balancedAccuracy": 0.523538961038961,
+      "validationRows": 122,
+      "positiveRows": 66,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "45b93b342e884a9ea0687f36ecaf89cc"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5023310023310024,
+      "balancedAccuracy": 0.5089754211543772,
+      "validationRows": 122,
+      "positiveRows": 51,
+      "negativeRows": 71,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "c3f2b0aa61394e6b862ee5e5e8a8d506"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5430711610486891,
+      "balancedAccuracy": 0.5477265883769948,
+      "validationRows": 122,
+      "positiveRows": 41,
+      "negativeRows": 81,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "cf51435868bc4423b46c66622e418a3b"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.45764748287876966,
+      "balancedAccuracy": 0.4883020205600851,
+      "validationRows": 122,
+      "positiveRows": 31,
+      "negativeRows": 91,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "679d79f5e37643ee8b1fcd9f22b1d533"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4959669486523707,
+      "balancedAccuracy": 0.49867724867724866,
+      "validationRows": 122,
+      "positiveRows": 14,
+      "negativeRows": 108,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "2975e3a85b1f4374b133dce96ce9edcf"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5754385964912281,
+      "balancedAccuracy": 0.5732600732600732,
+      "validationRows": 121,
+      "positiveRows": 91,
+      "negativeRows": 30,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "e9aaf64054e2440b9e607627759edf01"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4805830088848957,
+      "balancedAccuracy": 0.5055485098287889,
+      "validationRows": 121,
+      "positiveRows": 83,
+      "negativeRows": 38,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "bc39a4951fff4e639989ba984ad3fa8d"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5270481550969356,
+      "balancedAccuracy": 0.5340713053479011,
+      "validationRows": 121,
+      "positiveRows": 74,
+      "negativeRows": 47,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "152fc747a9a043ec8ec62855b31355b0"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5373653110879388,
+      "balancedAccuracy": 0.5385989010989011,
+      "validationRows": 121,
+      "positiveRows": 65,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "4b63ccde3c8f49389a964fcd299477a4"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.483177219932559,
+      "balancedAccuracy": 0.4943977591036415,
+      "validationRows": 121,
+      "positiveRows": 51,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "a6a4ac1839de48559c6efaa81cbf49d1"
+    },
+    {
+      "family": "joshua",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5238005997001499,
+      "balancedAccuracy": 0.5234767025089606,
+      "validationRows": 121,
+      "positiveRows": 31,
+      "negativeRows": 90,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "260dc2431d4a4e1f8a062f9acaa12555"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5151033386327504,
+      "balancedAccuracy": 0.5158536585365854,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "8cd339ce285f4122bd19783a4415bbdd"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4908851306830661,
+      "balancedAccuracy": 0.5038282745419743,
+      "validationRows": 122,
+      "positiveRows": 69,
+      "negativeRows": 53,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "dbf18fe4fd68464fa146a69b030bf331"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5364993215739484,
+      "balancedAccuracy": 0.5383373688458435,
+      "validationRows": 122,
+      "positiveRows": 59,
+      "negativeRows": 63,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "27b23f97e9594187910b3bfda28379e2"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4649122807017544,
+      "balancedAccuracy": 0.49615384615384617,
+      "validationRows": 122,
+      "positiveRows": 52,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "1b7ba2d6f730425b80e2350a984c2431"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5640861200183234,
+      "balancedAccuracy": 0.5679641643497064,
+      "validationRows": 122,
+      "positiveRows": 39,
+      "negativeRows": 83,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "b2975098824b42008a70159a692c92fc"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5163362952836638,
+      "balancedAccuracy": 0.5168067226890756,
+      "validationRows": 122,
+      "positiveRows": 17,
+      "negativeRows": 105,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "0cd5dd0cd94749ee8f7dae7831297025"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4238095238095238,
+      "balancedAccuracy": 0.478494623655914,
+      "validationRows": 121,
+      "positiveRows": 93,
+      "negativeRows": 28,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "ca2475f91aad4d2f8f1418d6e430b079"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.43001996007984034,
+      "balancedAccuracy": 0.42953667953667957,
+      "validationRows": 121,
+      "positiveRows": 84,
+      "negativeRows": 37,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "0c874ca4cde04200a90438d0fe7525bb"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.48798403193612777,
+      "balancedAccuracy": 0.49512987012987014,
+      "validationRows": 121,
+      "positiveRows": 77,
+      "negativeRows": 44,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "7ba5a7f5a06b4f4c8c7007929ce99873"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5409395047251155,
+      "balancedAccuracy": 0.5432773109243698,
+      "validationRows": 121,
+      "positiveRows": 70,
+      "negativeRows": 51,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "ae3c4d76f16344c99efabeedb0e0f16b"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5254901960784314,
+      "balancedAccuracy": 0.5712121212121212,
+      "validationRows": 121,
+      "positiveRows": 55,
+      "negativeRows": 66,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "92d15dae51a1411696d267cb51c2f528"
+    },
+    {
+      "family": "joshua",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5232466509062254,
+      "balancedAccuracy": 0.532516339869281,
+      "validationRows": 121,
+      "positiveRows": 36,
+      "negativeRows": 85,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "9bc88aa77f0742519b9f264d6d685352"
+    },
+    {
+      "family": "mary",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.524078557976863,
+      "balancedAccuracy": 0.5354030501089324,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=20",
+        "volume.mfi.value?window=15",
+        "volume.mfi.value?window=21",
+        "trend.ema.price_ratio?round_decimals=4&window=19",
+        "volatility.atr.value?window=12",
+        "volatility.atr.value?window=19",
+        "momentum.rsi.value?lag_days=1&window=13",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=14",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "f48d3decb97a450ca1a059ae2efc03c3"
+    },
+    {
+      "family": "mary",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5665739882607352,
+      "balancedAccuracy": 0.5762032085561497,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=20",
+        "volume.mfi.value?window=21",
+        "trend.ema.price_ratio?round_decimals=4&window=14",
+        "trend.ema.price_ratio?round_decimals=4&window=19",
+        "volatility.atr.value?window=12",
+        "volatility.atr.value?window=19",
+        "momentum.rsi.value?lag_days=1&window=13",
+        "volume.mfi.value?lag_days=1&window=15",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "153e1d24ff23486187046214cc71a7ec"
+    },
+    {
+      "family": "mary",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4206241519674355,
+      "balancedAccuracy": 0.4247311827956989,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=13",
+        "volume.mfi.value?window=21",
+        "trend.ema.price_ratio?round_decimals=4&window=14",
+        "trend.ema.price_ratio?round_decimals=4&window=19",
+        "volatility.atr.value?window=19",
+        "momentum.rsi.value?lag_days=1&window=20",
+        "volume.mfi.value?lag_days=1&window=15",
+        "volatility.atr.value?lag_days=1&window=12",
+        "volume.obv.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20",
+        "volume.accumulation_distribution.rolling_mean_ratio_v1?denominator_epsilon=1e-12&window=20"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "b5bb23563018433c9ca633cc11714f14"
+    },
+    {
+      "family": "mary",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4911955514365153,
+      "balancedAccuracy": 0.4928571428571428,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 10,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.rsi.value?window=13",
+        "momentum.rsi.value?window=20",
+        "volume.mfi.value?window=21",
+        "trend.ema.price_ratio?round_decimals=4&window=19",
+        "volatility.atr.value?window=12",
+        "volatility.atr.value?window=19",
+        "volume.mfi.value?lag_days=1&window=15",
+        "trend.ema.price_ratio?lag_days=1&round_decimals=4&window=14",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "8fc17eb1fc1a47659fa2622527a3b2bc"
+    },
+    {
+      "family": "moses",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5271317829457364,
+      "balancedAccuracy": 0.5669934640522876,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=20",
+        "trend.aroon.spread?window=40",
+        "momentum.roc.value?window=10",
+        "volume.vwap.distance?window=40",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "4a7ef6f51abc4dc8b644f4247993b084"
+    },
+    {
+      "family": "moses",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.6291793313069909,
+      "balancedAccuracy": 0.6196524064171123,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=20",
+        "trend.aroon.spread?window=40",
+        "momentum.roc.value?window=10",
+        "volume.vwap.distance?window=40",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "90781e14c1a54d378cd35027dd53f027"
+    },
+    {
+      "family": "moses",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.3715042684721813,
+      "balancedAccuracy": 0.421505376344086,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "trend.aroon.spread?window=40",
+        "volume.vwap.distance?window=40",
+        "volatility.donchian.width?lag_days=1&window=20",
+        "momentum.roc.value?lag_days=1&window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "0777ec1b8d8144e7b3bcbd7a75995568"
+    },
+    {
+      "family": "moses",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4649122807017544,
+      "balancedAccuracy": 0.46904761904761905,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=20",
+        "trend.aroon.spread?lag_days=1&window=40",
+        "momentum.williams_r.value?lag_days=1&window=5",
+        "volume.vwap.distance?lag_days=1&window=40",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "3ca0f66a245a47b09636bb11f7fa85dd"
+    },
+    {
+      "family": "noah",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5451532725766363,
+      "balancedAccuracy": 0.5457516339869282,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=10",
+        "trend.aroon.spread?window=20",
+        "momentum.roc.value?window=5",
+        "volume.vwap.distance?window=20",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "c9b851b5ffe14c61982fa07528d2ddc7"
+    },
+    {
+      "family": "noah",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5665374677002584,
+      "balancedAccuracy": 0.5695187165775402,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=10",
+        "trend.aroon.spread?lag_days=1&window=20",
+        "momentum.roc.value?lag_days=1&window=5",
+        "volume.vwap.distance?lag_days=1&window=20",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "e23d5a96c81f49e6baab51412c080c2b"
+    },
+    {
+      "family": "noah",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4537313432835821,
+      "balancedAccuracy": 0.4575268817204301,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=10",
+        "trend.aroon.spread?window=20",
+        "momentum.roc.value?lag_days=1&window=5",
+        "volume.vwap.distance?lag_days=1&window=20",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "f83fce23c8ec4a8e9082db56b6c6aad6"
+    },
+    {
+      "family": "noah",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5638406537282942,
+      "balancedAccuracy": 0.5678571428571428,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=10",
+        "trend.aroon.spread?window=20",
+        "momentum.roc.value?lag_days=1&window=5",
+        "volume.force_index.value?lag_days=1&window=10",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "2e6933ac06434b658c85297f0be867ff"
+    },
+    {
+      "family": "ruth",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4911955514365153,
+      "balancedAccuracy": 0.522875816993464,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=40",
+        "trend.aroon.spread?window=5",
+        "momentum.roc.value?window=20",
+        "volume.vwap.distance?lag_days=1&window=5",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "1c61fb8b0d9d45de854dde4a4bd38a01"
+    },
+    {
+      "family": "ruth",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4345569150908417,
+      "balancedAccuracy": 0.4451871657754011,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=40",
+        "volume.vwap.distance?window=5",
+        "trend.aroon.spread?lag_days=1&window=5",
+        "momentum.roc.value?lag_days=1&window=20",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "b9dcdd751de9481db4f4ad3cf67cbab4"
+    },
+    {
+      "family": "ruth",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5530529172320217,
+      "balancedAccuracy": 0.5591397849462365,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "volatility.donchian.width?window=40",
+        "trend.aroon.spread?lag_days=1&window=5",
+        "momentum.roc.value?lag_days=1&window=20",
+        "volume.vwap.distance?lag_days=1&window=5",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "86f9ceeb63a24802a46a4cc42e4fbf45"
+    },
+    {
+      "family": "ruth",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5538950715421304,
+      "balancedAccuracy": 0.5541666666666667,
+      "validationRows": null,
+      "positiveRows": null,
+      "negativeRows": null,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [
+        "momentum.roc.value?window=20",
+        "volume.force_index.value?window=40",
+        "volatility.donchian.width?lag_days=1&window=40",
+        "trend.aroon.spread?lag_days=1&window=5",
+        "volume.accumulation_distribution.value",
+        "volume.obv.value"
+      ],
+      "source": "ARB-063",
+      "evidenceKind": "selection",
+      "runId": "92dc24de4113443da29da23af879e372"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5734265734265734,
+      "balancedAccuracy": 0.5792682926829269,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "959dca5ba0664f1a83ce6fae030beacf"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5161008403361345,
+      "balancedAccuracy": 0.5219155844155844,
+      "validationRows": 122,
+      "positiveRows": 66,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "187ea478d9b74d63aae9f539eb28470f"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5637871853546911,
+      "balancedAccuracy": 0.5650372825186413,
+      "validationRows": 122,
+      "positiveRows": 51,
+      "negativeRows": 71,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "0e3a88aed13d49db8544e282d946d368"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5604636591478697,
+      "balancedAccuracy": 0.559470039144836,
+      "validationRows": 122,
+      "positiveRows": 41,
+      "negativeRows": 81,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "b05a909966074930bd6a7b0b25f5b5f5"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4863387978142077,
+      "balancedAccuracy": 0.48652959943282525,
+      "validationRows": 122,
+      "positiveRows": 31,
+      "negativeRows": 91,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "7a7bf86a9f68475ab30109a0af5873f4"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5378787878787878,
+      "balancedAccuracy": 0.5343915343915344,
+      "validationRows": 122,
+      "positiveRows": 14,
+      "negativeRows": 108,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "68af5d73feee46b8958e11eda6daaa0e"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.43229678123295145,
+      "balancedAccuracy": 0.4509157509157509,
+      "validationRows": 121,
+      "positiveRows": 91,
+      "negativeRows": 30,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "be9e295a66a9411eb9d1ca1ec7ffecdb"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5567765567765568,
+      "balancedAccuracy": 0.559289790741915,
+      "validationRows": 121,
+      "positiveRows": 83,
+      "negativeRows": 38,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "08b0c30fd1f7468cb58f8645e27c6399"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5441531042796866,
+      "balancedAccuracy": 0.5457159286946521,
+      "validationRows": 121,
+      "positiveRows": 74,
+      "negativeRows": 47,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "52c4adf53a2b4d8c8e3d80259fc18b52"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.552220394736842,
+      "balancedAccuracy": 0.5524725274725275,
+      "validationRows": 121,
+      "positiveRows": 65,
+      "negativeRows": 56,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "303485732c5d41b1bf95ea9de2633784"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5254901960784314,
+      "balancedAccuracy": 0.5254901960784314,
+      "validationRows": 121,
+      "positiveRows": 51,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "824bbec2a601477a9f83ba6cca3b88ea"
+    },
+    {
+      "family": "solomon",
+      "direction": "long",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5232466509062254,
+      "balancedAccuracy": 0.5240143369175627,
+      "validationRows": 121,
+      "positiveRows": 31,
+      "negativeRows": 90,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "1e1d29c8deb449808252a2eee998e4cf"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.4543541173375428,
+      "balancedAccuracy": 0.4713414634146342,
+      "validationRows": 122,
+      "positiveRows": 82,
+      "negativeRows": 40,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "4fbae4083c514728bc6cab3ff61c060f"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5211733112993183,
+      "balancedAccuracy": 0.5213289581624283,
+      "validationRows": 122,
+      "positiveRows": 69,
+      "negativeRows": 53,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "43b6072ac22445c7b6571c44182c6830"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5390013495276653,
+      "balancedAccuracy": 0.5394135055152005,
+      "validationRows": 122,
+      "positiveRows": 59,
+      "negativeRows": 63,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "9074c70f7cce4a62bd17b0b5bed64dee"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5035146133925268,
+      "balancedAccuracy": 0.5156593406593406,
+      "validationRows": 122,
+      "positiveRows": 52,
+      "negativeRows": 70,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "6adba49e896f4d96acde12dc46e8029c"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5399456283434184,
+      "balancedAccuracy": 0.5438677788075379,
+      "validationRows": 122,
+      "positiveRows": 39,
+      "negativeRows": 83,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "c3301c9453734a96942820e34c40102a"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 1,
+      "candleInterval": "1d",
+      "macroF1": 0.5264643613267467,
+      "balancedAccuracy": 0.5254901960784314,
+      "validationRows": 122,
+      "positiveRows": 17,
+      "negativeRows": 105,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "7f7f4cd4991e4fae9fef2b402ac300fc"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 75,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.4182692307692308,
+      "balancedAccuracy": 0.46774193548387094,
+      "validationRows": 121,
+      "positiveRows": 93,
+      "negativeRows": 28,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "181785f91f9b4bfe9e55f4c57df289ee"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 100,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.49523809523809526,
+      "balancedAccuracy": 0.4954954954954955,
+      "validationRows": 121,
+      "positiveRows": 84,
+      "negativeRows": 37,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "fcb1ae8745684a49bce5a6852b6fe7d4"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 125,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5714285714285714,
+      "balancedAccuracy": 0.5714285714285714,
+      "validationRows": 121,
+      "positiveRows": 77,
+      "negativeRows": 44,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-061",
+      "evidenceKind": "validation",
+      "runId": "5fcb4252014c407aa2adb9bc78c0e299"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 150,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5057805469020422,
+      "balancedAccuracy": 0.5067226890756302,
+      "validationRows": 121,
+      "positiveRows": 70,
+      "negativeRows": 51,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "7a6fd77dba924759a2faa2c272d8d221"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 200,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5615942028985507,
+      "balancedAccuracy": 0.5696969696969697,
+      "validationRows": 121,
+      "positiveRows": 55,
+      "negativeRows": 66,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "f21b928c3f71436699ecb0130dc118d1"
+    },
+    {
+      "family": "solomon",
+      "direction": "short",
+      "bps": 300,
+      "horizon": 2,
+      "candleInterval": "1d",
+      "macroF1": 0.5625,
+      "balancedAccuracy": 0.5607843137254902,
+      "validationRows": 121,
+      "positiveRows": 36,
+      "negativeRows": 85,
+      "finalFeatureCount": 6,
+      "protectedReferencesSurvived": true,
+      "survivingFeatures": [],
+      "source": "ARB-053",
+      "evidenceKind": "validation",
+      "runId": "925a9351440d4bd0aa5bd9a69666a4c5"
+    }
+  ],
+  "jacob": [
+    {
+      "direction": "long",
+      "horizon": 1,
+      "candleInterval": "1d",
+      "ladderBps": [
+        75,
+        100,
+        125,
+        150,
+        200,
+        300
+      ],
+      "baseRates": [
+        0.6377816291161178,
+        0.5355285961871751,
+        0.4488734835355286,
+        0.389948006932409,
+        0.28942807625649913,
+        0.1369150779896014
+      ],
+      "rows": 577,
+      "baselineLoss": 0.2147466548952293,
+      "boostedLoss": 0.21129841097333688,
+      "boostedSkill": 0.01605726488999204,
+      "improvement": 0.0034482439218924245,
+      "confidenceInterval": [
+        -0.0004490265735044191,
+        0.007326193249684444
+      ]
+    },
+    {
+      "direction": "long",
+      "horizon": 2,
+      "candleInterval": "1d",
+      "ladderBps": [
+        75,
+        100,
+        125,
+        150,
+        200,
+        300
+      ],
+      "baseRates": [
+        0.7604166666666666,
+        0.6857638888888888,
+        0.6163194444444444,
+        0.5590277777777778,
+        0.4496527777777778,
+        0.2690972222222222
+      ],
+      "rows": 576,
+      "baselineLoss": 0.2204735531187845,
+      "boostedLoss": 0.21818758699317994,
+      "boostedSkill": 0.010368436908951839,
+      "improvement": 0.002285966125604536,
+      "confidenceInterval": [
+        -0.0014273462586844113,
+        0.0060665468622429575
+      ]
+    },
+    {
+      "direction": "short",
+      "horizon": 1,
+      "candleInterval": "1d",
+      "ladderBps": [
+        75,
+        100,
+        125,
+        150,
+        200,
+        300
+      ],
+      "baseRates": [
+        0.6551126516464472,
+        0.5632582322357019,
+        0.4800693240901213,
+        0.42634315424610053,
+        0.3292894280762565,
+        0.19064124783362218
+      ],
+      "rows": 577,
+      "baselineLoss": 0.23087163761184118,
+      "boostedLoss": 0.22444767678397645,
+      "boostedSkill": 0.02782481596403441,
+      "improvement": 0.006423960827864717,
+      "confidenceInterval": [
+        0.00274586236069074,
+        0.010134905443915538
+      ]
+    },
+    {
+      "direction": "short",
+      "horizon": 2,
+      "candleInterval": "1d",
+      "ladderBps": [
+        75,
+        100,
+        125,
+        150,
+        200,
+        300
+      ],
+      "baseRates": [
+        0.7586805555555556,
+        0.6840277777777778,
+        0.6128472222222222,
+        0.5520833333333334,
+        0.4565972222222222,
+        0.3229166666666667
+      ],
+      "rows": 576,
+      "baselineLoss": 0.2337369342389947,
+      "boostedLoss": 0.22419876149066298,
+      "boostedSkill": 0.04080729808229189,
+      "improvement": 0.00953817274833172,
+      "confidenceInterval": [
+        0.004445720318872723,
+        0.014586177924432972
+      ]
+    }
+  ],
+  "scanner": {
+    "updatedAt": "2026-08-10T04:52:00Z",
+    "universe": 6207,
+    "analyzed": 6162,
+    "signalLabel": "Liquidity acceptance + PPO prior-median filter",
+    "candidates": [
+      {
+        "symbol": "ATAI",
+        "name": "AtaiBeckley Inc.",
+        "close": 7.25,
+        "direction": "LONG",
+        "signalBar": "2026-08-07",
+        "ppo": -0.4287,
+        "priorMedian": -0.0125
+      },
+      {
+        "symbol": "GBTG",
+        "name": "Global Business Travel Group",
+        "close": 9.46,
+        "direction": "LONG",
+        "signalBar": "2026-08-07",
+        "ppo": -0.1774,
+        "priorMedian": -0.0286
+      },
+      {
+        "symbol": "HCI",
+        "name": "HCI Group",
+        "close": 188.69,
+        "direction": "LONG",
+        "signalBar": "2026-08-07",
+        "ppo": -0.0236,
+        "priorMedian": -0.0107
+      },
+      {
+        "symbol": "OGN",
+        "name": "Organon & Co.",
+        "close": 13.6,
+        "direction": "LONG",
+        "signalBar": "2026-08-07",
+        "ppo": -0.1603,
+        "priorMedian": -0.0013
+      },
+      {
+        "symbol": "RGA",
+        "name": "Reinsurance Group of America",
+        "close": 246.33,
+        "direction": "LONG",
+        "signalBar": "2026-08-07",
+        "ppo": -0.0872,
+        "priorMedian": 0.0021
+      }
+    ]
+  },
+  "indicators": {
+    "refined": [
+      {
+        "name": "Absolute Strength Rank",
+        "outputs": 11,
+        "role": "rank, tails, crossings and divergence events"
+      },
+      {
+        "name": "Volume DNA",
+        "outputs": 5,
+        "role": "volume, spread, body and location state"
+      },
+      {
+        "name": "Hurst Adaptive Supertrend",
+        "outputs": 6,
+        "role": "causal Hurst, normalized trend and flips"
+      },
+      {
+        "name": "Balanced Volume Profile",
+        "outputs": 5,
+        "role": "POC distance, balance, entropy and migration"
+      },
+      {
+        "name": "Liquidity Sweeps",
+        "outputs": 10,
+        "role": "confirmed pools, sweeps and acceptance events"
+      },
+      {
+        "name": "Inversion Order Blocks",
+        "outputs": 14,
+        "role": "block state, invalidation and retest events"
+      },
+      {
+        "name": "RSI Analog",
+        "outputs": 7,
+        "role": "neighbor vote, agreement, distance and bias"
+      }
+    ],
+    "pine": [
+      "absolute-strength-rank",
+      "volume-spread-dna",
+      "hurst-adaptive-supertrend",
+      "balanced-candle-volume-profile",
+      "liquidity-sweep-detector",
+      "inversion-order-blocks",
+      "ml-rsi-analog",
+      "adaptive-kalman-filter",
+      "adaptive-kalman-trend-filter",
+      "adaptive-volatility-regime-oscillator",
+      "inversion-block-rsi-source-alias",
+      "kinetic-efficiency-index",
+      "knn-point-forecast-with-sr",
+      "rolling-vwap-dispersion-bands",
+      "supertrend-exit-context"
+    ]
+  },
+  "schedule": [
+    {
+      "cadence": "After completed daily candles",
+      "jobs": [
+        "Universe scanner",
+        "Jacob evidence update"
+      ],
+      "consequence": "Refresh research candidates and matured daily outcomes"
+    },
+    {
+      "cadence": "Every four hours",
+      "jobs": [
+        "Fourth Watch",
+        "Evening Watch"
+      ],
+      "consequence": "Refresh intraday shadow distributions"
+    },
+    {
+      "cadence": "When artifacts change",
+      "jobs": [
+        "Basket index",
+        "Indicator inventory"
+      ],
+      "consequence": "Rebuild feature identities, metrics and provenance"
+    }
+  ]
+}
