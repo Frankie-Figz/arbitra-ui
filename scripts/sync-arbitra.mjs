@@ -8,244 +8,302 @@ const arbitraRoot = resolve(
   process.env.ARBITRA_REPO ?? resolve(uiRoot, "..", "Arbitra"),
 );
 const outputPath = resolve(uiRoot, "public", "data", "arbitra-snapshot.json");
+const historyPath = resolve(uiRoot, "public", "data", "arbitra-daily-history.json");
+
+const methodologies = [
+  {
+    id: "smc-ppo",
+    name: "SMC + PPO",
+    shortName: "Parent",
+    description: "Liquidity accepted above resistance while PPO(21,38,7) sits below its strictly prior median.",
+    gate: "Parent signal + tradability",
+    confirmationSignals: 2452,
+  },
+  {
+    id: "smc-ppo-atr10",
+    name: "SMC + PPO + ATR(10)",
+    shortName: "ATR pace",
+    description: "The parent long plus ATR(10)/close at or above the asset's strictly prior 70th percentile.",
+    gate: "Parent + ATR q70",
+    confirmationSignals: 370,
+  },
+  {
+    id: "smc-ppo-atr10-bb40",
+    name: "SMC + PPO + ATR(10) + BB(40)",
+    shortName: "ATR + BB",
+    description: "The ATR-qualified long plus Bollinger width(40) at or above its strictly prior 80th percentile.",
+    gate: "Parent + ATR q70 + BB q80",
+    confirmationSignals: 180,
+  },
+  {
+    id: "smc-ppo-atr10-ema20",
+    name: "SMC + PPO + ATR(10) + EMA(20)",
+    shortName: "ATR + EMA",
+    description: "The ATR-qualified long plus close/EMA(20)-1 at or above its strictly prior 90th percentile.",
+    gate: "Parent + ATR q70 + EMA extension q90",
+    confirmationSignals: 332,
+  },
+];
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
 
-function displayName(id) {
-  if (id === "eve-evolved") return "Eve Evolved";
-  return id.replace(/(^|-)([a-z])/g, (_, separator, letter) =>
-    `${separator ? " " : ""}${letter.toUpperCase()}`,
-  );
-}
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
 
-function normalizeReferences(raw) {
-  if (Array.isArray(raw)) {
-    return raw.map((featureId) => ({ featureId, parameters: {} }));
+  for (let index = 0; index < text.length; index += 1) {
+    const character = text[index];
+    if (quoted) {
+      if (character === '"' && text[index + 1] === '"') {
+        cell += '"';
+        index += 1;
+      } else if (character === '"') {
+        quoted = false;
+      } else {
+        cell += character;
+      }
+    } else if (character === '"') {
+      quoted = true;
+    } else if (character === ",") {
+      row.push(cell);
+      cell = "";
+    } else if (character === "\n") {
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+    } else if (character !== "\r") {
+      cell += character;
+    }
   }
-  return (raw?.features ?? []).map((feature) => ({
-    featureId: feature.feature_id,
-    parameters: feature.parameters ?? {},
-  }));
+
+  if (cell.length || row.length) {
+    row.push(cell);
+    rows.push(row);
+  }
+  const [headers = [], ...body] = rows;
+  return body
+    .filter((values) => values.some((value) => value !== ""))
+    .map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""])));
 }
 
-function cellKey(family, direction, bps, horizon) {
-  return `${family}|${direction}|${bps}|${horizon}`;
+async function readCsv(path) {
+  return parseCsv(await readFile(path, "utf8"));
 }
 
-async function collectFamilies() {
-  const configDir = resolve(arbitraRoot, "config", "models");
-  const names = (await readdir(configDir)).filter((name) => name.endsWith(".json"));
-  const families = [];
+function numeric(value) {
+  const parsed = Number(value);
+  return value === "" || !Number.isFinite(parsed) ? null : parsed;
+}
 
-  for (const filename of names.sort()) {
-    const definition = await readJson(resolve(configDir, filename));
-    const id = definition.name;
-    families.push({
-      id,
-      name: displayName(id),
-      description: definition.description,
-      mode: id === "jacob" ? "hazard" : "binary",
-      candidates: (definition.basket ?? []).map((feature) => ({
-        category: feature.category,
-        featureId: feature.feature_id,
-        parameters: feature.parameters ?? {},
-      })),
-      references: normalizeReferences(definition.references),
+function truthy(value) {
+  return String(value).toLowerCase() === "true";
+}
+
+function datePart(value) {
+  return String(value ?? "").slice(0, 10);
+}
+
+function normalizeAsset(row) {
+  const methodIds = ["smc-ppo"];
+  if (truthy(row.actionable_ppo_atr10)) methodIds.push("smc-ppo-atr10");
+  if (truthy(row.actionable_ppo_atr10_bb40)) methodIds.push("smc-ppo-atr10-bb40");
+  if (truthy(row.actionable_ppo_atr10_ema20)) methodIds.push("smc-ppo-atr10-ema20");
+  return {
+    symbol: row.symbol,
+    name: row.name,
+    instrumentFamily: row.instrument_family,
+    exchange: row.exchange,
+    signalDate: datePart(row.signal_timestamp),
+    close: numeric(row.close),
+    ppo: numeric(row.ppo_histogram_21_38_7),
+    ppoPriorMedian: numeric(row.ppo_prior_expanding_median),
+    atr10Percent: numeric(row.atr10_percent),
+    atr10ThresholdPercent: numeric(row.atr10_prior_q70_percent),
+    atr10Pass: truthy(row.atr10_pass),
+    bb40Width: numeric(row.bollinger_width_40),
+    bb40Threshold: numeric(row.bollinger_width_40_prior_q80),
+    bb40Pass: truthy(row.bollinger_width_40_pass),
+    ema20DistancePercent: numeric(row.ema20_distance_percent),
+    ema20ThresholdPercent: numeric(row.ema20_distance_prior_q90_percent),
+    ema20Pass: truthy(row.ema20_distance_pass),
+    ema5: numeric(row.ema5),
+    ema10: numeric(row.ema10),
+    ema20: numeric(row.ema20),
+    ema50: numeric(row.ema50),
+    emaBullStack: truthy(row.ema_bull_stack_5_10_20_50),
+    launchWatch: truthy(row.launch_discontinuity_watch),
+    methodologies: methodIds,
+    evaluationMature: false,
+    evaluationThrough: null,
+    realizedOutcomes: [],
+  };
+}
+
+async function collectDailyScans() {
+  const root = resolve(arbitraRoot, "artifacts", "yahoo-liquidity-sniper");
+  if (!existsSync(root)) return [];
+  const directories = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory());
+  const newestByDate = new Map();
+
+  for (const directory of directories) {
+    const reportPath = resolve(root, directory.name, "report.json");
+    const scanPath = resolve(root, directory.name, "latest-ppo-scan.csv");
+    if (!existsSync(reportPath) || !existsSync(scanPath)) continue;
+    const report = await readJson(reportPath);
+    const date = String(report.completed_through ?? "");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+    const generatedAt = String(report.generated_utc ?? "");
+    const prior = newestByDate.get(date);
+    if (!prior || generatedAt.localeCompare(prior.generatedAt) > 0) {
+      newestByDate.set(date, { date, generatedAt, report, scanPath, run: directory.name });
+    }
+  }
+
+  const datasets = [];
+  for (const candidate of newestByDate.values()) {
+    const rows = await readCsv(candidate.scanPath);
+    const analyzedStatuses = new Set(["green", "quality_rejected", "not_green"]);
+    const exactRows = rows.filter(
+      (row) => analyzedStatuses.has(row.status) && datePart(row.signal_timestamp) === candidate.date,
+    );
+    const assets = exactRows
+      .filter((row) => row.status === "green")
+      .map(normalizeAsset)
+      .sort(
+        (left, right) =>
+          right.methodologies.length - left.methodologies.length ||
+          Number(right.launchWatch) - Number(left.launchWatch) ||
+          left.symbol.localeCompare(right.symbol),
+      );
+    const staleAnalyzed = rows.filter(
+      (row) => analyzedStatuses.has(row.status) && datePart(row.signal_timestamp) !== candidate.date,
+    ).length;
+    datasets.push({
+      date: candidate.date,
+      generatedAt: candidate.generatedAt,
+      sourceRun: candidate.run,
+      universe: Number(candidate.report.universe_symbols ?? rows.length),
+      exactDateAnalyzed: exactRows.length,
+      staleAnalyzed,
+      historyMissing: Number(candidate.report.history_missing ?? 0),
+      analysisFailed: Number(candidate.report.analysis_failed ?? 0),
+      qualityRejected: exactRows.filter((row) => row.status === "quality_rejected").length,
+      assets,
     });
   }
-
-  return families;
+  return datasets.sort((left, right) => right.date.localeCompare(left.date));
 }
 
-async function collectCells() {
-  const cells = new Map();
-  const governmentPath = resolve(
+async function readWideMatrix(path) {
+  const rows = await readCsv(path);
+  const values = new Map();
+  for (const row of rows) {
+    const pullbackPercent = Number(String(row.pullback).replace("%", ""));
+    for (const [target, value] of Object.entries(row)) {
+      if (target === "pullback") continue;
+      const targetPercent = Number(target.replace("%", ""));
+      values.set(`${pullbackPercent}|${targetPercent}`, Number(value));
+    }
+  }
+  return values;
+}
+
+async function collectMatrices() {
+  const playbook = resolve(arbitraRoot, "docs", "ppo-pullback-playbook", "data");
+  const parent = resolve(
     arbitraRoot,
     "artifacts",
-    "all-generation-governments",
-    "governments.json",
+    "liquidity-ppo-atr-pullback-target-grid-v1",
+    "platform-full-20260810",
   );
-
-  if (existsSync(governmentPath)) {
-    const government = await readJson(governmentPath);
-    for (const [identity, rankings] of Object.entries(
-      government.family_lineage_rankings ?? {},
-    )) {
-      const [targetIdentity, family] = identity.split("::");
-      const match = targetIdentity.match(
-        /^barrier__(long|short)__(\d+)bps__h(\d+)__(.+)$/,
-      );
-      const top = rankings[0];
-      if (!match || !top) continue;
-      const [, direction, rawBps, rawHorizon, candleInterval] = match;
-      const bps = Number(rawBps);
-      const horizon = Number(rawHorizon);
-      cells.set(cellKey(family, direction, bps, horizon), {
-        family,
-        direction,
-        bps,
-        horizon,
-        candleInterval,
-        macroF1: top.selection_metrics?.macro_f1 ?? null,
-        balancedAccuracy: top.selection_metrics?.balanced_accuracy ?? null,
-        validationRows: null,
-        positiveRows: null,
-        negativeRows: null,
-        finalFeatureCount: top.surviving_features?.length ?? null,
-        protectedReferencesSurvived: true,
-        survivingFeatures: top.surviving_features ?? [],
-        source: government.ticket ?? "ARB-063",
-        evidenceKind: "selection",
-        runId: top.run_id ?? null,
-      });
-    }
-  }
-
-  const matrixPaths = [
-    resolve(arbitraRoot, "artifacts", "requested-daily-governments", "summary.json"),
-    resolve(arbitraRoot, "artifacts", "parameterized-retraining", "summary.json"),
+  const sources = [
+    {
+      methodologyId: "smc-ppo",
+      conditional: resolve(parent, "confirmation-unfiltered-conditional-hit-rate.csv"),
+      perSignal: resolve(parent, "confirmation-unfiltered-success-per-signal.csv"),
+    },
+    {
+      methodologyId: "smc-ppo-atr10",
+      conditional: resolve(playbook, "atr10-conditional-hit-rate.csv"),
+      perSignal: resolve(playbook, "atr10-success-per-signal.csv"),
+    },
+    {
+      methodologyId: "smc-ppo-atr10-bb40",
+      conditional: resolve(playbook, "atr10-bb40-conditional-hit-rate.csv"),
+      perSignal: resolve(playbook, "atr10-bb40-success-per-signal.csv"),
+    },
+    {
+      methodologyId: "smc-ppo-atr10-ema20",
+      conditional: resolve(playbook, "atr10-ema20-conditional-hit-rate.csv"),
+      perSignal: resolve(playbook, "atr10-ema20-success-per-signal.csv"),
+    },
   ];
 
-  for (const path of matrixPaths) {
-    if (!existsSync(path)) continue;
-    const matrix = await readJson(path);
-    for (const row of matrix.completed_rows ?? []) {
-      const target = row.target;
-      const direction = target.direction.toLowerCase();
-      const bps = Number(target.threshold_bps);
-      const horizon = Number(target.horizon_candles);
-      cells.set(cellKey(row.model, direction, bps, horizon), {
-        family: row.model,
-        direction,
-        bps,
-        horizon,
-        candleInterval: target.candle_interval,
-        macroF1: row.macro_f1,
-        balancedAccuracy: row.balanced_accuracy,
-        validationRows: row.validation_row_count,
-        positiveRows: row.positive_class_count,
-        negativeRows: row.negative_class_count,
-        finalFeatureCount: row.final_feature_count,
-        protectedReferencesSurvived: row.protected_references_survived,
-        survivingFeatures: [],
-        source: matrix.ticket,
-        evidenceKind: "validation",
-        runId: row.mlflow_run_id ?? null,
-      });
-    }
-  }
-
-  return [...cells.values()].sort(
-    (left, right) =>
-      left.family.localeCompare(right.family) ||
-      left.direction.localeCompare(right.direction) ||
-      left.horizon - right.horizon ||
-      left.bps - right.bps,
-  );
-}
-
-async function collectJacob() {
-  const results = [];
-  for (const direction of ["long", "short"]) {
-    for (const horizon of [1, 2]) {
-      const path = resolve(
-        arbitraRoot,
-        "artifacts",
-        "jacob",
-        "registered-ablation",
-        `${direction}-h${horizon}`,
-        "ablation.json",
+  const matrices = [];
+  for (const source of sources) {
+    const [conditional, perSignal] = await Promise.all([
+      readWideMatrix(source.conditional),
+      readWideMatrix(source.perSignal),
+    ]);
+    const cells = [...conditional.entries()]
+      .map(([key, conditionalHitRate]) => {
+        const [pullbackPercent, targetPercent] = key.split("|").map(Number);
+        return {
+          pullbackPercent,
+          targetPercent,
+          conditionalHitRate,
+          successPerSignal: perSignal.get(key),
+        };
+      })
+      .sort(
+        (left, right) =>
+          left.pullbackPercent - right.pullbackPercent || left.targetPercent - right.targetPercent,
       );
-      if (!existsSync(path)) continue;
-      const ablation = await readJson(path);
-      results.push({
-        direction,
-        horizon,
-        candleInterval: "1d",
-        ladderBps: ablation.ladder_bps,
-        baseRates: ablation.ladder_bps.map(
-          (bps) => ablation.base_rates_by_rung[String(bps)],
-        ),
-        rows: ablation.scores.rows,
-        baselineLoss: ablation.scores.baseline_loss,
-        boostedLoss: ablation.scores.boosted_loss,
-        boostedSkill: ablation.scores.boosted_skill,
-        improvement: ablation.paired_brier_improvement.estimate,
-        confidenceInterval: ablation.paired_brier_improvement.interval,
-      });
-    }
+    matrices.push({ methodologyId: source.methodologyId, cells });
   }
-  return results;
+  return matrices;
 }
 
-const scanner = {
-  updatedAt: "2026-08-10T04:52:00Z",
-  universe: 6207,
-  analyzed: 6162,
-  signalLabel: "Liquidity acceptance + PPO prior-median filter",
-  candidates: [
-    { symbol: "ATAI", name: "AtaiBeckley Inc.", close: 7.25, direction: "LONG", signalBar: "2026-08-07", ppo: -0.4287, priorMedian: -0.0125 },
-    { symbol: "GBTG", name: "Global Business Travel Group", close: 9.46, direction: "LONG", signalBar: "2026-08-07", ppo: -0.1774, priorMedian: -0.0286 },
-    { symbol: "HCI", name: "HCI Group", close: 188.69, direction: "LONG", signalBar: "2026-08-07", ppo: -0.0236, priorMedian: -0.0107 },
-    { symbol: "OGN", name: "Organon & Co.", close: 13.6, direction: "LONG", signalBar: "2026-08-07", ppo: -0.1603, priorMedian: -0.0013 },
-    { symbol: "RGA", name: "Reinsurance Group of America", close: 246.33, direction: "LONG", signalBar: "2026-08-07", ppo: -0.0872, priorMedian: 0.0021 },
-  ],
-};
-
-const indicators = {
-  refined: [
-    ["Absolute Strength Rank", 11, "rank, tails, crossings and divergence events"],
-    ["Volume DNA", 5, "volume, spread, body and location state"],
-    ["Hurst Adaptive Supertrend", 6, "causal Hurst, normalized trend and flips"],
-    ["Balanced Volume Profile", 5, "POC distance, balance, entropy and migration"],
-    ["Liquidity Sweeps", 10, "confirmed pools, sweeps and acceptance events"],
-    ["Inversion Order Blocks", 14, "block state, invalidation and retest events"],
-    ["RSI Analog", 7, "neighbor vote, agreement, distance and bias"],
-  ].map(([name, outputs, role]) => ({ name, outputs, role })),
-  pine: [
-    "absolute-strength-rank", "volume-spread-dna", "hurst-adaptive-supertrend",
-    "balanced-candle-volume-profile", "liquidity-sweep-detector", "inversion-order-blocks",
-    "ml-rsi-analog", "adaptive-kalman-filter", "adaptive-kalman-trend-filter",
-    "adaptive-volatility-regime-oscillator", "inversion-block-rsi-source-alias",
-    "kinetic-efficiency-index", "knn-point-forecast-with-sr",
-    "rolling-vwap-dispersion-bands", "supertrend-exit-context",
-  ],
-};
-
-const schedule = [
-  { cadence: "After completed daily candles", jobs: ["Universe scanner", "Jacob evidence update"], consequence: "Refresh research candidates and matured daily outcomes" },
-  { cadence: "Every four hours", jobs: ["Fourth Watch", "Evening Watch"], consequence: "Refresh intraday shadow distributions" },
-  { cadence: "When artifacts change", jobs: ["Basket index", "Indicator inventory"], consequence: "Rebuild feature identities, metrics and provenance" },
-];
-
-const [families, cells, jacob] = await Promise.all([
-  collectFamilies(), collectCells(), collectJacob(),
+const [scanDatasets, matrices, historical] = await Promise.all([
+  collectDailyScans(),
+  collectMatrices(),
+  existsSync(historyPath) ? readJson(historyPath) : Promise.resolve(null),
 ]);
-
-const familyCellCounts = new Map();
-for (const cell of cells) {
-  familyCellCounts.set(cell.family, (familyCellCounts.get(cell.family) ?? 0) + 1);
-}
-for (const family of families) {
-  const count = familyCellCounts.get(family.id) ?? 0;
-  family.coverage = family.id === "jacob" ? "ladder" : count >= 24 ? "full" : count > 0 ? "historical" : "registry";
-  family.cellCount = family.id === "jacob" ? jacob.length * 6 : count;
-}
-
+const historicalDatasets = historical?.datasets ?? [];
+const historicalLatest = historicalDatasets[0]?.date ?? "";
+const datasets = historicalDatasets.length
+  ? [
+      ...scanDatasets.filter((dataset) => dataset.date > historicalLatest),
+      ...historicalDatasets,
+    ]
+  : scanDatasets;
 const snapshot = {
-  schemaVersion: 1,
+  schemaVersion: 3,
   generatedAt: new Date().toISOString(),
-  source: "Arbitra artifact index",
-  families,
-  cells,
-  jacob,
-  scanner,
-  indicators,
-  schedule,
+  source: historicalDatasets.length
+    ? "Arbitra causal daily history plus completed-daily scan artifacts"
+    : "Arbitra completed-daily long artifacts",
+  deploymentAllowed: false,
+  methodologies,
+  datasets,
+  matrices,
+  profiles: historical?.profiles ?? {},
+  history: {
+    startDate: historical?.startDate ?? datasets.at(-1)?.date ?? null,
+    endDate: datasets[0]?.date ?? null,
+    entryWindowCompletedCandles: historical?.evaluation?.entryWindowCompletedCandles ?? 5,
+    targetWindowCompletedCandlesAfterFill:
+      historical?.evaluation?.targetWindowCompletedCandlesAfterFill ?? 20,
+  },
 };
 
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
-console.log(`Synced ${families.length} baskets, ${cells.length} binary cells, and ${jacob.length} Jacob fits.`);
+console.log(
+  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, and ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells.`,
+);

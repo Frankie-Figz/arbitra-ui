@@ -24,18 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
-    title: "Arbitra Research Observatory",
+    title: "Arbitra Daily Longs",
     description:
-      "A research-first interface for Arbitra model baskets, daily scans, indicators, and scheduled evidence.",
+      "Completed daily long setups with Yahoo company profiles, causal pace gates, and forecast-versus-achieved pullback evidence.",
     openGraph: {
-      title: "Arbitra Research Observatory",
-      description: "18 model baskets, daily evidence, and no order authority.",
+      title: "Arbitra Daily Longs",
+      description: "Completed candles. Causal gates. Pullback / target evidence.",
       images: [{ url: "/og.png", width: 1731, height: 909 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Arbitra Research Observatory",
-      description: "18 model baskets, daily evidence, and no order authority.",
+      title: "Arbitra Daily Longs",
+      description: "Completed candles. Causal gates. Pullback / target evidence.",
       images: ["/og.png"],
     },
   };

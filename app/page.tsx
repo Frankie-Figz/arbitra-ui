@@ -3,498 +3,553 @@
 import { useMemo, useState } from "react";
 import snapshotJson from "../public/data/arbitra-snapshot.json";
 
-type Direction = "long" | "short";
-type View = "baskets" | "scan" | "indicators" | "schedule";
-type Parameters = Record<string, string | number | boolean | null>;
-
-type Candidate = { category: string; featureId: string; parameters: Parameters };
-type Family = {
+type Methodology = {
   id: string;
   name: string;
+  shortName: string;
   description: string;
-  mode: "binary" | "hazard";
-  coverage: "full" | "historical" | "ladder" | "registry";
-  cellCount: number;
-  candidates: Candidate[];
-  references: Array<{ featureId: string; parameters: Parameters }>;
+  gate: string;
+  confirmationSignals: number;
 };
-type Cell = {
-  family: string;
-  direction: Direction;
-  bps: number;
-  horizon: number;
-  candleInterval: string;
-  macroF1: number | null;
-  balancedAccuracy: number | null;
-  validationRows: number | null;
-  positiveRows: number | null;
-  negativeRows: number | null;
-  finalFeatureCount: number | null;
-  protectedReferencesSurvived: boolean;
-  survivingFeatures: string[];
+
+type RealizedOutcome = {
+  pullbackPercent: number;
+  targetPercent: number;
+  filled: boolean;
+  targetHit: boolean;
+  fillDate: string | null;
+  entryPrice: number | null;
+  targetPrice: number | null;
+  targetDate: string | null;
+};
+
+type CompanyProfile = {
+  symbol: string;
+  longName: string;
+  description: string;
+  employees: number | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  sector: string | null;
+  industry: string | null;
+  website: string | null;
   source: string;
-  evidenceKind: "selection" | "validation";
-  runId: string | null;
+  sourceUrl: string;
+  fetchedAt: string;
+  available: boolean;
 };
-type JacobFit = {
-  direction: Direction;
-  horizon: number;
-  candleInterval: string;
-  ladderBps: number[];
-  baseRates: number[];
-  rows: number;
-  baselineLoss: number;
-  boostedLoss: number;
-  boostedSkill: number;
-  improvement: number;
-  confidenceInterval: number[];
+
+type Asset = {
+  symbol: string;
+  name: string;
+  instrumentFamily: string;
+  exchange: string;
+  signalDate: string;
+  close: number | null;
+  ppo: number | null;
+  ppoPriorMedian: number | null;
+  atr10Percent: number | null;
+  atr10ThresholdPercent: number | null;
+  atr10Pass: boolean;
+  bb40Width: number | null;
+  bb40Threshold: number | null;
+  bb40Pass: boolean;
+  ema20DistancePercent: number | null;
+  ema20ThresholdPercent: number | null;
+  ema20Pass: boolean;
+  ema5: number | null;
+  ema10: number | null;
+  ema20: number | null;
+  ema50: number | null;
+  emaBullStack: boolean;
+  launchWatch: boolean;
+  methodologies: string[];
+  evaluationMature: boolean;
+  evaluationThrough: string | null;
+  realizedOutcomes: RealizedOutcome[];
 };
+
+type Dataset = {
+  date: string;
+  generatedAt: string;
+  sourceRun: string;
+  universe: number;
+  exactDateAnalyzed: number;
+  staleAnalyzed: number;
+  historyMissing: number;
+  analysisFailed: number;
+  qualityRejected: number;
+  assets: Asset[];
+};
+
+type MatrixCell = {
+  pullbackPercent: number;
+  targetPercent: number;
+  conditionalHitRate: number;
+  successPerSignal: number;
+};
+
 type Snapshot = {
+  schemaVersion: number;
   generatedAt: string;
   source: string;
-  families: Family[];
-  cells: Cell[];
-  jacob: JacobFit[];
-  scanner: {
-    updatedAt: string;
-    universe: number;
-    analyzed: number;
-    signalLabel: string;
-    candidates: Array<{
-      symbol: string;
-      name: string;
-      close: number;
-      direction: string;
-      signalBar: string;
-      ppo: number;
-      priorMedian: number;
-    }>;
+  deploymentAllowed: boolean;
+  methodologies: Methodology[];
+  datasets: Dataset[];
+  matrices: Array<{ methodologyId: string; cells: MatrixCell[] }>;
+  profiles: Record<string, CompanyProfile>;
+  history: {
+    startDate: string | null;
+    endDate: string | null;
+    entryWindowCompletedCandles: number;
+    targetWindowCompletedCandlesAfterFill: number;
   };
-  indicators: {
-    refined: Array<{ name: string; outputs: number; role: string }>;
-    pine: string[];
-  };
-  schedule: Array<{ cadence: string; jobs: string[]; consequence: string }>;
 };
 
+type MatrixMetric = "conditionalHitRate" | "successPerSignal";
+
 const snapshot = snapshotJson as Snapshot;
-const bpsOptions = [75, 100, 125, 150, 200, 300];
-const candleOptions = ["1d", "4h", "3h", "2h", "1h"];
 
-function percent(value: number | null | undefined, digits = 1) {
-  return value == null ? "—" : `${(value * 100).toFixed(digits)}%`;
+function formatDate(value: string) {
+  if (!value) return "No date selected";
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T12:00:00Z`));
 }
 
-function fixed(value: number | null | undefined, digits = 4) {
-  return value == null ? "—" : value.toFixed(digits);
+function compactNumber(value: number) {
+  return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
-function parameterText(parameters: Parameters) {
-  const entries = Object.entries(parameters).filter(
-    ([key]) => !["denominator_epsilon", "round_decimals", "normalization"].includes(key),
-  );
-  return entries.length
-    ? entries.map(([key, value]) => `${key}=${String(value)}`).join(", ")
-    : "—";
+function companyLocation(profile: CompanyProfile) {
+  return [profile.city, profile.state, profile.country].filter(Boolean).join(", ") || "Not reported";
 }
 
-function coverageLabel(family: Family) {
-  if (family.coverage === "full") return "24 daily cells";
-  if (family.coverage === "historical") return "100 bps selection";
-  if (family.coverage === "ladder") return "joint ladder";
-  return "definition only";
+function price(value: number | null | undefined) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  const digits = value < 10 ? 3 : 2;
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(value);
 }
 
-function Metric({ label, value, note }: { label: string; value: string; note: string }) {
+function percentage(value: number | null | undefined, digits = 1) {
+  return value == null || !Number.isFinite(value) ? "—" : `${(value * 100).toFixed(digits)}%`;
+}
+
+function points(value: number | null | undefined, digits = 2) {
+  return value == null || !Number.isFinite(value) ? "—" : value.toFixed(digits);
+}
+
+function heatStyle(value: number) {
+  const normalized = Math.max(0, Math.min(1, (value - 0.25) / 0.7));
+  const hue = 28 + normalized * 128;
+  const lightness = 95 - normalized * 53;
+  return {
+    backgroundColor: `hsl(${hue} 58% ${lightness}%)`,
+    color: normalized > 0.58 ? "#f8fbf8" : "#152019",
+  };
+}
+
+function Gate({
+  label,
+  value,
+  threshold,
+  pass,
+}: {
+  label: string;
+  value: string;
+  threshold: string;
+  pass: boolean;
+}) {
   return (
-    <div className="metric-card">
+    <div className={`gate ${pass ? "pass" : "miss"}`}>
       <span>{label}</span>
       <strong>{value}</strong>
-      <small>{note}</small>
+      <small>{pass ? "passes" : "below"} {threshold}</small>
     </div>
   );
 }
 
-function BarrierBars({
-  primary,
-  secondary,
-  selected,
-  mode,
+function Heatmap({
+  cells,
+  outcomes,
+  metric,
+  selectedPullback,
+  selectedTarget,
+  onSelect,
 }: {
-  primary: Array<number | null>;
-  secondary?: Array<number | null>;
-  selected: number;
-  mode: "classifier" | "base-rate";
+  cells: MatrixCell[];
+  outcomes: RealizedOutcome[];
+  metric: MatrixMetric;
+  selectedPullback: number;
+  selectedTarget: number;
+  onSelect: (pullback: number, target: number) => void;
 }) {
-  const min = mode === "classifier" ? 0.35 : 0;
-  const max = mode === "classifier" ? 0.75 : 0.8;
-  const height = (value: number | null) =>
-    value == null ? 0 : Math.max(4, Math.min(100, ((value - min) / (max - min)) * 100));
-  const description = bpsOptions
-    .map((bps, index) => {
-      const first = primary[index];
-      const second = secondary?.[index];
-      return `${bps} bps: ${first == null ? "unavailable" : percent(first)}${second == null ? "" : ` and ${percent(second)}`}`;
-    })
-    .join("; ");
+  const pullbacks = [...new Set(cells.map((cell) => cell.pullbackPercent))].sort((a, b) => a - b);
+  const targets = [...new Set(cells.map((cell) => cell.targetPercent))].sort((a, b) => a - b);
+  const lookup = new Map(cells.map((cell) => [`${cell.pullbackPercent}|${cell.targetPercent}`, cell]));
+  const outcomeLookup = new Map(
+    outcomes.map((outcome) => [`${outcome.pullbackPercent}|${outcome.targetPercent}`, outcome]),
+  );
+  const realized = outcomes.length > 0;
 
   return (
-    <div className="bar-chart" role="img" aria-label={description}>
-      <div className="chart-scale" aria-hidden="true">
-        <span>{Math.round(max * 100)}%</span>
-        <span>{Math.round(((min + max) / 2) * 100)}%</span>
-        <span>{Math.round(min * 100)}%</span>
-      </div>
-      <div className="bar-field">
-        {bpsOptions.map((bps, index) => (
-          <div className={`bar-column ${bps === selected ? "selected" : ""}`} key={bps}>
-            <div className="bar-value">
-              {bps === selected && primary[index] != null ? percent(primary[index]) : ""}
-            </div>
-            <div className="bar-pair">
-              <span
-                className={`bar primary ${primary[index] == null ? "missing" : ""}`}
-                style={{ height: `${height(primary[index])}%` }}
-              />
-              {secondary && (
-                <span
-                  className={`bar secondary ${secondary[index] == null ? "missing" : ""}`}
-                  style={{ height: `${height(secondary[index])}%` }}
-                />
-              )}
-            </div>
-            <span className="bar-label">{bps}</span>
+    <div className="heatmap-scroll">
+      <div
+        className="heatmap"
+        role="grid"
+        aria-label={`${realized ? "Forecast probability and realized result" : metric === "conditionalHitRate" ? "Hit rate after fill" : "Success per qualifying signal"} by pullback and target`}
+      >
+        <div className="heat-corner" aria-hidden="true">PB \ TGT</div>
+        {targets.map((target) => <div className="heat-axis target-axis" key={`target-${target}`}>+{target}%</div>)}
+        {pullbacks.map((pullback) => (
+          <div className="heat-row" key={`pullback-${pullback}`}>
+            <div className="heat-axis pullback-axis">−{pullback}%</div>
+            {targets.map((target) => {
+              const cell = lookup.get(`${pullback}|${target}`);
+              const outcome = outcomeLookup.get(`${pullback}|${target}`);
+              const value = cell?.[metric] ?? 0;
+              const selected = pullback === selectedPullback && target === selectedTarget;
+              const result = outcome
+                ? outcome.targetHit
+                  ? "target achieved"
+                  : outcome.filled
+                    ? "target not achieved"
+                    : "pullback not filled"
+                : null;
+              return (
+                <button
+                  className={`heat-cell ${outcome ? `realized ${outcome.targetHit ? "achieved" : "missed"}` : ""} ${selected ? "selected" : ""}`}
+                  key={`${pullback}-${target}`}
+                  style={outcome ? undefined : heatStyle(value)}
+                  onClick={() => onSelect(pullback, target)}
+                  role="gridcell"
+                  aria-selected={selected}
+                  aria-label={`${pullback}% pullback, ${target}% target, ${percentage(value)} historical probability${result ? `, ${result}` : ""}`}
+                  title={`${pullback}% pullback → ${target}% target: ${percentage(value, 2)}${result ? ` · ${result}` : ""}`}
+                >
+                  {outcome && <span className="heat-result" aria-hidden="true" />}
+                  <span className="heat-probability">{(value * 100).toFixed(0)}</span>
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
     </div>
-  );
-}
-
-function BasketExplorer() {
-  const [familyId, setFamilyId] = useState("david");
-  const [direction, setDirection] = useState<Direction>("long");
-  const [bps, setBps] = useState(100);
-  const [horizon, setHorizon] = useState(1);
-  const [candle, setCandle] = useState("1d");
-  const family = snapshot.families.find((item) => item.id === familyId) ?? snapshot.families[0];
-
-  const sliceCells = useMemo(
-    () =>
-      snapshot.cells.filter(
-        (cell) =>
-          cell.family === familyId &&
-          cell.direction === direction &&
-          cell.horizon === horizon &&
-          cell.candleInterval === candle,
-      ),
-    [familyId, direction, horizon, candle],
-  );
-  const cell = sliceCells.find((item) => item.bps === bps);
-  const jacob = snapshot.jacob.find(
-    (item) =>
-      item.direction === direction &&
-      item.horizon === horizon &&
-      item.candleInterval === candle,
-  );
-  const selectedBaseRate = jacob?.baseRates[jacob.ladderBps.indexOf(bps)] ?? null;
-  const unavailable =
-    candle !== "1d"
-      ? `No comparable ${candle} biblical-basket matrix is indexed.`
-      : family.coverage === "registry"
-        ? "The basket definition is registered, but no comparable evaluation cell is indexed."
-        : family.mode === "binary" && !cell
-          ? `${family.name} has no indexed ${bps} bps cell for this direction and horizon.`
-          : null;
-
-  const primary = bpsOptions.map((barrier) => {
-    if (family.mode === "hazard") {
-      return jacob?.baseRates[jacob.ladderBps.indexOf(barrier)] ?? null;
-    }
-    return sliceCells.find((item) => item.bps === barrier)?.balancedAccuracy ?? null;
-  });
-  const secondary =
-    family.mode === "binary"
-      ? bpsOptions.map(
-          (barrier) => sliceCells.find((item) => item.bps === barrier)?.macroF1 ?? null,
-        )
-      : undefined;
-
-  const selectFamily = (next: Family) => {
-    setFamilyId(next.id);
-    if (next.coverage === "historical") setBps(100);
-  };
-
-  return (
-    <main className="product-shell">
-      <section className="product-intro">
-        <div>
-          <p className="eyebrow">Biblical basket registry</p>
-          <h1>One model. One target cell. Full provenance.</h1>
-        </div>
-        <p>
-          Inspect exactly how a basket changes across direction, barrier, horizon, and candle size—without mixing validation, selection, or hazard objectives.
-        </p>
-      </section>
-
-      <div className="explorer-layout">
-        <aside className="registry" aria-label="Model basket registry">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">Registry</span>
-              <h2>18 families</h2>
-            </div>
-            <span className="count">{snapshot.cells.length} cells</span>
-          </div>
-          <div className="family-list">
-            {snapshot.families.map((item) => (
-              <button
-                className={`family-button coverage-${item.coverage}`}
-                aria-pressed={item.id === familyId}
-                onClick={() => selectFamily(item)}
-                key={item.id}
-              >
-                <span>{item.name}</span>
-                <small>{coverageLabel(item)}</small>
-              </button>
-            ))}
-          </div>
-          <div className="coverage-key" aria-label="Coverage key">
-            <span><i className="dot full" />full grid</span>
-            <span><i className="dot historical" />100 bps</span>
-            <span><i className="dot ladder" />hazard</span>
-            <span><i className="dot registry-only" />definition</span>
-          </div>
-        </aside>
-
-        <section className="basket-detail">
-          <header className="basket-header">
-            <div>
-              <div className="title-row">
-                <h2>{family.name}</h2>
-                <span className={`status-pill ${family.mode}`}>{family.mode === "hazard" ? "hazard ladder" : "binary basket"}</span>
-              </div>
-              <p>{family.description}</p>
-            </div>
-            <div className="coverage-block">
-              <strong>{family.cellCount}</strong>
-              <span>indexed read-offs</span>
-            </div>
-          </header>
-
-          <div className="controls" aria-label="Evaluation slice">
-            <label>Direction
-              <select value={direction} onChange={(event) => setDirection(event.target.value as Direction)}>
-                <option value="long">LONG</option><option value="short">SHORT</option>
-              </select>
-            </label>
-            <label>Barrier
-              <select value={bps} onChange={(event) => setBps(Number(event.target.value))}>
-                {bpsOptions.map((value) => <option value={value} key={value}>{value} bps</option>)}
-              </select>
-            </label>
-            <label>Horizon
-              <select value={horizon} onChange={(event) => setHorizon(Number(event.target.value))}>
-                <option value={1}>h1</option><option value={2}>h2</option>
-              </select>
-            </label>
-            <label>Candle
-              <select value={candle} onChange={(event) => setCandle(event.target.value)}>
-                {candleOptions.map((value) => <option value={value} key={value}>{value}</option>)}
-              </select>
-            </label>
-          </div>
-
-          {unavailable ? (
-            <div className="coverage-gap" role="status">
-              <span>Coverage gap</span>
-              <strong>{unavailable}</strong>
-              <small>Unavailable evidence is never rendered as zero.</small>
-            </div>
-          ) : family.mode === "hazard" && jacob ? (
-            <>
-              <div className="metrics">
-                <Metric label="Boosted Brier loss" value={fixed(jacob.boostedLoss)} note="joint ladder · lower is better" />
-                <Metric label="Baseline Brier loss" value={fixed(jacob.baselineLoss)} note="same rows and ladder" />
-                <Metric label="Brier skill" value={percent(jacob.boostedSkill, 2)} note="relative to baseline" />
-              </div>
-              <div className="chart-section">
-                <div className="section-heading">
-                  <div><span className="eyebrow">Variation by barrier</span><h3>Unconditional hit base rate</h3></div>
-                  <span className="chart-legend"><i className="dot full" />base rate</span>
-                </div>
-                <BarrierBars primary={primary} selected={bps} mode="base-rate" />
-                <p className="evidence-line">
-                  n={jacob.rows} · {bps} bps base rate {percent(selectedBaseRate)} · paired improvement {fixed(jacob.improvement)} · 95% CI {fixed(jacob.confidenceInterval[0])} to {fixed(jacob.confidenceInterval[1])}
-                </p>
-              </div>
-            </>
-          ) : cell ? (
-            <>
-              <div className="metrics">
-                <Metric label="Balanced accuracy" value={percent(cell.balancedAccuracy)} note={cell.evidenceKind === "validation" ? "chronological validation" : "selection period"} />
-                <Metric label="Macro F1" value={percent(cell.macroF1)} note="same target cell" />
-                <Metric
-                  label={cell.validationRows == null ? "Final features" : "Positive base rate"}
-                  value={cell.validationRows == null ? String(cell.finalFeatureCount ?? "—") : percent((cell.positiveRows ?? 0) / cell.validationRows)}
-                  note={cell.validationRows == null ? "top selected variant" : `${cell.positiveRows} of ${cell.validationRows} rows`}
-                />
-              </div>
-              <div className="chart-section">
-                <div className="section-heading">
-                  <div><span className="eyebrow">Variation by barrier</span><h3>{direction.toUpperCase()} · h{horizon} · {candle}</h3></div>
-                  <div className="chart-legend"><span><i className="dot full" />balanced accuracy</span><span><i className="dot historical" />Macro F1</span></div>
-                </div>
-                <BarrierBars primary={primary} secondary={secondary} selected={bps} mode="classifier" />
-                <p className="evidence-line">
-                  {cell.validationRows == null ? "Row counts not indexed in this summary" : `n=${cell.validationRows} · ${cell.positiveRows} positive · ${cell.negativeRows} negative`} · {cell.finalFeatureCount} final features · protected references {cell.protectedReferencesSurvived ? "survived" : "not verified"} · {cell.source} {cell.evidenceKind}
-                </p>
-              </div>
-            </>
-          ) : null}
-
-          <section className="features-section">
-            <div className="section-heading">
-              <div><span className="eyebrow">Configured order</span><h3>Candidate feature manifest</h3></div>
-              <span className="count">{family.candidates.length} candidates</span>
-            </div>
-            <div className="feature-table-wrap">
-              <table>
-                <thead><tr><th>#</th><th>Category</th><th>Stable identity</th><th>Parameters</th></tr></thead>
-                <tbody>
-                  {family.candidates.map((candidate, index) => (
-                    <tr key={`${candidate.featureId}-${index}`}>
-                      <td>{index + 1}</td><td>{candidate.category}</td><td><code>{candidate.featureId}</code></td><td>{parameterText(candidate.parameters)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="references">
-              <span>Protected references</span>
-              {family.references.map((reference) => (
-                <code key={reference.featureId}>{reference.featureId}{parameterText(reference.parameters) === "—" ? "" : ` · ${parameterText(reference.parameters)}`}</code>
-              ))}
-            </div>
-            {cell?.survivingFeatures.length ? (
-              <details className="survivors">
-                <summary>Show {cell.survivingFeatures.length} selected-cell survivors</summary>
-                <ul>{cell.survivingFeatures.map((feature) => <li key={feature}><code>{feature}</code></li>)}</ul>
-              </details>
-            ) : null}
-          </section>
-        </section>
-      </div>
-    </main>
-  );
-}
-
-function ScanView() {
-  const coverage = snapshot.scanner.analyzed / snapshot.scanner.universe;
-  return (
-    <main className="secondary-view">
-      <section className="product-intro">
-        <div><p className="eyebrow">Daily universe</p><h1>Liquidity Sniper scan</h1></div>
-        <p>The scan is an opportunity surface. A LONG flag is research evidence, never order authority.</p>
-      </section>
-      <div className="metrics">
-        <Metric label="Declared universe" value={snapshot.scanner.universe.toLocaleString()} note="stocks and crypto" />
-        <Metric label="Analyzed" value={snapshot.scanner.analyzed.toLocaleString()} note={`${percent(coverage)} denominator coverage`} />
-        <Metric label="Primary LONG shadows" value={String(snapshot.scanner.candidates.length)} note="completed candles only" />
-      </div>
-      <section className="scan-card">
-        <div className="section-heading"><div><span className="eyebrow">Current green set</span><h2>{snapshot.scanner.signalLabel}</h2></div><span className="status-pill hazard">research only</span></div>
-        <div className="scan-list">
-          {snapshot.scanner.candidates.map((candidate) => (
-            <article key={candidate.symbol}>
-              <div className="ticker"><strong>{candidate.symbol}</strong><span>{candidate.name}</span></div>
-              <strong>${candidate.close.toFixed(2)}</strong>
-              <span className="direction">{candidate.direction}</span>
-              <small>PPO {candidate.ppo.toFixed(4)} &lt; prior median {candidate.priorMedian.toFixed(4)}</small>
-              <time>{candidate.signalBar}</time>
-            </article>
-          ))}
-        </div>
-      </section>
-    </main>
-  );
-}
-
-function IndicatorsView() {
-  return (
-    <main className="secondary-view">
-      <section className="product-intro">
-        <div><p className="eyebrow">Indicator arsenal</p><h1>One identity across Python and Pine.</h1></div>
-        <p>Refined outputs stay explicit so chart behavior, feature engineering, and research evidence can be reconciled.</p>
-      </section>
-      <div className="indicator-layout">
-        <section>
-          <div className="section-heading"><div><span className="eyebrow">Causal package</span><h2>Refined families</h2></div><span className="count">58 outputs</span></div>
-          <div className="indicator-list">
-            {snapshot.indicators.refined.map((indicator) => (
-              <article key={indicator.name}><div><strong>{indicator.name}</strong><p>{indicator.role}</p></div><span>{indicator.outputs}</span></article>
-            ))}
-          </div>
-        </section>
-        <section>
-          <div className="section-heading"><div><span className="eyebrow">TradingView</span><h2>Optimized Pine inventory</h2></div><span className="count">{snapshot.indicators.pine.length} scripts</span></div>
-          <div className="pine-grid">{snapshot.indicators.pine.map((name) => <code key={name}>{name}</code>)}</div>
-        </section>
-      </div>
-    </main>
-  );
-}
-
-function ScheduleView() {
-  return (
-    <main className="secondary-view">
-      <section className="product-intro">
-        <div><p className="eyebrow">Living interface</p><h1>Scheduled evidence lanes</h1></div>
-        <p>Each cadence updates a bounded slice of the observatory. Missing runs stay visible instead of disappearing.</p>
-      </section>
-      <div className="schedule-grid">
-        {snapshot.schedule.map((lane, index) => (
-          <article key={lane.cadence}>
-            <span className="lane-number">0{index + 1}</span>
-            <h2>{lane.cadence}</h2>
-            <ul>{lane.jobs.map((job) => <li key={job}>{job}</li>)}</ul>
-            <p>{lane.consequence}</p>
-          </article>
-        ))}
-      </div>
-      <section className="data-contract">
-        <span className="eyebrow">Update contract</span>
-        <h2>Artifacts in. Snapshot out. Interface stays stable.</h2>
-        <p>The repository’s sync task reads model definitions, evaluation matrices, and Jacob ablations from Arbitra, then rebuilds a versioned UI snapshot for deployment.</p>
-      </section>
-    </main>
   );
 }
 
 export default function Home() {
-  const [view, setView] = useState<View>("baskets");
-  const navigation: Array<[View, string]> = [
-    ["baskets", "Model baskets"], ["scan", "Daily scan"], ["indicators", "Indicators"], ["schedule", "Schedule"],
-  ];
-  const generated = new Intl.DateTimeFormat("en", {
-    month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "UTC", timeZoneName: "short",
-  }).format(new Date(snapshot.generatedAt));
+  const [selectedDate, setSelectedDate] = useState(snapshot.datasets[0]?.date ?? "");
+  const [methodologyId, setMethodologyId] = useState(snapshot.methodologies[0]?.id ?? "");
+  const [assetSymbol, setAssetSymbol] = useState("");
+  const [matrixMetric, setMatrixMetric] = useState<MatrixMetric>("conditionalHitRate");
+  const [pullbackPercent, setPullbackPercent] = useState(1);
+  const [targetPercent, setTargetPercent] = useState(5);
+  const [assetQuery, setAssetQuery] = useState("");
+
+  const dataset = snapshot.datasets.find((item) => item.date === selectedDate);
+  const methodology = snapshot.methodologies.find((item) => item.id === methodologyId) ?? snapshot.methodologies[0];
+  const matrix = snapshot.matrices.find((item) => item.methodologyId === methodologyId)?.cells ?? [];
+  const methodAssets = useMemo(
+    () => dataset?.assets.filter((asset) => asset.methodologies.includes(methodologyId)) ?? [],
+    [dataset, methodologyId],
+  );
+  const filteredAssets = useMemo(() => {
+    const query = assetQuery.trim().toLowerCase();
+    if (!query) return methodAssets;
+    return methodAssets.filter(
+      (asset) => asset.symbol.toLowerCase().includes(query) || asset.name.toLowerCase().includes(query),
+    );
+  }, [methodAssets, assetQuery]);
+  const asset = methodAssets.find((item) => item.symbol === assetSymbol) ?? methodAssets[0] ?? null;
+  const selectedCell = matrix.find(
+    (cell) => cell.pullbackPercent === pullbackPercent && cell.targetPercent === targetPercent,
+  );
+  const selectedOutcome = asset?.realizedOutcomes.find(
+    (outcome) => outcome.pullbackPercent === pullbackPercent && outcome.targetPercent === targetPercent,
+  );
+  const profile = asset ? snapshot.profiles[asset.symbol] : null;
+  const entryPrice = asset?.close == null ? null : asset.close * (1 - pullbackPercent / 100);
+  const targetPrice = entryPrice == null ? null : entryPrice * (1 + targetPercent / 100);
+  const latestDate = snapshot.datasets[0]?.date ?? "";
+  const earliestDate = snapshot.datasets.at(-1)?.date ?? latestDate;
+  const exactCoverage = dataset ? dataset.exactDateAnalyzed / dataset.universe : 0;
+  const dataGaps = dataset
+    ? dataset.staleAnalyzed + dataset.historyMissing + dataset.analysisFailed
+    : 0;
 
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div className="brand"><span className="brand-mark">A</span><div><strong>ARBITRA</strong><small>Research Observatory</small></div></div>
-        <nav aria-label="Primary navigation">
-          {navigation.map(([id, label]) => <button key={id} aria-pressed={view === id} onClick={() => setView(id)}>{label}</button>)}
-        </nav>
-        <div className="sync-state"><i />snapshot <time>{generated}</time></div>
+        <div className="brand">
+          <span className="brand-mark">A</span>
+          <div><strong>ARBITRA</strong><small>Daily Longs</small></div>
+        </div>
+        <div className="market-state"><i /> completed candles only</div>
+        <label className="date-picker">
+          <span>Signal date</span>
+          <input
+            type="date"
+            value={selectedDate}
+            min={earliestDate}
+            max={latestDate}
+            onChange={(event) => {
+              setSelectedDate(event.target.value);
+              setAssetSymbol("");
+            }}
+          />
+        </label>
       </header>
-      <div className="authority-strip"><strong>Research opportunity ≠ order</strong><span>Every score retains its target identity, evidence period, and objective.</span></div>
-      {view === "baskets" && <BasketExplorer />}
-      {view === "scan" && <ScanView />}
-      {view === "indicators" && <IndicatorsView />}
-      {view === "schedule" && <ScheduleView />}
-      <footer><span>Arbitra UI</span><span>Snapshot schema v1 · deployment authority disabled</span></footer>
+
+      <div className="authority-strip">
+        <strong>Daily long research</strong>
+        <span>Eligibility is causal. Matrices are historical. No order routing.</span>
+      </div>
+
+      <main>
+        <section className="hero">
+          <div>
+            <p className="eyebrow">{dataset ? formatDate(dataset.date) : "Unavailable scan date"}</p>
+            <h1>Long setups,<br />without the noise.</h1>
+          </div>
+          <div className="hero-copy">
+            <p>Choose a completed daily scan, move through the nested methodologies, then inspect the eligible assets against the matching pullback and target evidence.</p>
+            <div className="coverage-line">
+              <span className={exactCoverage >= 0.95 ? "coverage-good" : "coverage-partial"} />
+              {dataset
+                ? `${dataset.exactDateAnalyzed.toLocaleString()} of ${dataset.universe.toLocaleString()} assets exact to this date`
+                : "No saved scan snapshot for this date"}
+            </div>
+            {!dataset && <button className="text-button" onClick={() => setSelectedDate(latestDate)}>Return to latest scan</button>}
+          </div>
+        </section>
+
+        <section className="summary-strip" aria-label="Daily scan summary">
+          <div><span>Exact-date coverage</span><strong>{dataset ? percentage(exactCoverage) : "—"}</strong></div>
+          <div><span>Parent long setups</span><strong>{dataset?.assets.length ?? 0}</strong></div>
+          <div><span>Selected methodology</span><strong>{methodAssets.length}</strong></div>
+          <div><span>Stale / unavailable</span><strong>{dataset ? compactNumber(dataGaps) : "—"}</strong></div>
+        </section>
+
+        <section className="methodology-section">
+          <div className="section-title">
+            <div><p className="eyebrow">Eligibility ladder</p><h2>Pick a methodology</h2></div>
+            <p>Each step inherits every gate to its left. A BB or EMA state never creates a signal by itself.</p>
+          </div>
+          <div className="methodology-tabs" role="tablist" aria-label="Long methodologies">
+            {snapshot.methodologies.map((item, index) => {
+              const count = dataset?.assets.filter((assetItem) => assetItem.methodologies.includes(item.id)).length ?? 0;
+              return (
+                <button
+                  key={item.id}
+                  role="tab"
+                  aria-selected={item.id === methodologyId}
+                  className={item.id === methodologyId ? "active" : ""}
+                  onClick={() => {
+                    setMethodologyId(item.id);
+                    setAssetSymbol("");
+                    setAssetQuery("");
+                  }}
+                >
+                  <span className="method-index">0{index + 1}</span>
+                  <strong>{item.shortName}</strong>
+                  <small>{item.gate}</small>
+                  <b>{count}</b>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="workspace">
+          <aside className="asset-panel">
+            <div className="panel-heading">
+              <div><p className="eyebrow">Eligible now</p><h2>{methodAssets.length} assets</h2></div>
+              <span className="long-pill">LONG</span>
+            </div>
+            {methodAssets.length > 5 && (
+              <label className="asset-search">
+                <span className="sr-only">Search eligible assets</span>
+                <input value={assetQuery} onChange={(event) => setAssetQuery(event.target.value)} placeholder="Search ticker or name" />
+              </label>
+            )}
+            <div className="asset-list">
+              {filteredAssets.map((item) => (
+                <button
+                  key={item.symbol}
+                  className={asset?.symbol === item.symbol ? "selected" : ""}
+                  onClick={() => setAssetSymbol(item.symbol)}
+                >
+                  <div><strong>{item.symbol}</strong><span>{item.name}</span></div>
+                  <div><b>{price(item.close)}</b><small>{item.instrumentFamily}</small></div>
+                </button>
+              ))}
+              {methodAssets.length === 0 && (
+                <div className="empty-assets">
+                  <span>0</span>
+                  <strong>No assets cleared this gate.</strong>
+                  <p>The matrix remains visible as historical context; it does not manufacture a setup.</p>
+                </div>
+              )}
+              {methodAssets.length > 0 && filteredAssets.length === 0 && (
+                <div className="empty-search">No eligible asset matches “{assetQuery}”.</div>
+              )}
+            </div>
+            {dataset && (
+              <div className="data-note">
+                <span>Data quality</span>
+                <p>{dataset.qualityRejected} quality rejected · {dataset.analysisFailed} analysis failed · {dataset.historyMissing} missing</p>
+              </div>
+            )}
+            <section className="company-profile" aria-label="Company profile">
+              <div className="company-profile-heading">
+                <div><p className="eyebrow">Company profile</p><h2>{profile?.longName ?? asset?.name ?? "Select an asset"}</h2></div>
+                {profile && <span>Yahoo</span>}
+              </div>
+              {asset && profile?.available ? (
+                <>
+                  <dl className="company-facts">
+                    <div><dt>Industry</dt><dd>{profile.industry || "Not reported"}</dd></div>
+                    <div><dt>Sector</dt><dd>{profile.sector || "Not reported"}</dd></div>
+                    <div><dt>Employees</dt><dd>{profile.employees?.toLocaleString("en-US") ?? "Not reported"}</dd></div>
+                    <div><dt>Headquarters</dt><dd>{companyLocation(profile)}</dd></div>
+                  </dl>
+                  <div className="company-summary">
+                    <span>What they do</span>
+                    <p>{profile.description || "Yahoo does not currently provide a business summary for this asset."}</p>
+                  </div>
+                  <div className="company-links">
+                    <a href={profile.sourceUrl} target="_blank" rel="noreferrer">Yahoo Finance ↗</a>
+                    {profile.website && <a href={profile.website} target="_blank" rel="noreferrer">Company site ↗</a>}
+                  </div>
+                </>
+              ) : asset ? (
+                <div className="company-empty">
+                  <p>Yahoo does not currently provide company details for this asset.</p>
+                  {profile && <a href={profile.sourceUrl} target="_blank" rel="noreferrer">Open Yahoo Finance ↗</a>}
+                </div>
+              ) : (
+                <div className="company-empty"><p>Choose an eligible stock to see what the company does, its industry, employees, and headquarters.</p></div>
+              )}
+            </section>
+          </aside>
+
+          <div className="evidence-panel">
+            <section className="asset-detail">
+              <div className="asset-identity">
+                <p className="eyebrow">Selected setup</p>
+                {asset ? (
+                  <>
+                    <div className="symbol-row"><h2>{asset.symbol}</h2><span>{price(asset.close)}</span></div>
+                    <p>{asset.name} · {asset.exchange || asset.instrumentFamily}</p>
+                  </>
+                ) : (
+                  <><h2>No current asset</h2><p>{methodology.description}</p></>
+                )}
+              </div>
+              <div className="plan-card">
+                <div><span>Pullback entry</span><strong>{price(entryPrice)}</strong><small>−{pullbackPercent}% from signal close</small></div>
+                <i>→</i>
+                <div><span>Target at limit fill</span><strong>{price(targetPrice)}</strong><small>+{targetPercent}% from actual fill</small></div>
+              </div>
+            </section>
+
+            {asset ? (
+              <section className="gate-grid" aria-label="Selected asset indicator gates">
+                <Gate label="ATR(10) / close" value={`${points(asset.atr10Percent)}%`} threshold={`${points(asset.atr10ThresholdPercent)}% q70`} pass={asset.atr10Pass} />
+                <Gate label="BB width(40)" value={points(asset.bb40Width)} threshold={`${points(asset.bb40Threshold)} q80`} pass={asset.bb40Pass} />
+                <Gate label="EMA20 extension" value={`${points(asset.ema20DistancePercent)}%`} threshold={`${points(asset.ema20ThresholdPercent)}% q90`} pass={asset.ema20Pass} />
+                <div className={`gate ${asset.emaBullStack ? "pass" : "miss"}`}>
+                  <span>EMA structure</span>
+                  <strong>{asset.emaBullStack ? "5 > 10 > 20 > 50" : "mixed"}</strong>
+                  <small>{asset.launchWatch ? "launch watch · research only" : "no launch watch"}</small>
+                </div>
+              </section>
+            ) : (
+              <section className="method-note">
+                <span>{methodology.name}</span>
+                <p>{methodology.description}</p>
+              </section>
+            )}
+
+            <section className="matrix-section">
+              <div className="matrix-heading">
+                <div>
+                  <p className="eyebrow">{asset?.evaluationMature ? `${asset.symbol} · realized path` : "2024+ confirmation evidence"}</p>
+                  <h2>{asset?.evaluationMature ? "Forecast vs achieved" : "Pullback / target matrix"}</h2>
+                  <p>
+                    {methodology.name} · n={methodology.confirmationSignals.toLocaleString()} qualifying signals
+                    {asset?.evaluationMature && asset.evaluationThrough ? ` · observed through ${formatDate(asset.evaluationThrough)}` : ""}
+                  </p>
+                </div>
+                <div className="metric-toggle" role="group" aria-label="Matrix denominator">
+                  <button className={matrixMetric === "conditionalHitRate" ? "active" : ""} onClick={() => setMatrixMetric("conditionalHitRate")}>After fill</button>
+                  <button className={matrixMetric === "successPerSignal" ? "active" : ""} onClick={() => setMatrixMetric("successPerSignal")}>Per signal</button>
+                </div>
+              </div>
+
+              <Heatmap
+                cells={matrix}
+                outcomes={asset?.evaluationMature ? asset.realizedOutcomes : []}
+                metric={matrixMetric}
+                selectedPullback={pullbackPercent}
+                selectedTarget={targetPercent}
+                onSelect={(pullback, target) => {
+                  setPullbackPercent(pullback);
+                  setTargetPercent(target);
+                }}
+              />
+
+              <div className="matrix-readout">
+                <div><span>Selected cell</span><strong>−{pullbackPercent}% → +{targetPercent}%</strong></div>
+                {selectedOutcome ? (
+                  <>
+                    <div><span>{matrixMetric === "conditionalHitRate" ? "Forecast after fill" : "Forecast per signal"}</span><strong>{percentage(selectedCell?.[matrixMetric], 2)}</strong></div>
+                    <div><span>Realized result</span><strong className={selectedOutcome.targetHit ? "result-hit" : "result-miss"}>{selectedOutcome.targetHit ? "Achieved" : selectedOutcome.filled ? "Not achieved" : "Not filled"}</strong></div>
+                  </>
+                ) : (
+                  <>
+                    <div><span>Hits after fill</span><strong>{percentage(selectedCell?.conditionalHitRate, 2)}</strong></div>
+                    <div><span>Success per signal</span><strong>{percentage(selectedCell?.successPerSignal, 2)}</strong></div>
+                  </>
+                )}
+                <div><span>Measurement</span><strong>5 + 20 candles</strong></div>
+              </div>
+              <div className="matrix-footnote">
+                {asset?.evaluationMature ? (
+                  <div className="outcome-legend">
+                    <span><i className="legend-hit" /> achieved</span>
+                    <span><i className="legend-miss" /> not achieved</span>
+                    <span><i className="legend-probability" /> probability</span>
+                  </div>
+                ) : (
+                  <div className="probability-legend">
+                    <span className="legend-gradient" aria-hidden="true" />
+                    <span>lower</span><span>higher</span>
+                  </div>
+                )}
+                <p>Entry is eligible for five completed candles. Target measurement begins after fill and runs for twenty completed candles. No stop, costs, slippage, or order authority is included.</p>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>Arbitra Daily Longs</span>
+        <span>Snapshot v{snapshot.schemaVersion} · {snapshot.deploymentAllowed ? "deployment enabled" : "research only"}</span>
+      </footer>
     </div>
   );
 }
