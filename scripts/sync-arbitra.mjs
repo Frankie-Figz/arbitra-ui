@@ -283,7 +283,7 @@ const datasets = historicalDatasets.length
     ]
   : scanDatasets;
 const snapshot = {
-  schemaVersion: 3,
+  schemaVersion: 4,
   generatedAt: new Date().toISOString(),
   source: historicalDatasets.length
     ? "Arbitra causal daily history plus completed-daily scan artifacts"
@@ -299,6 +299,8 @@ const snapshot = {
     entryWindowCompletedCandles: historical?.evaluation?.entryWindowCompletedCandles ?? 5,
     targetWindowCompletedCandlesAfterFill:
       historical?.evaluation?.targetWindowCompletedCandlesAfterFill ?? 20,
+    unfilledTargetMarkWindowCompletedCandles:
+      historical?.evaluation?.unfilledTargetMarkWindowCompletedCandles ?? 25,
   },
 };
 

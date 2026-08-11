@@ -28,7 +28,10 @@ test("server-renders the focused daily-long workspace", async () => {
   assert.match(html, /Yahoo Finance/);
   assert.match(html, /SMC \+ PPO/);
   assert.match(html, /CLMT/);
-  assert.match(html, /type="date"/);
+  assert.match(html, /aria-label="Signal date"/);
+  assert.match(html, /aria-label="Eligible asset"/);
+  assert.match(html, /<option value="2026-07-28">/);
+  assert.doesNotMatch(html, /<option value="2026-08-09">/);
   assert.doesNotMatch(html, /Biblical basket registry|Research Observatory/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
@@ -37,7 +40,7 @@ test("ships exact-date signals and a matrix for every methodology", async () => 
   const snapshot = JSON.parse(
     await readFile(new URL("public/data/arbitra-snapshot.json", root), "utf8"),
   );
-  assert.equal(snapshot.schemaVersion, 3);
+  assert.equal(snapshot.schemaVersion, 4);
   assert.equal(snapshot.deploymentAllowed, false);
   assert.deepEqual(
     snapshot.methodologies.map((methodology) => methodology.id),
@@ -60,6 +63,9 @@ test("ships exact-date signals and a matrix for every methodology", async () => 
   );
 
   assert.equal(snapshot.datasets.length, 41);
+  const validTradeDates = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
+  assert.ok(validTradeDates.length <= 30);
+  assert.ok(validTradeDates.every((dataset) => dataset.assets.length > 0));
   assert.equal(snapshot.datasets.at(-1).date, "2026-07-01");
   assert.equal(snapshot.history.startDate, "2026-07-01");
   assert.equal(snapshot.history.entryWindowCompletedCandles, 5);
@@ -75,8 +81,17 @@ test("ships exact-date signals and a matrix for every methodology", async () => 
   assert.ok(
     maturedAssets.every((asset) =>
       asset.realizedOutcomes.every(
-        (outcome) => typeof outcome.filled === "boolean" && typeof outcome.targetHit === "boolean",
+        (outcome) =>
+          typeof outcome.filled === "boolean" &&
+          typeof outcome.targetHit === "boolean" &&
+          typeof outcome.targetMarkHit === "boolean" &&
+          typeof outcome.targetMarkPrice === "number",
       ),
+    ),
+  );
+  assert.ok(
+    maturedAssets.some((asset) =>
+      asset.realizedOutcomes.some((outcome) => !outcome.filled && outcome.targetMarkHit),
     ),
   );
 });

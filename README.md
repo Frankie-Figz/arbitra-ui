@@ -4,12 +4,12 @@ Arbitra UI currently has one job: show daily long setups from completed Yahoo Fi
 
 The focused release includes:
 
-- A date picker bounded to synchronized completed-candle datasets
+- A date picker limited to the 30 most recent dates containing valid parent setups
 - Exact-date eligible assets under four nested methodologies: SMC + PPO, ATR(10), BB(40), and EMA(20)
 - ATR, Bollinger Band, and EMA gate readings for each selected asset
 - Yahoo Finance company summaries, industries, employee counts, headquarters, and source links
 - Clickable 10 × 10 pullback/target heatmaps
-- Split forecast-versus-achieved cells once the complete outcome window has matured
+- Diagonally split pullback-versus-target validation cells once the complete outcome window has matured
 - Suggested pullback entry and target exit prices derived from the selected asset's signal close
 - Coverage, stale-row, missing-history, analysis-failure, and quality-rejection counts
 - A responsive phone layout with swipeable methodology and asset selectors
@@ -70,7 +70,7 @@ To rebuild the July 1 onward history and refresh missing Yahoo profiles, run the
 npm run sync:data
 ```
 
-Realized matrix cells are emitted only after enough completed candles exist for the entire five-candle entry window and the slowest possible twenty-candle post-fill target window. A red cell means the route did not achieve its target under that completed protocol; it is never colored red while its outcome is still immature.
+Realized matrix cells are emitted only after enough completed candles exist for the entire five-candle entry window and the slowest possible twenty-candle post-fill target window. The lower-left triangle reports whether the pullback filled; the upper-right reports whether the matching target-price mark was reached. When no pullback fills, the target mark is still evaluated from the hypothetical pullback price across the complete twenty-five-candle window. Green means achieved and red means missed; immature outcomes are never painted red.
 
 ## Validation
 

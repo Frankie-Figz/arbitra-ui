@@ -21,6 +21,9 @@ type RealizedOutcome = {
   entryPrice: number | null;
   targetPrice: number | null;
   targetDate: string | null;
+  targetMarkHit: boolean;
+  targetMarkPrice: number | null;
+  targetMarkDate: string | null;
 };
 
 type CompanyProfile = {
@@ -104,12 +107,14 @@ type Snapshot = {
     endDate: string | null;
     entryWindowCompletedCandles: number;
     targetWindowCompletedCandlesAfterFill: number;
+    unfilledTargetMarkWindowCompletedCandles: number;
   };
 };
 
 type MatrixMetric = "conditionalHitRate" | "successPerSignal";
 
 const snapshot = snapshotJson as Snapshot;
+const validTradeDatasets = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
 
 function formatDate(value: string) {
   if (!value) return "No date selected";
@@ -120,10 +125,6 @@ function formatDate(value: string) {
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(`${value}T12:00:00Z`));
-}
-
-function compactNumber(value: number) {
-  return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
 function companyLocation(profile: CompanyProfile) {
@@ -219,16 +220,13 @@ function Heatmap({
               const outcome = outcomeLookup.get(`${pullback}|${target}`);
               const value = cell?.[metric] ?? 0;
               const selected = pullback === selectedPullback && target === selectedTarget;
+              const targetMarkHit = outcome?.targetMarkHit ?? outcome?.targetHit ?? false;
               const result = outcome
-                ? outcome.targetHit
-                  ? "target achieved"
-                  : outcome.filled
-                    ? "target not achieved"
-                    : "pullback not filled"
+                ? `${outcome.filled ? "pullback filled" : "pullback not filled"}, ${targetMarkHit ? "target mark reached" : "target mark not reached"}`
                 : null;
               return (
                 <button
-                  className={`heat-cell ${outcome ? `realized ${outcome.targetHit ? "achieved" : "missed"}` : ""} ${selected ? "selected" : ""}`}
+                  className={`heat-cell ${outcome ? "realized" : ""} ${selected ? "selected" : ""}`}
                   key={`${pullback}-${target}`}
                   style={outcome ? undefined : heatStyle(value)}
                   onClick={() => onSelect(pullback, target)}
@@ -237,7 +235,12 @@ function Heatmap({
                   aria-label={`${pullback}% pullback, ${target}% target, ${percentage(value)} historical probability${result ? `, ${result}` : ""}`}
                   title={`${pullback}% pullback → ${target}% target: ${percentage(value, 2)}${result ? ` · ${result}` : ""}`}
                 >
-                  {outcome && <span className="heat-result" aria-hidden="true" />}
+                  {outcome && (
+                    <>
+                      <span className={`heat-triangle heat-pullback ${outcome.filled ? "hit" : "miss"}`} aria-hidden="true" />
+                      <span className={`heat-triangle heat-target ${targetMarkHit ? "hit" : "miss"}`} aria-hidden="true" />
+                    </>
+                  )}
                   <span className="heat-probability">{(value * 100).toFixed(0)}</span>
                 </button>
               );
@@ -250,13 +253,12 @@ function Heatmap({
 }
 
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState(snapshot.datasets[0]?.date ?? "");
+  const [selectedDate, setSelectedDate] = useState(validTradeDatasets[0]?.date ?? "");
   const [methodologyId, setMethodologyId] = useState(snapshot.methodologies[0]?.id ?? "");
   const [assetSymbol, setAssetSymbol] = useState("");
   const [matrixMetric, setMatrixMetric] = useState<MatrixMetric>("conditionalHitRate");
   const [pullbackPercent, setPullbackPercent] = useState(1);
   const [targetPercent, setTargetPercent] = useState(5);
-  const [assetQuery, setAssetQuery] = useState("");
 
   const dataset = snapshot.datasets.find((item) => item.date === selectedDate);
   const methodology = snapshot.methodologies.find((item) => item.id === methodologyId) ?? snapshot.methodologies[0];
@@ -265,13 +267,6 @@ export default function Home() {
     () => dataset?.assets.filter((asset) => asset.methodologies.includes(methodologyId)) ?? [],
     [dataset, methodologyId],
   );
-  const filteredAssets = useMemo(() => {
-    const query = assetQuery.trim().toLowerCase();
-    if (!query) return methodAssets;
-    return methodAssets.filter(
-      (asset) => asset.symbol.toLowerCase().includes(query) || asset.name.toLowerCase().includes(query),
-    );
-  }, [methodAssets, assetQuery]);
   const asset = methodAssets.find((item) => item.symbol === assetSymbol) ?? methodAssets[0] ?? null;
   const selectedCell = matrix.find(
     (cell) => cell.pullbackPercent === pullbackPercent && cell.targetPercent === targetPercent,
@@ -282,65 +277,72 @@ export default function Home() {
   const profile = asset ? snapshot.profiles[asset.symbol] : null;
   const entryPrice = asset?.close == null ? null : asset.close * (1 - pullbackPercent / 100);
   const targetPrice = entryPrice == null ? null : entryPrice * (1 + targetPercent / 100);
-  const latestDate = snapshot.datasets[0]?.date ?? "";
-  const earliestDate = snapshot.datasets.at(-1)?.date ?? latestDate;
-  const exactCoverage = dataset ? dataset.exactDateAnalyzed / dataset.universe : 0;
-  const dataGaps = dataset
-    ? dataset.staleAnalyzed + dataset.historyMissing + dataset.analysisFailed
-    : 0;
 
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-mark">A</span>
-          <div><strong>ARBITRA</strong><small>Daily Longs</small></div>
+      <header className="app-header">
+        <div className="topbar">
+          <div className="brand-lockup">
+            <div className="brand">
+              <span className="brand-mark">A</span>
+              <div><strong>ARBITRA</strong><small>Daily Longs</small></div>
+            </div>
+            <p className="brand-tagline">Long setups,<br />without the noise.</p>
+          </div>
+
+          <div className="header-asset" aria-live="polite">
+            <div className="header-asset-context">
+              <span>Selected long</span>
+              <small>{methodology.shortName} · {methodAssets.length} eligible</small>
+            </div>
+            <div className="header-asset-identity">
+              <strong>{asset?.symbol ?? "No setup"}</strong>
+              {asset && <b>{price(asset.close)}</b>}
+            </div>
+            <label className="header-asset-picker">
+              <span className="sr-only">Eligible asset</span>
+              <select
+                aria-label="Eligible asset"
+                value={asset?.symbol ?? ""}
+                disabled={methodAssets.length === 0}
+                onChange={(event) => setAssetSymbol(event.target.value)}
+              >
+                {methodAssets.length === 0 ? (
+                  <option value="">No eligible assets</option>
+                ) : methodAssets.map((item) => (
+                  <option key={item.symbol} value={item.symbol}>{item.symbol} — {item.name}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <label className="date-picker">
+            <span>Signal date</span>
+            <select
+              aria-label="Signal date"
+              value={selectedDate}
+              onChange={(event) => {
+                setSelectedDate(event.target.value);
+                setAssetSymbol("");
+              }}
+            >
+              {validTradeDatasets.map((item) => (
+                <option key={item.date} value={item.date}>
+                  {formatDate(item.date)} — {item.assets.length} setup{item.assets.length === 1 ? "" : "s"}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-        <div className="market-state"><i /> completed candles only</div>
-        <label className="date-picker">
-          <span>Signal date</span>
-          <input
-            type="date"
-            value={selectedDate}
-            min={earliestDate}
-            max={latestDate}
-            onChange={(event) => {
-              setSelectedDate(event.target.value);
-              setAssetSymbol("");
-            }}
-          />
-        </label>
+
+        <div className="authority-strip">
+          <div className="market-state"><i /> completed candles only</div>
+          <span>Eligibility is causal · matrices are historical · no order routing</span>
+        </div>
+
       </header>
 
-      <div className="authority-strip">
-        <strong>Daily long research</strong>
-        <span>Eligibility is causal. Matrices are historical. No order routing.</span>
-      </div>
-
       <main>
-        <section className="hero">
-          <div>
-            <p className="eyebrow">{dataset ? formatDate(dataset.date) : "Unavailable scan date"}</p>
-            <h1>Long setups,<br />without the noise.</h1>
-          </div>
-          <div className="hero-copy">
-            <p>Choose a completed daily scan, move through the nested methodologies, then inspect the eligible assets against the matching pullback and target evidence.</p>
-            <div className="coverage-line">
-              <span className={exactCoverage >= 0.95 ? "coverage-good" : "coverage-partial"} />
-              {dataset
-                ? `${dataset.exactDateAnalyzed.toLocaleString()} of ${dataset.universe.toLocaleString()} assets exact to this date`
-                : "No saved scan snapshot for this date"}
-            </div>
-            {!dataset && <button className="text-button" onClick={() => setSelectedDate(latestDate)}>Return to latest scan</button>}
-          </div>
-        </section>
-
-        <section className="summary-strip" aria-label="Daily scan summary">
-          <div><span>Exact-date coverage</span><strong>{dataset ? percentage(exactCoverage) : "—"}</strong></div>
-          <div><span>Parent long setups</span><strong>{dataset?.assets.length ?? 0}</strong></div>
-          <div><span>Selected methodology</span><strong>{methodAssets.length}</strong></div>
-          <div><span>Stale / unavailable</span><strong>{dataset ? compactNumber(dataGaps) : "—"}</strong></div>
-        </section>
 
         <section className="methodology-section">
           <div className="section-title">
@@ -359,7 +361,6 @@ export default function Home() {
                   onClick={() => {
                     setMethodologyId(item.id);
                     setAssetSymbol("");
-                    setAssetQuery("");
                   }}
                 >
                   <span className="method-index">0{index + 1}</span>
@@ -374,44 +375,6 @@ export default function Home() {
 
         <section className="workspace">
           <aside className="asset-panel">
-            <div className="panel-heading">
-              <div><p className="eyebrow">Eligible now</p><h2>{methodAssets.length} assets</h2></div>
-              <span className="long-pill">LONG</span>
-            </div>
-            {methodAssets.length > 5 && (
-              <label className="asset-search">
-                <span className="sr-only">Search eligible assets</span>
-                <input value={assetQuery} onChange={(event) => setAssetQuery(event.target.value)} placeholder="Search ticker or name" />
-              </label>
-            )}
-            <div className="asset-list">
-              {filteredAssets.map((item) => (
-                <button
-                  key={item.symbol}
-                  className={asset?.symbol === item.symbol ? "selected" : ""}
-                  onClick={() => setAssetSymbol(item.symbol)}
-                >
-                  <div><strong>{item.symbol}</strong><span>{item.name}</span></div>
-                  <div><b>{price(item.close)}</b><small>{item.instrumentFamily}</small></div>
-                </button>
-              ))}
-              {methodAssets.length === 0 && (
-                <div className="empty-assets">
-                  <span>0</span>
-                  <strong>No assets cleared this gate.</strong>
-                  <p>The matrix remains visible as historical context; it does not manufacture a setup.</p>
-                </div>
-              )}
-              {methodAssets.length > 0 && filteredAssets.length === 0 && (
-                <div className="empty-search">No eligible asset matches “{assetQuery}”.</div>
-              )}
-            </div>
-            {dataset && (
-              <div className="data-note">
-                <span>Data quality</span>
-                <p>{dataset.qualityRejected} quality rejected · {dataset.analysisFailed} analysis failed · {dataset.historyMissing} missing</p>
-              </div>
-            )}
             <section className="company-profile" aria-label="Company profile">
               <div className="company-profile-heading">
                 <div><p className="eyebrow">Company profile</p><h2>{profile?.longName ?? asset?.name ?? "Select an asset"}</h2></div>
@@ -443,6 +406,12 @@ export default function Home() {
                 <div className="company-empty"><p>Choose an eligible stock to see what the company does, its industry, employees, and headquarters.</p></div>
               )}
             </section>
+            {dataset && (
+              <div className="data-note">
+                <span>Data quality</span>
+                <p>{dataset.qualityRejected} quality rejected · {dataset.analysisFailed} analysis failed · {dataset.historyMissing} missing</p>
+              </div>
+            )}
           </aside>
 
           <div className="evidence-panel">
@@ -516,7 +485,8 @@ export default function Home() {
                 {selectedOutcome ? (
                   <>
                     <div><span>{matrixMetric === "conditionalHitRate" ? "Forecast after fill" : "Forecast per signal"}</span><strong>{percentage(selectedCell?.[matrixMetric], 2)}</strong></div>
-                    <div><span>Realized result</span><strong className={selectedOutcome.targetHit ? "result-hit" : "result-miss"}>{selectedOutcome.targetHit ? "Achieved" : selectedOutcome.filled ? "Not achieved" : "Not filled"}</strong></div>
+                    <div><span>Pullback</span><strong className={selectedOutcome.filled ? "result-hit" : "result-miss"}>{selectedOutcome.filled ? "Filled" : "Not filled"}</strong></div>
+                    <div><span>Target mark</span><strong className={selectedOutcome.targetMarkHit ? "result-hit" : "result-miss"}>{selectedOutcome.targetMarkHit ? "Reached" : "Not reached"}</strong></div>
                   </>
                 ) : (
                   <>
@@ -524,13 +494,14 @@ export default function Home() {
                     <div><span>Success per signal</span><strong>{percentage(selectedCell?.successPerSignal, 2)}</strong></div>
                   </>
                 )}
-                <div><span>Measurement</span><strong>5 + 20 candles</strong></div>
+                {!selectedOutcome && <div><span>Measurement</span><strong>5 + 20 candles</strong></div>}
               </div>
               <div className="matrix-footnote">
                 {asset?.evaluationMature ? (
                   <div className="outcome-legend">
-                    <span><i className="legend-hit" /> achieved</span>
-                    <span><i className="legend-miss" /> not achieved</span>
+                    <span><i className="legend-diagonal" /> lower-left pullback · upper-right target</span>
+                    <span><i className="legend-hit" /> hit</span>
+                    <span><i className="legend-miss" /> missed</span>
                     <span><i className="legend-probability" /> probability</span>
                   </div>
                 ) : (
@@ -539,7 +510,7 @@ export default function Home() {
                     <span>lower</span><span>higher</span>
                   </div>
                 )}
-                <p>Entry is eligible for five completed candles. Target measurement begins after fill and runs for twenty completed candles. No stop, costs, slippage, or order authority is included.</p>
+                <p>Entry is eligible for five completed candles. After a fill, the target mark uses the actual entry and twenty completed candles. Without a fill, it uses the hypothetical pullback price across the full twenty-five-candle window. No stop, costs, slippage, or order authority is included.</p>
               </div>
             </section>
           </div>

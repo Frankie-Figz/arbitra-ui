@@ -100,8 +100,14 @@ def _realized_outcomes(frame: pd.DataFrame, signal_position: int) -> list[dict[s
             target_hit = False
             target_date: str | None = None
             target_price: float | None = None
+            target_mark_price = (
+                (entry_price if entry_price is not None else limit_price)
+                * (1.0 + target_percent / 100.0)
+            )
+            target_mark_hit = False
+            target_mark_date: str | None = None
             if fill_position is not None and entry_price is not None:
-                target_price = entry_price * (1.0 + target_percent / 100.0)
+                target_price = target_mark_price
                 target_start = fill_position + 1
                 target_end = fill_position + TARGET_WINDOW
                 hits = np.flatnonzero(
@@ -110,6 +116,20 @@ def _realized_outcomes(frame: pd.DataFrame, signal_position: int) -> list[dict[s
                 if len(hits):
                     target_hit = True
                     target_date = _iso_date(index[target_start + int(hits[0])])
+                target_mark_hit = target_hit
+                target_mark_date = target_date
+            else:
+                # When the limit never filled, retain the independent question:
+                # did price still trade through the hypothetical target derived
+                # from that pullback level during the complete mature window?
+                target_start = signal_position + 1
+                target_end = signal_position + ENTRY_WINDOW + TARGET_WINDOW
+                mark_hits = np.flatnonzero(
+                    high_values[target_start : target_end + 1] >= target_mark_price
+                )
+                if len(mark_hits):
+                    target_mark_hit = True
+                    target_mark_date = _iso_date(index[target_start + int(mark_hits[0])])
             outcomes.append(
                 {
                     "pullbackPercent": pullback_percent,
@@ -120,6 +140,9 @@ def _realized_outcomes(frame: pd.DataFrame, signal_position: int) -> list[dict[s
                     "entryPrice": _json_number(entry_price),
                     "targetPrice": _json_number(target_price),
                     "targetDate": target_date,
+                    "targetMarkHit": target_mark_hit,
+                    "targetMarkPrice": _json_number(target_mark_price),
+                    "targetMarkDate": target_mark_date,
                 }
             )
     return outcomes
@@ -447,6 +470,7 @@ def main() -> int:
         "evaluation": {
             "entryWindowCompletedCandles": ENTRY_WINDOW,
             "targetWindowCompletedCandlesAfterFill": TARGET_WINDOW,
+            "unfilledTargetMarkWindowCompletedCandles": ENTRY_WINDOW + TARGET_WINDOW,
             "fillCandleTargetAllowed": False,
             "stopUsed": False,
         },
