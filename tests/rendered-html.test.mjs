@@ -27,7 +27,7 @@ test("server-renders the focused daily-long workspace", async () => {
   assert.match(html, /Company profile/);
   assert.match(html, /Yahoo Finance/);
   assert.match(html, /SMC \+ PPO/);
-  assert.match(html, /CLMT/);
+  assert.match(html, /MPC/);
   assert.match(html, /aria-label="Signal date"/);
   assert.match(html, /aria-label="Eligible asset"/);
   assert.match(html, /<option value="2026-07-28">/);
@@ -49,6 +49,21 @@ test("ships exact-date signals and a matrix for every methodology", async () => 
   assert.equal(snapshot.matrices.length, snapshot.methodologies.length);
   assert.ok(snapshot.matrices.every((matrix) => matrix.cells.length === 100));
 
+  const august11 = snapshot.datasets.find((dataset) => dataset.date === "2026-08-11");
+  assert.ok(august11);
+  assert.deepEqual(
+    august11.assets.map((asset) => asset.symbol),
+    ["MPC", "VLO", "ARMK"],
+  );
+  assert.deepEqual(august11.assets[0].methodologies, [
+    "smc-ppo",
+    "smc-ppo-atr10",
+    "smc-ppo-atr10-bb40",
+    "smc-ppo-atr10-ema20",
+  ]);
+  assert.deepEqual(august11.assets[1].methodologies, august11.assets[0].methodologies);
+  assert.deepEqual(august11.assets[2].methodologies, ["smc-ppo"]);
+
   const august10 = snapshot.datasets.find((dataset) => dataset.date === "2026-08-10");
   assert.ok(august10);
   assert.deepEqual(
@@ -62,7 +77,7 @@ test("ships exact-date signals and a matrix for every methodology", async () => 
     0,
   );
 
-  assert.equal(snapshot.datasets.length, 41);
+  assert.equal(snapshot.datasets.length, 42);
   const validTradeDates = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
   assert.ok(validTradeDates.length <= 30);
   assert.ok(validTradeDates.every((dataset) => dataset.assets.length > 0));
