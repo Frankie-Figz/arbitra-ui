@@ -25,11 +25,11 @@ test("server-renders indicator-led stock, ETF, and crypto workspaces", async () 
   assert.match(html, /Daily stock opportunities/);
   assert.match(html, /Indicator-lit setups/);
   assert.match(html, /Reference trade setup/);
-  assert.match(html, /4 of 4 indicators lit/);
+  assert.match(html, /3 of 4 indicators lit/);
   assert.match(html, /Company profile/);
   assert.match(html, /Yahoo Finance/);
   assert.match(html, /SMC \+ PPO/);
-  assert.match(html, /MPC/);
+  assert.match(html, /MSGS/);
   assert.match(html, /aria-label="Signal date"/);
   assert.match(html, /aria-label="Eligible asset"/);
   assert.match(html, /open company detail/);
@@ -81,7 +81,7 @@ test("ships exact-date stock signals with complementary indicator states", async
   assert.ok(august10.assets.every((asset) => asset.signalDate === august10.date));
   assert.equal(august10.assets.filter((asset) => asset.atr10Pass).length, 0);
 
-  assert.equal(snapshot.datasets.length, 42);
+  assert.equal(snapshot.datasets.length, 43);
   const validTradeDates = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
   assert.ok(validTradeDates.length <= 30);
   assert.ok(validTradeDates.every((dataset) => dataset.assets.length > 0));
