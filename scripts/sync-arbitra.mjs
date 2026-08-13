@@ -269,10 +269,390 @@ async function collectMatrices() {
   return matrices;
 }
 
-const [scanDatasets, matrices, historical] = await Promise.all([
+function normalizeCryptoOrder(row) {
+  return {
+    pushPercent: numeric(row.push_percent),
+    targetPercent: numeric(row.target_percent),
+    limitPrice: numeric(row.limit_price),
+    plannedEntryPrice: numeric(row.planned_entry_price || row.limit_price),
+    plannedExitPrice: numeric(row.planned_exit_price),
+    orderState: row.order_state,
+    barsRemainingToFill: numeric(row.bars_remaining_to_fill),
+    entryPrice: numeric(row.entry_price),
+    targetPrice: numeric(row.target_price),
+    barsRemainingToTarget: numeric(row.bars_remaining_to_target),
+  };
+}
+
+function normalizeRsiCandidate(rows) {
+  const row = rows[0];
+  return {
+    setupId: row.setup_id,
+    researchStatus: row.research_status,
+    eligibleForActiveOutput: truthy(row.eligible_for_active_output),
+    instrumentId: row.instrument_id,
+    baseAsset: row.base_asset,
+    quoteCurrency: row.quote_currency,
+    insideOriginalSevenAssets: truthy(row.inside_original_seven_assets),
+    timeframe: row.timeframe,
+    rsiPeriod: numeric(row.rsi_period),
+    emaFast: numeric(row.ema_fast),
+    emaSlow: numeric(row.ema_slow),
+    signalAvailableAt: row.signal_available_at,
+    signalClose: numeric(row.signal_close),
+    latestClose: numeric(row.latest_close),
+    barsSinceSignal: numeric(row.bars_since_signal),
+    rsiAtConfirmation: numeric(row.rsi_at_confirmation),
+    emaFastValue: numeric(row.ema_fast_value),
+    emaSlowValue: numeric(row.ema_slow_value),
+    emaSpreadChange: numeric(row.ema_spread_change),
+    divergencePriorRsi: numeric(row.divergence_prior_rsi),
+    divergenceCurrentRsi: numeric(row.divergence_current_rsi),
+    divergenceBarsBetweenPivots: numeric(row.divergence_bars_between_pivots),
+    godmodeAddOnMet: truthy(row.godmode_add_on_met),
+    godmodeAddOnRule: row.godmode_add_on_rule || "confirmed_short_transition_within_prior_6h",
+    godmodeAddOnLookbackHours: numeric(row.godmode_add_on_lookback_hours),
+    godmodeAddOnSignalAvailableAt: row.godmode_add_on_signal_available_at || null,
+    godmodeAddOnWt0: numeric(row.godmode_add_on_wt0),
+    godmodeAddOnWt1: numeric(row.godmode_add_on_wt1),
+    godmodeAddOnPreviousWt1: numeric(row.godmode_add_on_previous_wt1),
+    godmodeAddOnSlope: numeric(row.godmode_add_on_slope),
+    suggestedSetupEligible: truthy(row.suggested_setup_eligible),
+    tradabilityReady: truthy(row.tradability_ready),
+    tradabilityPass: truthy(row.tradability_pass),
+    tradabilityReasons: String(row.tradability_reasons ?? "").split("|").filter(Boolean),
+    priorMedianDollarVolume20: numeric(row.prior_median_dollar_volume_20),
+    priorZeroVolumeBars20: numeric(row.prior_zero_volume_bars_20),
+    signalRangeFraction: numeric(row.signal_range_fraction),
+    signalVolumeMultiple20: numeric(row.signal_volume_multiple_20),
+    orders: rows.map(normalizeCryptoOrder),
+  };
+}
+
+function normalizeGodmode(row, direction = row.direction) {
+  return {
+    instrumentId: row.instrument_id,
+    baseAsset: row.base_asset,
+    quoteCurrency: row.quote_currency,
+    timeframe: row.timeframe,
+    researchStatus: row.research_status,
+    deploymentAllowed: truthy(row.deployment_allowed),
+    direction,
+    signalAvailableAt: row.signal_available_at || row.state_available_at,
+    barsSinceSignal: numeric(row.bars_since_signal),
+    close: numeric(row.signal_close || row.latest_close),
+    wt0: numeric(row.wt0),
+    wt1: numeric(row.wt1),
+    previousWt1: numeric(row.previous_wt1),
+    wt2: numeric(row.wt2),
+    slope: numeric(row.slope),
+    regimeCode: numeric(row.regime_code),
+    extremityLevel: numeric(row.extremity_level),
+    extremeCurrentOrPrior: truthy(row.extreme_current_or_prior),
+  };
+}
+
+async function collectCryptoOpportunities() {
+  const root = resolve(arbitraRoot, "artifacts", "rsi-ema-godmode-hourly");
+  if (!existsSync(root)) return null;
+  const requiredFiles = [
+    "report.json",
+    "recent-signal-orders.csv",
+    "active-setup-orders.csv",
+    "recent-godmode-events.csv",
+    "godmode-latest-state.csv",
+    "universe-audit.csv",
+  ];
+  const directories = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory());
+  const completed = [];
+  for (const directory of directories) {
+    const runRoot = resolve(root, directory.name);
+    if (!requiredFiles.every((name) => existsSync(resolve(runRoot, name)))) continue;
+    const report = await readJson(resolve(runRoot, "report.json"));
+    const generatedAt = String(report.generated_utc ?? "");
+    if (generatedAt) completed.push({ runRoot, run: directory.name, report, generatedAt });
+  }
+  completed.sort((left, right) => right.generatedAt.localeCompare(left.generatedAt));
+  const latest = completed[0];
+  if (!latest) return null;
+
+  const [recentOrderRows, activeOrderRows, recentGodmodeRows, latestGodmodeRows, universeRows] =
+    await Promise.all([
+      readCsv(resolve(latest.runRoot, "recent-signal-orders.csv")),
+      readCsv(resolve(latest.runRoot, "active-setup-orders.csv")),
+      readCsv(resolve(latest.runRoot, "recent-godmode-events.csv")),
+      readCsv(resolve(latest.runRoot, "godmode-latest-state.csv")),
+      readCsv(resolve(latest.runRoot, "universe-audit.csv")),
+    ]);
+
+  const groupCandidates = (rows) => {
+    const grouped = new Map();
+    for (const row of rows) {
+      const key = `${row.setup_id}|${row.instrument_id}|${row.signal_available_at}`;
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key).push(row);
+    }
+    return [...grouped.values()]
+      .map(normalizeRsiCandidate)
+      .sort((left, right) => right.signalAvailableAt.localeCompare(left.signalAvailableAt));
+  };
+  const activeConfiguration = latest.report.configurations?.find(
+    (configuration) => configuration.eligible_for_active_output,
+  );
+  const currentGodmode = latestGodmodeRows.flatMap((row) => {
+    if (truthy(row.confirmed_long_transition)) return [normalizeGodmode(row, "long")];
+    if (truthy(row.confirmed_short_transition)) return [normalizeGodmode(row, "short")];
+    return [];
+  });
+  const retainedHistory = groupCandidates(recentOrderRows).filter(
+    (candidate) => candidate.eligibleForActiveOutput,
+  );
+
+  return {
+    schemaVersion: 3,
+    generatedAt: latest.generatedAt,
+    sourceRun: latest.run,
+    venue: latest.report.venue,
+    marketType: latest.report.market_type,
+    universeRule: latest.report.universe_rule,
+    deploymentAllowed: Boolean(latest.report.deployment_allowed),
+    capitalAuthority: Boolean(latest.report.capital_authority),
+    cryptoTradabilityGateEnabled: Boolean(
+      latest.report.crypto_tradability_gate_enabled,
+    ),
+    historyWindowHours: Number(latest.report.history_window_hours ?? 168),
+    universe: {
+      live: Number(latest.report.full_live_universe_size ?? universeRows.length),
+      considered: Number(latest.report.instruments_considered ?? universeRows.length),
+      usableHistory: Number(latest.report.instruments_with_usable_history ?? 0),
+      usableGodmode: Number(latest.report.instruments_with_usable_godmode ?? 0),
+      qualityRejected: universeRows.filter((row) => !truthy(row.quality_pass)).length,
+      godmodeRejected: universeRows.filter((row) => !truthy(row.godmode_pass)).length,
+    },
+    rsi: {
+      setup: activeConfiguration
+        ? {
+            setupId: activeConfiguration.setup_id,
+            timeframe: activeConfiguration.timeframe,
+            rsiPeriod: Number(activeConfiguration.rsi_period),
+            emaFast: Number(activeConfiguration.ema_fast),
+            emaSlow: Number(activeConfiguration.ema_slow),
+            researchStatus: activeConfiguration.research_status,
+          }
+        : null,
+      activeSignals: groupCandidates(activeOrderRows),
+      recentCandidates: [],
+      history: retainedHistory,
+    },
+    godmodeAddOn: {
+      direction: latest.report.godmode_add_on?.direction ?? "short",
+      rule: latest.report.godmode_add_on?.rule ?? "confirmed_extreme_cross",
+      lookbackCompletedHours: Number(
+        latest.report.godmode_add_on?.lookback_completed_hours ?? 6,
+      ),
+      requiredForParentRsiSetup: Boolean(
+        latest.report.godmode_add_on?.required_for_parent_rsi_setup,
+      ),
+      suggestedSetupRequiresAddOn: Boolean(
+        latest.report.godmode_add_on?.suggested_setup_requires_add_on ?? true,
+      ),
+    },
+    suggestedTradeSetup: {
+      direction: latest.report.suggested_trade_setup?.direction ?? "short",
+      pushPercent: Number(latest.report.suggested_trade_setup?.push_percent ?? 1),
+      targetPercentBelowFill: Number(
+        latest.report.suggested_trade_setup?.target_percent_below_fill ?? 2,
+      ),
+      entryWindowCompletedSetupBars: Number(
+        latest.report.suggested_trade_setup?.entry_window_completed_setup_bars ?? 5,
+      ),
+      targetWindowCompletedSetupBarsAfterFill: Number(
+        latest.report.suggested_trade_setup?.target_window_completed_setup_bars_after_fill ?? 20,
+      ),
+      stop: latest.report.suggested_trade_setup?.stop ?? "not_modeled",
+      orderAuthority: Boolean(latest.report.suggested_trade_setup?.order_authority),
+      tradabilityQualityGateRequired: Boolean(
+        latest.report.suggested_trade_setup?.tradability_quality_gate_required,
+      ),
+    },
+    godmode: {
+      timeframe: latest.report.godmode?.interval ?? "1h",
+      rule: latest.report.godmode?.rule ?? "confirmed_extreme_cross",
+      researchStatus: latest.report.godmode?.research_status ?? "unvalidated_intraday_crypto_transfer",
+      warning: latest.report.godmode?.warning ?? "Godmode crypto states are observational only.",
+      current: currentGodmode,
+      recent: recentGodmodeRows
+        .map((row) => normalizeGodmode(row))
+        .sort((left, right) => right.signalAvailableAt.localeCompare(left.signalAvailableAt))
+        .slice(0, 48),
+    },
+  };
+}
+
+function normalizeEtfOpportunity(row) {
+  return {
+    symbol: row.symbol,
+    name: row.name,
+    evidenceRole: row.evidence_role,
+    signalTime: row.signal_time,
+    signalClose: numeric(row.signal_close),
+    wt0: numeric(row.wt0),
+    wt1: numeric(row.wt1),
+    previousWt1: numeric(row.previous_wt1),
+    slope: numeric(row.slope),
+    extremity: numeric(row.extremity),
+    mfi14: numeric(row.mfi14),
+    previousMfi14: numeric(row.previous_mfi14),
+    mfiAddOnAvailable: truthy(row.mfi_add_on_available),
+    mfiAddOnMet: truthy(row.mfi_add_on_met),
+    orderState: row.order_state,
+    active: truthy(row.active),
+    entryPrice: numeric(row.entry_price),
+    targetPrice: numeric(row.target_price),
+    actualExitPrice: numeric(row.actual_exit_price),
+    entryTime: row.entry_time || null,
+    exitTime: row.exit_time || null,
+    barsRemaining: numeric(row.bars_remaining),
+    targetHit: truthy(row.target_hit),
+  };
+}
+
+function normalizeEtfState(row) {
+  return {
+    symbol: row.symbol,
+    name: row.name,
+    evidenceRole: row.evidence_role,
+    candleTime: row.candle_time,
+    close: numeric(row.close),
+    wt0: numeric(row.wt0),
+    wt1: numeric(row.wt1),
+    previousWt1: numeric(row.previous_wt1),
+    slope: numeric(row.slope),
+    extremity: numeric(row.extremity),
+    mfi14: numeric(row.mfi14),
+    previousMfi14: numeric(row.previous_mfi14),
+    mfiAddOnAvailable: truthy(row.mfi_add_on_available),
+    mfi14Rising: truthy(row.mfi14_rising),
+    confirmedLongTransition: truthy(row.confirmed_long_transition),
+  };
+}
+
+async function collectEtfOpportunities() {
+  const root = resolve(arbitraRoot, "artifacts", "etf-godmode-daily");
+  if (!existsSync(root)) return null;
+  const requiredFiles = [
+    "report.json",
+    "manifest.json",
+    "recent-opportunities.csv",
+    "active-orders.csv",
+    "latest-states.csv",
+    "universe-audit.csv",
+  ];
+  const directories = (await readdir(root, { withFileTypes: true })).filter((entry) => entry.isDirectory());
+  const completed = [];
+  for (const directory of directories) {
+    const runRoot = resolve(root, directory.name);
+    if (!requiredFiles.every((name) => existsSync(resolve(runRoot, name)))) continue;
+    const report = await readJson(resolve(runRoot, "report.json"));
+    if (
+      report.status !== "complete" ||
+      Number(report.schema_version ?? 0) < 1 ||
+      Boolean(report.etf_prospective_tradability_gate_enabled) ||
+      Boolean(report.deployment_allowed) ||
+      Boolean(report.capital_authority)
+    ) continue;
+    const generatedAt = String(report.generated_utc ?? "");
+    if (generatedAt) completed.push({ runRoot, run: directory.name, report, generatedAt });
+  }
+  completed.sort((left, right) => right.generatedAt.localeCompare(left.generatedAt));
+  const latest = completed[0];
+  if (!latest) return null;
+  const [recentRows, activeRows, stateRows, auditRows] = await Promise.all([
+    readCsv(resolve(latest.runRoot, "recent-opportunities.csv")),
+    readCsv(resolve(latest.runRoot, "active-orders.csv")),
+    readCsv(resolve(latest.runRoot, "latest-states.csv")),
+    readCsv(resolve(latest.runRoot, "universe-audit.csv")),
+  ]);
+  const opportunities = recentRows.map(normalizeEtfOpportunity);
+  const active = activeRows.map(normalizeEtfOpportunity);
+  return {
+    schemaVersion: Number(latest.report.schema_version),
+    generatedAt: latest.generatedAt,
+    sourceRun: latest.run,
+    completedCandleDates: latest.report.completed_candle_dates ?? [],
+    universeId: latest.report.universe_id,
+    universeSymbols: Number(latest.report.universe_symbols ?? auditRows.length),
+    usableHistory: Number(latest.report.usable_history ?? 0),
+    basicDataIntegrityFailures: Number(latest.report.basic_data_integrity_failures ?? 0),
+    downloadOrAnalysisFailures: Number(latest.report.download_or_analysis_failures ?? 0),
+    historyWindowSessions: Number(latest.report.history_window_sessions ?? 252),
+    etfProspectiveTradabilityGateEnabled: Boolean(
+      latest.report.etf_prospective_tradability_gate_enabled,
+    ),
+    basicCandleIntegrityGateEnabled: Boolean(
+      latest.report.basic_candle_integrity_gate_enabled,
+    ),
+    mfiAddOnRequiredForParentSignal: Boolean(
+      latest.report.mfi_add_on_required_for_parent_signal,
+    ),
+    deploymentAllowed: Boolean(latest.report.deployment_allowed),
+    capitalAuthority: Boolean(latest.report.capital_authority),
+    opportunities,
+    active,
+    latestStates: stateRows.map(normalizeEtfState),
+    totals: {
+      recent: Number(latest.report.recent_opportunities ?? opportunities.length),
+      mfiAddOnMet: Number(latest.report.mfi_add_on_met ?? 0),
+      mfiAddOnNotMet: Number(latest.report.mfi_add_on_not_met ?? 0),
+      active: Number(latest.report.active_orders ?? active.length),
+      targetHits: Number(latest.report.historical_target_hits ?? 0),
+    },
+    referenceOutcome: {
+      entry: latest.report.reference_outcome?.entry ?? "next completed-session open",
+      horizonCandles: Number(latest.report.reference_outcome?.horizon_candles ?? 2),
+      barrierBps: Number(latest.report.reference_outcome?.barrier_bps ?? 100),
+      modeledStop: latest.report.reference_outcome?.modeled_stop ?? null,
+      interpretation:
+        latest.report.reference_outcome?.evidence_interpretation ??
+        "upside opportunity, not autonomous execution",
+    },
+    evidence: {
+      parentBarrierEdgePercentagePoints: Number(
+        latest.report.evidence?.parent_etf_h2_barrier_edge_percentage_points ?? 17.1,
+      ),
+      parentMeanNetReturn: Number(
+        latest.report.evidence?.parent_etf_h2_mean_net_return ?? -0.0003,
+      ),
+      mfiBarrierChangePercentagePoints: Number(
+        latest.report.evidence?.mfi14_etf_barrier_rate_change_percentage_points ?? 3.14,
+      ),
+      mfiMeanNetReturnChangePercentagePoints: Number(
+        latest.report.evidence?.mfi14_etf_mean_net_return_change_percentage_points ?? 0.08,
+      ),
+      warning: latest.report.evidence?.warning ?? "Retrospective ETF evidence only.",
+    },
+    suggestedTradeSetup: latest.report.suggested_trade_setup
+      ? {
+          symbol: latest.report.suggested_trade_setup.symbol,
+          signalTime: latest.report.suggested_trade_setup.signal_time,
+          state: latest.report.suggested_trade_setup.state,
+          entryPrice: numeric(latest.report.suggested_trade_setup.entry_price),
+          exitPrice: numeric(latest.report.suggested_trade_setup.exit_price),
+          entryRule: latest.report.suggested_trade_setup.entry_rule,
+          exitRule: latest.report.suggested_trade_setup.exit_rule,
+          modeledStop: latest.report.suggested_trade_setup.modeled_stop ?? null,
+          orderAuthority: Boolean(latest.report.suggested_trade_setup.order_authority),
+        }
+      : null,
+  };
+}
+
+const [scanDatasets, matrices, historical, etf, crypto] = await Promise.all([
   collectDailyScans(),
   collectMatrices(),
   existsSync(historyPath) ? readJson(historyPath) : Promise.resolve(null),
+  collectEtfOpportunities(),
+  collectCryptoOpportunities(),
 ]);
 const historicalDatasets = historical?.datasets ?? [];
 const historicalLatest = historicalDatasets[0]?.date ?? "";
@@ -283,7 +663,7 @@ const datasets = historicalDatasets.length
     ]
   : scanDatasets;
 const snapshot = {
-  schemaVersion: 4,
+  schemaVersion: 6,
   generatedAt: new Date().toISOString(),
   source: historicalDatasets.length
     ? "Arbitra causal daily history plus completed-daily scan artifacts"
@@ -293,6 +673,8 @@ const snapshot = {
   datasets,
   matrices,
   profiles: historical?.profiles ?? {},
+  etf,
+  crypto,
   history: {
     startDate: historical?.startDate ?? datasets.at(-1)?.date ?? null,
     endDate: datasets[0]?.date ?? null,
@@ -307,5 +689,5 @@ const snapshot = {
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
 console.log(
-  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, and ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells.`,
+  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, and ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : "no crypto run"}.`,
 );

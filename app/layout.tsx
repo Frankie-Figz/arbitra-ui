@@ -24,19 +24,19 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
-    title: "Arbitra Daily Longs",
+    title: "Arbitra Market Signals",
     description:
-      "Completed daily long setups with Yahoo company profiles, causal pace gates, and forecast-versus-achieved pullback evidence.",
+      "Indicator-led stock trade setups, daily ETF Godmode/MFI opportunities, and hourly crypto RSI/EMA signals from completed candles.",
     openGraph: {
-      title: "Arbitra Daily Longs",
-      description: "Completed candles. Causal gates. Pullback / target evidence.",
-      images: [{ url: "/og.png", width: 1731, height: 909 }],
+      title: "Arbitra Market Signals",
+      description: "Daily indicator-led stock and ETF setups plus hourly crypto signals from completed candles.",
+      images: [{ url: "/og-market-signals-etf-crypto.png", width: 1672, height: 941 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Arbitra Daily Longs",
-      description: "Completed candles. Causal gates. Pullback / target evidence.",
-      images: ["/og.png"],
+      title: "Arbitra Market Signals",
+      description: "Daily indicator-led stock and ETF setups plus hourly crypto signals from completed candles.",
+      images: ["/og-market-signals-etf-crypto.png"],
     },
   };
 }
