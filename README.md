@@ -13,6 +13,7 @@ The focused release includes:
 - Suggested pullback entry and target exit prices derived from the selected asset's signal close
 - Coverage, stale-row, missing-history, analysis-failure, and quality-rejection counts
 - A responsive phone layout with swipeable methodology and asset selectors
+- Do we need  to re-deploy ?
 
 ## Local development
 
