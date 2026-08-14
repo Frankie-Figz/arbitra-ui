@@ -45,6 +45,131 @@ const methodologies = [
   },
 ];
 
+const xgbShowcase = {
+  schemaVersion: 1,
+  evidenceAsOf: "2026-08-05",
+  deploymentAllowed: false,
+  capitalAuthority: false,
+  comparisonHoldout: {
+    rows: 569,
+    start: "2025-01-01",
+    end: "2026-07-23",
+    longLabels: 274,
+    shortLabels: 295,
+  },
+  models: [
+    {
+      id: "able-logistic",
+      name: "Able",
+      title: "Raw holdout leader",
+      status: "legacy evidence leader",
+      crown: "Highest reported foundational macro F1",
+      evidenceClass: "fixed-configuration late holdout",
+      objective: "binary:logistic",
+      macroF1: 0.530516,
+      balancedAccuracy: null,
+      accuracy: null,
+      innerBalancedAccuracy: null,
+      candidatePolicy: "Foundational Able basket",
+      composition: [
+        "Mixed momentum, volume, trend, and volatility lineage",
+        "Protected A/D and OBV reference features",
+      ],
+      runId: null,
+      registeredVersion: null,
+      caution:
+        "This is the strongest raw macro-F1 number in the preceding logistic family runs, but it came from one fixed configuration rather than the later purged hyperparameter contest.",
+      evidencePath: "docs/six-model-training-results.md",
+    },
+    {
+      id: "mary-prior",
+      name: "Mary",
+      title: "Balance crown",
+      status: "selection-aware holdout leader",
+      crown: "Best balanced accuracy and accuracy in the frozen comparison",
+      evidenceClass: "training-only search + untouched chronological holdout",
+      objective: "binary:hinge",
+      macroF1: 0.51746,
+      balancedAccuracy: 0.526253,
+      accuracy: 0.521968,
+      innerBalancedAccuracy: null,
+      candidatePolicy: "36-candidate search · 8 → 4 candidates",
+      composition: [
+        "Four retained mixed-indicator candidates",
+        "Protected A/D and OBV reference features",
+      ],
+      runId: null,
+      registeredVersion: null,
+      caution:
+        "Mary remains the balance leader, but the result is one 569-row holdout and does not establish stable statistical superiority.",
+      evidencePath: "docs/mary-chatty-expanded-sweep-comparison.md",
+    },
+    {
+      id: "chatty-pruned",
+      name: "Chatty",
+      title: "Composite crown",
+      status: "registered research champion",
+      crown: "Best compact, source-balanced composite",
+      evidenceClass: "purged inner selection + untouched chronological holdout",
+      objective: "binary:hinge",
+      macroF1: 0.519046,
+      balancedAccuracy: 0.522739,
+      accuracy: 0.520211,
+      innerBalancedAccuracy: null,
+      candidatePolicy: "14 → 7 candidates · one survivor per source",
+      composition: [
+        "Adam · RSI(7)",
+        "Able · ATR(7)",
+        "Abraham · ATR(8)",
+        "Eve-Evolved · EMA ratio(15)",
+        "Hagar · ATR(10)",
+        "Jose · EMA ratio(11)",
+        "Mary · MFI(21)",
+        "Protected A/D and OBV reference features",
+      ],
+      runId: "70d39607162e42e5b1573deccd23096c",
+      registeredVersion: 1,
+      caution:
+        "Pruning halves the candidate basket with almost no macro-F1 loss. That is a compactness win, not evidence of a large predictive edge.",
+      evidencePath: "docs/two-champion-pruned-chatty-results.md",
+    },
+  ],
+  futureWatch: {
+    id: "laguerre-future-eight",
+    name: "Laguerre Eight",
+    title: "Frozen for the future",
+    status: "future-only watch",
+    crown: "Strongest unconsumed inner walk-forward reading",
+    evidenceClass: "three-fold inner walk-forward · no historical holdout claim",
+    objective: "XGBoost binary classifier",
+    macroF1: null,
+    balancedAccuracy: null,
+    accuracy: null,
+    innerBalancedAccuracy: 0.544335,
+    candidatePolicy: "Eight frozen, disjoint features",
+    trainingRows: 4172,
+    trainingCutoff: "2026-08-01",
+    composition: [
+      "Laguerre dispersion 55/0.10",
+      "Laguerre dispersion 26/0.90",
+      "RSI(42) and RSI(14)",
+      "EMA(24) and EMA(55) percentage distance",
+      "Squeeze width 26 / BB 1.5 / KC 1.0",
+      "Chaikin Money Flow(20)",
+    ],
+    runId: null,
+    registeredVersion: null,
+    caution:
+      "It has no unconsumed historical holdout. Only candles after the frozen 2026-08-01 cutoff may become evaluation evidence.",
+    evidencePath: "docs/laguerre-frozen-future-model-evidence-2026-08-05.md",
+  },
+  exclusions: [
+    "The fixed binary:hinge migration runs are excluded: six of seven collapsed to constant LONG predictions.",
+    "Legacy bestModel filenames are descriptors, not proof that a model won an out-of-sample contest.",
+    "The EPIC-028 XGBoost finalist lost to the causal ATR baseline on the reused confirmation interval.",
+  ],
+};
+
 async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
@@ -246,6 +371,7 @@ async function collectMatrices() {
 
   const matrices = [];
   for (const source of sources) {
+    if (!existsSync(source.conditional) || !existsSync(source.perSignal)) continue;
     const [conditional, perSignal] = await Promise.all([
       readWideMatrix(source.conditional),
       readWideMatrix(source.perSignal),
@@ -673,6 +799,7 @@ const snapshot = {
   datasets,
   matrices,
   profiles: historical?.profiles ?? {},
+  xgbShowcase,
   etf,
   crypto,
   history: {
