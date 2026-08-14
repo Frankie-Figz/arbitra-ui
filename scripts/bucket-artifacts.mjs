@@ -18,6 +18,8 @@ export function createBucketArtifactSigner(environment = process.env) {
   const client = new S3Client({
     endpoint,
     region,
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
     forcePathStyle: environment.BUCKET_FORCE_PATH_STYLE === "true",
     credentials: {
       accessKeyId: requiredEnvironment(environment, "BUCKET_ACCESS_KEY_ID"),

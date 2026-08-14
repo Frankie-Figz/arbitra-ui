@@ -17,6 +17,7 @@ test("creates a short-lived virtual-hosted Railway bucket download", async () =>
   assert.equal(signed.hostname, "arbitra-history-test123.storage.railway.app");
   assert.match(signed.searchParams.get("X-Amz-Signature") ?? "", /^[0-9a-f]{64}$/);
   assert.equal(signed.searchParams.get("X-Amz-Expires"), "900");
+  assert.equal(signed.searchParams.has("x-amz-checksum-mode"), false);
   assert.equal(signed.searchParams.has("response-content-disposition"), false);
 });
 
