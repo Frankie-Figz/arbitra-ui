@@ -1,6 +1,9 @@
-# Arbitra Daily Longs
+# Arbitra Platform
 
-Arbitra UI currently has one job: show daily long setups from completed Yahoo Finance candles. The screen keeps the signal date, causal eligibility gates, and historical pullback-to-target evidence together without implying order authority.
+Arbitra Platform shows research-only market setups and now owns the private
+control plane for Elijah's Ravens historical Massive acquisitions. The screen
+keeps signal evidence, data-job state and downloadable immutable artifacts
+together without implying order authority.
 
 The focused release includes:
 
@@ -36,6 +39,65 @@ npm start
 The local launcher resolves URL paths through Node's cross-platform path APIs
 and serves the generated browser assets directly, so the same command works on
 Windows, macOS, and Linux.
+
+## Historical data jobs
+
+The **Historical data acquisition** console queues resumable unadjusted
+one-minute Massive jobs for the top 10, top 50, an explicit ticker set, or the
+confirmed current SPY universe. The platform owns job intent and progress; the
+provider-facing Python worker remains in the Arbitra repository behind the
+`arbitra-ingest-us-equities` extraction seam.
+
+```text
+browser administrator
+  -> arbitra-platform job API + volume ledger
+  -> Railway-private worker API
+  -> Elijah's Ravens worker -> Massive + State Street
+  -> private Railway Bucket
+  -> 15-minute presigned browser download
+```
+
+The browser administrator token stays in React memory and is never written to
+local storage. The worker uses a separate token over Railway's private network.
+The Massive key belongs only to the worker and must not be added to this UI
+service.
+
+For local development, copy the variable names from `.env.example` into an
+ignored `.env` or your shell. The Node launcher reads:
+
+- `ARBITRA_DATA_JOBS_ROOT` — durable JSON ledger root; use a Railway volume path
+  such as `/data/arbitra-jobs` in production.
+- `ARBITRA_PLATFORM_JOB_TOKEN` — bearer secret entered by the administrator in
+  the private console.
+- `ARBITRA_DATA_WORKER_TOKEN` — distinct bearer secret shared only with the
+  worker.
+- `BUCKET_NAME`, `BUCKET_ENDPOINT`, `BUCKET_REGION`,
+  `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY` — credentials for the same
+  private bucket used by the worker.
+- `BUCKET_FORCE_PATH_STYLE=true` — only for legacy buckets whose Railway
+  Credentials tab explicitly requires path-style URLs.
+
+In Railway, keep the UI at one replica while it uses the file ledger and mount
+its existing volume at `/data`. Add a private Railway Bucket and map its
+provided `BUCKET`, `ENDPOINT`, `REGION`, `ACCESS_KEY_ID`, and
+`SECRET_ACCESS_KEY` variables to the names above. The API emits a presigned GET
+only after a job reaches `completed`; neither bucket credentials nor the
+Massive key are returned to the browser.
+
+Useful local checks are:
+
+```powershell
+npm.cmd test
+npm.cmd run build
+$env:ARBITRA_DATA_JOBS_ROOT = "$PWD\work\data-jobs"
+$env:ARBITRA_PLATFORM_JOB_TOKEN = "local-admin"
+$env:ARBITRA_DATA_WORKER_TOKEN = "local-worker"
+npm.cmd start
+```
+
+The full current-constituent selection requires a second visible confirmation.
+Do not use it as the first deployment smoke; queue a one-ticker completed-date
+job, verify its manifest and bundle, then run the top-ten two-year pilot.
 
 ## Updating the interface from Arbitra
 

@@ -24,19 +24,19 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
-    title: "Arbitra Market Signals",
+    title: "Arbitra Research Platform",
     description:
-      "Indicator-led stock trade setups, daily ETF Godmode/MFI opportunities, and hourly crypto RSI/EMA signals from completed candles.",
+      "Evidence-led market signals and resumable historical market-data acquisition for Arbitra research.",
     openGraph: {
-      title: "Arbitra Market Signals",
-      description: "Daily indicator-led stock and ETF setups plus hourly crypto signals from completed candles.",
-      images: [{ url: "/og-market-signals-etf-crypto.png", width: 1672, height: 941 }],
+      title: "Arbitra Research Platform",
+      description: "Research signals, immutable market-data evidence, and downloadable historical acquisitions.",
+      images: [{ url: "/og-data-acquisition-v1.png", width: 1672, height: 941 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Arbitra Market Signals",
-      description: "Daily indicator-led stock and ETF setups plus hourly crypto signals from completed candles.",
-      images: ["/og-market-signals-etf-crypto.png"],
+      title: "Arbitra Research Platform",
+      description: "Research signals, immutable market-data evidence, and downloadable historical acquisitions.",
+      images: ["/og-data-acquisition-v1.png"],
     },
   };
 }

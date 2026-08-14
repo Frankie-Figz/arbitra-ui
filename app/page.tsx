@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import snapshotJson from "../public/data/arbitra-snapshot.json";
 
 type CompanyProfile = {
@@ -365,6 +365,40 @@ type Snapshot = {
     targetWindowCompletedCandlesAfterFill: number;
     unfilledTargetMarkWindowCompletedCandles: number;
   };
+};
+
+type DataJobArtifact = {
+  id: string;
+  kind: string;
+  label: string;
+  sha256: string;
+  size: number;
+  ticker: string | null;
+};
+
+type DataJob = {
+  id: string;
+  status: "queued" | "running" | "cancel_requested" | "cancelled" | "completed" | "failed";
+  createdAt: string;
+  updatedAt: string;
+  finishedAt?: string;
+  request: {
+    rangeStart: string;
+    rangeEnd: string;
+    universe: { type: "top_weighted"; limit: number } | { type: "symbols"; symbols: string[] } | { type: "all_constituents" };
+  };
+  progress: {
+    symbolsTotal: number;
+    symbolsCompleted: number;
+    symbolsFailed: number;
+    pagesCompleted: number;
+    providerCalls: number;
+    rowsWritten: number;
+    bytesUploaded: number;
+    currentTicker: string;
+  };
+  artifacts: DataJobArtifact[];
+  error: string | null;
 };
 
 const bundledSnapshot = snapshotJson as Snapshot;
@@ -1084,6 +1118,212 @@ function XgbShowcase({ showcase }: { showcase: XgbShowcaseSnapshot }) {
   );
 }
 
+function formatBytes(value: number) {
+  if (!Number.isFinite(value) || value <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const exponent = Math.min(Math.floor(Math.log(value) / Math.log(1024)), units.length - 1);
+  return `${(value / 1024 ** exponent).toFixed(exponent === 0 ? 0 : 1)} ${units[exponent]}`;
+}
+
+function universeLabel(job: DataJob) {
+  if (job.request.universe.type === "top_weighted") return `Top ${job.request.universe.limit} by SPY weight`;
+  if (job.request.universe.type === "symbols") return `${job.request.universe.symbols.length} explicit ticker${job.request.universe.symbols.length === 1 ? "" : "s"}`;
+  return "All current SPY constituents";
+}
+
+function jobStatusLabel(status: DataJob["status"]) {
+  const labels: Record<DataJob["status"], string> = {
+    queued: "Queued",
+    running: "Running",
+    cancel_requested: "Stopping",
+    cancelled: "Cancelled",
+    completed: "Complete",
+    failed: "Failed",
+  };
+  return labels[status];
+}
+
+function DataAcquisitionConsole() {
+  const [token, setToken] = useState("");
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+  const [scope, setScope] = useState<"top10" | "top50" | "symbols" | "all">("top10");
+  const [symbols, setSymbols] = useState("");
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [jobs, setJobs] = useState<DataJob[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("Enter the platform access token to load the private job ledger.");
+
+  useEffect(() => {
+    const dateInNewYork = (value: Date) => new Intl.DateTimeFormat("en-CA", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(value);
+    const timeout = window.setTimeout(() => {
+      const now = new Date();
+      const latest = new Date(now);
+      latest.setUTCDate(latest.getUTCDate() - 1);
+      const earliest = new Date(now);
+      earliest.setUTCFullYear(earliest.getUTCFullYear() - 2);
+      setRangeStart(dateInNewYork(earliest));
+      setRangeEnd(dateInNewYork(latest));
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  const authorizedFetch = useCallback(async (pathname: string, init: RequestInit = {}) => {
+    if (!token) throw new Error("Enter the platform access token first.");
+    const response = await fetch(pathname, {
+      ...init,
+      cache: "no-store",
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${token}`,
+        ...(init.body ? { "content-type": "application/json" } : {}),
+        ...init.headers,
+      },
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error ?? payload.status ?? `Request failed (${response.status})`);
+    return payload;
+  }, [token]);
+
+  const refreshJobs = useCallback(async (quiet = false) => {
+    if (!token) return;
+    if (!quiet) setBusy(true);
+    try {
+      const payload = await authorizedFetch("/api/data-jobs");
+      setJobs(payload.jobs ?? []);
+      setMessage(payload.jobs?.length ? "Private acquisition ledger loaded." : "No acquisition jobs yet.");
+    } catch (error) {
+      setMessage(String((error as Error).message ?? error));
+    } finally {
+      if (!quiet) setBusy(false);
+    }
+  }, [authorizedFetch, token]);
+
+  useEffect(() => {
+    if (!token || !jobs.some((job) => ["queued", "running", "cancel_requested"].includes(job.status))) return;
+    const interval = window.setInterval(() => void refreshJobs(true), 5_000);
+    return () => window.clearInterval(interval);
+  }, [token, jobs, refreshJobs]);
+
+  const createJob = async () => {
+    setBusy(true);
+    try {
+      const universe = scope === "top10"
+        ? { type: "top_weighted", limit: 10 }
+        : scope === "top50"
+          ? { type: "top_weighted", limit: 50 }
+          : scope === "symbols"
+            ? { type: "symbols", symbols: symbols.split(/[\s,]+/).filter(Boolean) }
+            : { type: "all_constituents" };
+      const payload = await authorizedFetch("/api/data-jobs", {
+        method: "POST",
+        body: JSON.stringify({
+          rangeStart,
+          rangeEnd,
+          universe,
+          includeRaw: true,
+          createTickerBundles: true,
+          ...(scope === "all" && confirmAll ? { confirmation: "DOWNLOAD ALL CURRENT SPY CONSTITUENTS" } : {}),
+        }),
+      });
+      setJobs((current) => [payload.job, ...current]);
+      setMessage(`${universeLabel(payload.job)} acquisition queued.`);
+    } catch (error) {
+      setMessage(String((error as Error).message ?? error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancelJob = async (job: DataJob) => {
+    setBusy(true);
+    try {
+      const payload = await authorizedFetch(`/api/data-jobs/${encodeURIComponent(job.id)}/cancel`, {
+        method: "POST",
+        body: "{}",
+      });
+      setJobs((current) => current.map((item) => item.id === job.id ? payload.job : item));
+      setMessage(`${universeLabel(job)} job is stopping safely.`);
+    } catch (error) {
+      setMessage(String((error as Error).message ?? error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const downloadArtifact = async (job: DataJob, artifact: DataJobArtifact) => {
+    setBusy(true);
+    try {
+      const payload = await authorizedFetch(
+        `/api/data-jobs/${encodeURIComponent(job.id)}/artifacts/${encodeURIComponent(artifact.id)}`,
+      );
+      window.location.assign(payload.url);
+      setMessage(`${artifact.label} download authorized for 15 minutes.`);
+    } catch (error) {
+      setMessage(String((error as Error).message ?? error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="data-console" id="data-acquisition">
+      <div className="data-console-hero">
+        <div>
+          <p className="eyebrow">Elijah&apos;s Ravens · Massive stock history</p>
+          <h2>Historical data acquisition</h2>
+          <p>Queue resumable, oldest-first one-minute SPY constituent downloads. The platform tracks every provider page; the private bucket keeps the immutable evidence and downloadable ticker bundles.</p>
+        </div>
+        <div className="data-console-lock">
+          <label><span>Platform access token</span><input type="password" autoComplete="off" value={token} onChange={(event) => setToken(event.target.value)} placeholder="Required to manage jobs" /></label>
+          <button type="button" disabled={!token || busy} onClick={() => void refreshJobs()}>{busy ? "Working…" : "Unlock ledger"}</button>
+        </div>
+      </div>
+
+      <div className="data-job-builder">
+        <label><span>Oldest session</span><input type="date" value={rangeStart} onChange={(event) => setRangeStart(event.target.value)} /></label>
+        <label><span>Completed through</span><input type="date" value={rangeEnd} onChange={(event) => setRangeEnd(event.target.value)} /></label>
+        <label><span>SPY universe</span><select value={scope} onChange={(event) => { setScope(event.target.value as typeof scope); setConfirmAll(false); }}><option value="top10">Top 10 pilot</option><option value="top50">Top 50</option><option value="symbols">Explicit tickers</option><option value="all">All current constituents</option></select></label>
+        {scope === "symbols" && <label className="data-symbols"><span>Tickers</span><input value={symbols} onChange={(event) => setSymbols(event.target.value.toUpperCase())} placeholder="NVDA, AAPL, MSFT" /></label>}
+        {scope === "all" && <label className="data-confirm"><input type="checkbox" checked={confirmAll} onChange={(event) => setConfirmAll(event.target.checked)} /><span>I confirm the full current SPY universe. Estimated runtime may exceed eight hours.</span></label>}
+        <button className="data-queue-button" type="button" disabled={!token || busy || !rangeStart || !rangeEnd || (scope === "all" && !confirmAll) || (scope === "symbols" && !symbols.trim())} onClick={() => void createJob()}>Queue acquisition</button>
+      </div>
+
+      <div className="data-console-message" role="status"><i />{message}</div>
+      <div className="data-job-list" aria-live="polite">
+        {jobs.map((job) => {
+          const denominator = job.progress.symbolsTotal || (job.request.universe.type === "top_weighted" ? job.request.universe.limit : job.request.universe.type === "symbols" ? job.request.universe.symbols.length : 503);
+          const done = job.progress.symbolsCompleted + job.progress.symbolsFailed;
+          const percent = denominator ? Math.min(100, (done / denominator) * 100) : 0;
+          return (
+            <article className={`data-job ${job.status}`} key={job.id}>
+              <div className="data-job-head"><div><strong>{universeLabel(job)}</strong><span>{job.request.rangeStart} → {job.request.rangeEnd}</span></div><b>{jobStatusLabel(job.status)}</b></div>
+              <div className="data-progress"><span style={{ width: `${percent}%` }} /></div>
+              <div className="data-job-metrics"><span><b>{done}</b> / {denominator} tickers</span><span><b>{job.progress.pagesCompleted}</b> pages</span><span><b>{job.progress.providerCalls}</b> calls</span><span><b>{job.progress.rowsWritten.toLocaleString()}</b> rows</span><span><b>{formatBytes(job.progress.bytesUploaded)}</b> uploaded</span></div>
+              {job.progress.currentTicker && <p>Now acquiring <strong>{job.progress.currentTicker}</strong></p>}
+              {job.error && <p className="data-job-error">{job.error}</p>}
+              <footer>
+                <span>{formatTimestamp(job.updatedAt)} · research-only unadjusted 1m lineage</span>
+                <div>
+                  {["queued", "running"].includes(job.status) && <button type="button" disabled={busy} onClick={() => void cancelJob(job)}>Stop safely</button>}
+                  {job.status === "completed" && job.artifacts.map((artifact) => <button type="button" disabled={busy} onClick={() => void downloadArtifact(job, artifact)} key={artifact.id}>{artifact.ticker ?? artifact.kind} · {formatBytes(artifact.size)}</button>)}
+                </div>
+              </footer>
+            </article>
+          );
+        })}
+        {token && jobs.length === 0 && <div className="data-jobs-empty"><strong>No historical jobs yet</strong><span>The top-ten two-year pilot is the recommended first run.</span></div>}
+      </div>
+      <div className="data-console-guardrail"><span>Canonical</span><strong>Unadjusted 1m · no missing-minute fill · pre / regular / post labelled separately</strong><p>Current constituents applied retrospectively are survivorship-biased until historical membership evidence is added.</p></div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [snapshot, setSnapshot] = useState<Snapshot>(bundledSnapshot);
   const [selectedDate, setSelectedDate] = useState(bundledTradeDatasets[0]?.date ?? "");
@@ -1197,7 +1437,7 @@ export default function Home() {
         </div>
 
         <div className="authority-strip">
-          <nav aria-label="Market sections"><a href="#xgb-models">XGB champions</a><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
+          <nav aria-label="Market sections"><a href="#data-acquisition">Data jobs</a><a href="#xgb-models">XGB champions</a><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
           <div className="market-state"><i /> completed candles only</div>
           <span>Indicator states are causal · setups are research references · no order routing</span>
         </div>
@@ -1205,6 +1445,7 @@ export default function Home() {
       </header>
 
       <main>
+        <DataAcquisitionConsole />
         <XgbShowcase showcase={snapshot.xgbShowcase} />
         <section className="crypto-section stock-section" id="daily-longs">
           <div className="crypto-hero">

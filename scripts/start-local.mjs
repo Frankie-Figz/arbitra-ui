@@ -5,6 +5,8 @@ import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
+import { createBucketArtifactSigner } from "./bucket-artifacts.mjs";
+import { createDataJobsHandler } from "./data-jobs.mjs";
 import { createRuntimeSnapshotHandler } from "./runtime-snapshot.mjs";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
@@ -12,6 +14,7 @@ const clientRoot = path.join(projectRoot, "dist", "client");
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
 const runtimeSnapshotPath = process.env.ARBITRA_RUNTIME_SNAPSHOT_PATH ??
   "/data/arbitra-snapshot.json";
+const dataJobsRoot = process.env.ARBITRA_DATA_JOBS_ROOT ?? "/data/arbitra-jobs";
 
 const contentTypes = new Map([
   [".avif", "image/avif"],
@@ -132,11 +135,24 @@ const runtimeSnapshotResponse = createRuntimeSnapshotHandler({
   fallbackPath: path.join(clientRoot, "data", "arbitra-snapshot.json"),
   ingestToken: process.env.ARBITRA_UI_INGEST_TOKEN ?? "",
 });
+const bucketConfigured = [
+  "BUCKET_ENDPOINT",
+  "BUCKET_NAME",
+  "BUCKET_ACCESS_KEY_ID",
+  "BUCKET_SECRET_ACCESS_KEY",
+].every((name) => Boolean(process.env[name]));
+const dataJobsResponse = createDataJobsHandler({
+  jobsRoot: dataJobsRoot,
+  adminToken: process.env.ARBITRA_PLATFORM_JOB_TOKEN ?? "",
+  workerToken: process.env.ARBITRA_DATA_WORKER_TOKEN ?? "",
+  signArtifact: bucketConfigured ? createBucketArtifactSigner(process.env) : null,
+});
 
 const server = createServer(async (request, response) => {
   try {
     const webRequest = toWebRequest(request, hostname, port);
-    const result = (await runtimeSnapshotResponse(webRequest)) ??
+    const result = (await dataJobsResponse(webRequest)) ??
+      (await runtimeSnapshotResponse(webRequest)) ??
       (await staticResponse(webRequest)) ??
       (await worker.fetch(webRequest, { ASSETS: assets }, executionContext));
     await writeResponse(response, result, webRequest.method);

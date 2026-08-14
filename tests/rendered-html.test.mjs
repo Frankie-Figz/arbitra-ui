@@ -21,6 +21,10 @@ test("server-renders XGBoost champions and indicator-led market workspaces", asy
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, /Arbitra Market Signals/);
+  assert.match(html, /Historical data acquisition/);
+  assert.match(html, /Elijah&#x27;s Ravens/);
+  assert.match(html, /Top 10 pilot/);
+  assert.match(html, /Unadjusted 1m/);
   assert.match(html, /Call the champions/);
   assert.match(html, /XGB champions/);
   assert.match(html, /Raw holdout leader/);
