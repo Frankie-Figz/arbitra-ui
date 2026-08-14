@@ -1,6 +1,6 @@
 {
   "schemaVersion": 6,
-  "generatedAt": "2026-08-14T04:13:40.923Z",
+  "generatedAt": "2026-08-14T04:36:05.865Z",
   "source": "Arbitra causal daily history plus completed-daily scan artifacts",
   "deploymentAllowed": false,
   "methodologies": [
@@ -18530,6 +18530,24 @@
       "fetchedAt": "2026-08-11T01:19:38.396826+00:00",
       "available": true
     }
+  },
+  "stockSelector": {
+    "schemaVersion": 1,
+    "status": "legacy_snapshot",
+    "provider": "Yahoo Finance via yfinance",
+    "dataThrough": "2026-08-13",
+    "generatedAt": "2026-08-14T01:43:19.952382+00:00",
+    "sourceRun": "latest-20260814T014140Z",
+    "ruleId": "refined.liquidity.accepted_above.ppo21_38_7_below.long",
+    "universe": 5972,
+    "analyzed": 5938,
+    "stale": 305,
+    "historyMissing": 34,
+    "analysisFailed": 0,
+    "qualityRejected": 3,
+    "opportunities": 0,
+    "deploymentAllowed": false,
+    "ordersSubmitted": 0
   },
   "xgbShowcase": {
     "schemaVersion": 1,

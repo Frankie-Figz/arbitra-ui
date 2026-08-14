@@ -68,6 +68,10 @@ test("ships exact-date stock signals with complementary indicator states", async
   );
   assert.equal(snapshot.schemaVersion, 6);
   assert.equal(snapshot.deploymentAllowed, false);
+  assert.equal(snapshot.stockSelector.status, "legacy_snapshot");
+  assert.equal(snapshot.stockSelector.deploymentAllowed, false);
+  assert.equal(snapshot.stockSelector.ordersSubmitted, 0);
+  assert.ok(snapshot.stockSelector.universe >= 5000);
   assert.equal(snapshot.xgbShowcase.deploymentAllowed, false);
   assert.equal(snapshot.xgbShowcase.capitalAuthority, false);
   assert.equal(snapshot.xgbShowcase.comparisonHoldout.rows, 569);

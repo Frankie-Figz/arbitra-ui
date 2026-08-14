@@ -291,7 +291,9 @@ async function collectDailyScans() {
 
   const datasets = [];
   for (const candidate of newestByDate.values()) {
-    const rows = await readCsv(candidate.scanPath);
+    const rows = (await readCsv(candidate.scanPath)).filter((row) =>
+      ["stock", "equity"].includes(String(row.instrument_family).toLowerCase()),
+    );
     const analyzedStatuses = new Set(["green", "quality_rejected", "not_green"]);
     const exactRows = rows.filter(
       (row) => analyzedStatuses.has(row.status) && datePart(row.signal_timestamp) === candidate.date,
@@ -312,11 +314,11 @@ async function collectDailyScans() {
       date: candidate.date,
       generatedAt: candidate.generatedAt,
       sourceRun: candidate.run,
-      universe: Number(candidate.report.universe_symbols ?? rows.length),
+      universe: rows.length,
       exactDateAnalyzed: exactRows.length,
       staleAnalyzed,
-      historyMissing: Number(candidate.report.history_missing ?? 0),
-      analysisFailed: Number(candidate.report.analysis_failed ?? 0),
+      historyMissing: rows.filter((row) => row.status === "history_missing").length,
+      analysisFailed: rows.filter((row) => row.status === "analysis_failed").length,
       qualityRejected: exactRows.filter((row) => row.status === "quality_rejected").length,
       assets,
     });
@@ -788,6 +790,27 @@ const datasets = historicalDatasets.length
       ...historicalDatasets,
     ]
   : scanDatasets;
+const newestScan = scanDatasets[0] ?? null;
+const stockSelector = newestScan
+  ? {
+      schemaVersion: 1,
+      status: "legacy_snapshot",
+      provider: "Yahoo Finance via yfinance",
+      dataThrough: newestScan.date,
+      generatedAt: newestScan.generatedAt,
+      sourceRun: newestScan.sourceRun,
+      ruleId: "refined.liquidity.accepted_above.ppo21_38_7_below.long",
+      universe: newestScan.universe,
+      analyzed: newestScan.exactDateAnalyzed + newestScan.staleAnalyzed,
+      stale: newestScan.staleAnalyzed,
+      historyMissing: newestScan.historyMissing,
+      analysisFailed: newestScan.analysisFailed,
+      qualityRejected: newestScan.qualityRejected,
+      opportunities: newestScan.assets.length,
+      deploymentAllowed: false,
+      ordersSubmitted: 0,
+    }
+  : null;
 const snapshot = {
   schemaVersion: 6,
   generatedAt: new Date().toISOString(),
@@ -799,6 +822,7 @@ const snapshot = {
   datasets,
   matrices,
   profiles: historical?.profiles ?? {},
+  stockSelector,
   xgbShowcase,
   etf,
   crypto,

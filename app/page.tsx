@@ -337,6 +337,24 @@ type Snapshot = {
   deploymentAllowed: boolean;
   datasets: Dataset[];
   profiles: Record<string, CompanyProfile>;
+  stockSelector: {
+    schemaVersion: number;
+    status: string;
+    provider: string;
+    dataThrough: string;
+    generatedAt: string;
+    sourceRun: string;
+    ruleId: string;
+    universe: number;
+    analyzed: number;
+    stale: number;
+    historyMissing: number;
+    analysisFailed: number;
+    qualityRejected: number;
+    opportunities: number;
+    deploymentAllowed: boolean;
+    ordersSubmitted: number;
+  } | null;
   xgbShowcase: XgbShowcaseSnapshot;
   etf: EtfSnapshot | null;
   crypto: CryptoSnapshot | null;
@@ -1065,6 +1083,7 @@ export default function Home() {
   const targetPrice = entryPrice == null ? null : entryPrice * (1 + STOCK_TARGET_PERCENT / 100);
   const fullyConfirmed = stockAssets.filter((item) => stockIndicatorCount(item) === 4).length;
   const parentOnly = stockAssets.filter((item) => stockIndicatorCount(item) === 1).length;
+  const selector = snapshot.stockSelector;
 
   return (
     <div className="app-shell">
@@ -1141,9 +1160,9 @@ export default function Home() {
               <p>Each card shows the parent signal, the complementary indicators currently lit, and a concrete reference entry and exit. Click any card to open its company detail.</p>
             </div>
             <div className="crypto-scan-meta">
-              <span><i /> daily scan complete</span>
-              <strong>{formatDate(dataset?.date ?? "")}</strong>
-              <small>{formatTimestamp(dataset?.generatedAt ?? "")}</small>
+              <span><i /> {selector?.status === "accepted" ? "latest market scan accepted" : selector ? "latest local market scan" : "daily scan complete"}</span>
+              <strong>{formatDate(selector?.dataThrough ?? dataset?.date ?? "")}</strong>
+              <small>{selector ? `${selector.opportunities} setup${selector.opportunities === 1 ? "" : "s"} · ${selector.analyzed.toLocaleString()} analyzed · ${selector.provider}` : formatTimestamp(dataset?.generatedAt ?? "")}</small>
             </div>
           </div>
 

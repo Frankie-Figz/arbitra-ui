@@ -59,6 +59,8 @@ The sync task indexes:
 - `docs/ppo-pullback-playbook/data/{atr10,atr10-bb40,atr10-ema20}-*.csv`
 - `public/data/arbitra-daily-history.json`, when the historical builder has generated it
 
+For routine stock-selector refreshes, Arbitra's single Railway Yahoo worker updates only `public/data/arbitra-snapshot.json` after whole-market coverage and freshness gates pass. That commit triggers the UI deployment automatically. Failed, stale, holiday, or under-covered scans leave the last accepted selector untouched. The worker remains research-only and cannot submit orders.
+
 Only green signals whose candle date exactly matches the selected date are eligible. ATR is the parent gate for the BB and EMA variants; BB or EMA never creates a setup on its own. The matrix supplies historical context for a chosen pullback and target, not a forecast or an order.
 
 To rebuild the July 1 onward history and refresh missing Yahoo profiles, run the builder with Arbitra's Python environment before synchronizing the final snapshot:
