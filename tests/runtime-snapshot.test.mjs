@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 import {
+  CRYPTO_INGEST_SNAPSHOT_PATH,
   createRuntimeSnapshotHandler,
   INGEST_SNAPSHOT_PATH,
   PUBLIC_SNAPSHOT_PATH,
@@ -43,6 +44,7 @@ async function harness() {
   const handler = createRuntimeSnapshotHandler({
     snapshotPath,
     fallbackPath,
+    cryptoIngestToken: "test-crypto-ingest-token",
     ingestToken: "test-ingest-token",
   });
   return { directory, fallbackPath, handler, snapshot, snapshotPath };
@@ -67,6 +69,94 @@ test("rejects unauthenticated publication without changing state", async (contex
   }));
   assert.equal(response.status, 401);
   await assert.rejects(readFile(state.snapshotPath), { code: "ENOENT" });
+});
+
+function nextCrypto(snapshot, suffix = "151300Z") {
+  const generatedAt = new Date(
+    Date.parse(snapshot.crypto.generatedAt) + 60 * 60 * 1_000,
+  );
+  const completedHourOpen = new Date(generatedAt);
+  completedHourOpen.setUTCMinutes(0, 0, 0);
+  return {
+    ...structuredClone(snapshot.crypto),
+    completedHourOpen: completedHourOpen.toISOString(),
+    generatedAt: generatedAt.toISOString(),
+    sourceRun: `hourly-20260814T${suffix}`,
+  };
+}
+
+function publishCrypto(state, crypto, token = "test-crypto-ingest-token") {
+  return state.handler(new Request(`http://ui${CRYPTO_INGEST_SNAPSHOT_PATH}`, {
+    method: "POST",
+    body: JSON.stringify(crypto),
+    headers: {
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+    },
+  }));
+}
+
+test("atomically replaces only the crypto surface", async (context) => {
+  const state = await harness();
+  context.after(() => rm(state.directory, { recursive: true, force: true }));
+  const crypto = nextCrypto(state.snapshot);
+  crypto.rsi.activeSignals = [];
+
+  const response = await publishCrypto(state, crypto);
+
+  assert.equal(response.status, 200);
+  const receipt = await response.json();
+  assert.equal(receipt.status, "accepted");
+  assert.equal(receipt.sourceRun, crypto.sourceRun);
+  assert.match(receipt.sha256, /^[0-9a-f]{64}$/);
+  const stored = JSON.parse(await readFile(state.snapshotPath, "utf8"));
+  assert.deepEqual(stored.crypto, crypto);
+  assert.deepEqual(stored.datasets, state.snapshot.datasets);
+  assert.deepEqual(stored.stockSelector, state.snapshot.stockSelector);
+  assert.deepEqual(stored.xgbShowcase, state.snapshot.xgbShowcase);
+});
+
+test("rejects unauthorized, rollback, and capital-authority crypto payloads", async (context) => {
+  const state = await harness();
+  context.after(() => rm(state.directory, { recursive: true, force: true }));
+  const crypto = nextCrypto(state.snapshot);
+
+  assert.equal((await publishCrypto(state, crypto, "wrong-token")).status, 401);
+  assert.equal((await publishCrypto(state, crypto)).status, 200);
+  const unsafe = structuredClone(crypto);
+  unsafe.capitalAuthority = true;
+  assert.equal((await publishCrypto(state, unsafe)).status, 422);
+  const older = structuredClone(crypto);
+  older.generatedAt = new Date(Date.parse(crypto.generatedAt) - 1_000).toISOString();
+  assert.equal((await publishCrypto(state, older)).status, 409);
+  const stored = JSON.parse(await readFile(state.snapshotPath, "utf8"));
+  assert.equal(stored.crypto.sourceRun, crypto.sourceRun);
+});
+
+test("concurrent stock and crypto publication preserves both updates", async (context) => {
+  const state = await harness();
+  context.after(() => rm(state.directory, { recursive: true, force: true }));
+  const crypto = nextCrypto(state.snapshot, "151301Z");
+  const stock = structuredClone(state.snapshot);
+  stock.stockSelector.sourceRun = "concurrent-stock-run";
+
+  const [cryptoResponse, stockResponse] = await Promise.all([
+    publishCrypto(state, crypto),
+    state.handler(new Request(`http://ui${INGEST_SNAPSHOT_PATH}`, {
+      method: "POST",
+      body: JSON.stringify(stock),
+      headers: {
+        authorization: "Bearer test-ingest-token",
+        "content-type": "application/json",
+      },
+    })),
+  ]);
+
+  assert.equal(cryptoResponse.status, 200);
+  assert.equal(stockResponse.status, 200);
+  const stored = JSON.parse(await readFile(state.snapshotPath, "utf8"));
+  assert.equal(stored.crypto.sourceRun, crypto.sourceRun);
+  assert.equal(stored.stockSelector.sourceRun, "concurrent-stock-run");
 });
 
 test("atomically accepts a research-only whole-market snapshot", async (context) => {

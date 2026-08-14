@@ -4,6 +4,7 @@ import path from "node:path";
 
 export const PUBLIC_SNAPSHOT_PATH = "/data/arbitra-snapshot.json";
 export const INGEST_SNAPSHOT_PATH = "/internal/stock-selector-snapshot";
+export const CRYPTO_INGEST_SNAPSHOT_PATH = "/internal/crypto-selector-snapshot";
 
 const JSON_HEADERS = {
   "cache-control": "no-store",
@@ -23,6 +24,19 @@ function isObject(value) {
 
 function isIsoDate(value) {
   return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function isIsoTimestamp(value) {
+  return typeof value === "string" &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value) &&
+    Number.isFinite(Date.parse(value));
+}
+
+function isHourAlignedTimestamp(value) {
+  if (!isIsoTimestamp(value)) return false;
+  const timestamp = new Date(value);
+  return timestamp.getUTCMinutes() === 0 && timestamp.getUTCSeconds() === 0 &&
+    timestamp.getUTCMilliseconds() === 0;
 }
 
 function constantTimeEqual(left, right) {
@@ -113,6 +127,47 @@ export function validateAcceptedSnapshot(snapshot) {
   return snapshot;
 }
 
+export function validateCryptoSnapshot(crypto) {
+  if (!isObject(crypto)) throw new Error("crypto snapshot must be a JSON object");
+  if (!Number.isInteger(crypto.schemaVersion) || crypto.schemaVersion < 3) {
+    throw new Error("crypto snapshot schema is unsupported");
+  }
+  if (!isIsoTimestamp(crypto.generatedAt)) {
+    throw new Error("crypto snapshot generation time is invalid");
+  }
+  if (!isHourAlignedTimestamp(crypto.completedHourOpen)) {
+    throw new Error("crypto snapshot completed hour is invalid");
+  }
+  if (typeof crypto.sourceRun !== "string" || !crypto.sourceRun.trim()) {
+    throw new Error("crypto snapshot source run is missing");
+  }
+  if (crypto.venue !== "okx" || crypto.marketType !== "spot") {
+    throw new Error("crypto snapshot market identity is unsupported");
+  }
+  if (crypto.deploymentAllowed !== false || crypto.capitalAuthority !== false) {
+    throw new Error("crypto snapshot must remain research-only");
+  }
+  if (!isObject(crypto.universe) || !Number.isInteger(crypto.universe.considered) ||
+      crypto.universe.considered < 250) {
+    throw new Error("crypto snapshot universe is below the production gate");
+  }
+  if (!isObject(crypto.rsi) || !Array.isArray(crypto.rsi.activeSignals) ||
+      !Array.isArray(crypto.rsi.history)) {
+    throw new Error("crypto RSI evidence is incomplete");
+  }
+  if (!isObject(crypto.suggestedTradeSetup) ||
+      crypto.suggestedTradeSetup.orderAuthority !== false) {
+    throw new Error("crypto setup must not grant order authority");
+  }
+  if (!isObject(crypto.godmode) || !Array.isArray(crypto.godmode.current) ||
+      !Array.isArray(crypto.godmode.recent) ||
+      crypto.godmode.current.some((item) => !isObject(item) || item.deploymentAllowed !== false) ||
+      crypto.godmode.recent.some((item) => !isObject(item) || item.deploymentAllowed !== false)) {
+    throw new Error("crypto Godmode evidence is invalid");
+  }
+  return crypto;
+}
+
 async function readLimitedBody(request, maximumBytes) {
   const declaredLength = Number(request.headers.get("content-length") ?? 0);
   if (declaredLength > maximumBytes) throw new Error("snapshot exceeds the upload limit");
@@ -162,8 +217,23 @@ export function createRuntimeSnapshotHandler({
   snapshotPath,
   fallbackPath,
   ingestToken,
+  cryptoIngestToken,
   maximumBytes = 8 * 1024 * 1024,
 }) {
+  let mutationTail = Promise.resolve();
+
+  async function serializeMutation(task) {
+    const predecessor = mutationTail.catch(() => undefined);
+    let release;
+    mutationTail = new Promise((resolve) => { release = resolve; });
+    await predecessor;
+    try {
+      return await task();
+    } finally {
+      release();
+    }
+  }
+
   async function currentSnapshotText() {
     try {
       return await readFile(snapshotPath, "utf8");
@@ -188,8 +258,11 @@ export function createRuntimeSnapshotHandler({
       });
     }
 
-    if (pathname !== INGEST_SNAPSHOT_PATH) return null;
-    if (!authorized(request, ingestToken)) {
+    const isStockIngest = pathname === INGEST_SNAPSHOT_PATH;
+    const isCryptoIngest = pathname === CRYPTO_INGEST_SNAPSHOT_PATH;
+    if (!isStockIngest && !isCryptoIngest) return null;
+    const routeToken = isCryptoIngest ? cryptoIngestToken : ingestToken;
+    if (!authorized(request, routeToken)) {
       return jsonResponse(
         { status: "unauthorized" },
         401,
@@ -197,10 +270,12 @@ export function createRuntimeSnapshotHandler({
       );
     }
     if (request.method === "GET" || request.method === "HEAD") {
-      const { text } = await currentSnapshot();
-      return new Response(request.method === "HEAD" ? null : text, {
+      const { snapshot, text } = await currentSnapshot();
+      const responseText = isCryptoIngest ?
+        `${JSON.stringify(snapshot.crypto ?? null, null, 2)}\n` : text;
+      return new Response(request.method === "HEAD" ? null : responseText, {
         status: 200,
-        headers: { ...JSON_HEADERS, "content-length": String(Buffer.byteLength(text)) },
+        headers: { ...JSON_HEADERS, "content-length": String(Buffer.byteLength(responseText)) },
       });
     }
     if (request.method !== "POST") {
@@ -209,21 +284,57 @@ export function createRuntimeSnapshotHandler({
 
     try {
       const incomingText = await readLimitedBody(request, maximumBytes);
-      const incoming = validateAcceptedSnapshot(JSON.parse(incomingText));
-      const { snapshot: current, text: currentText } = await currentSnapshot();
-      const currentDate = current.stockSelector?.dataThrough;
-      if (isIsoDate(currentDate) && incoming.stockSelector.dataThrough < currentDate) {
-        return jsonResponse({ status: "rejected", error: "snapshot would move backwards" }, 409);
-      }
-      const normalized = `${JSON.stringify(incoming, null, 2)}\n`;
-      const digest = sha256(normalized);
-      const disposition = sha256(currentText) === digest ? "reused" : "published";
-      if (disposition === "published") await atomicWrite(snapshotPath, normalized);
-      return jsonResponse({
-        status: "accepted",
-        disposition,
-        dataThrough: incoming.stockSelector.dataThrough,
-        sha256: digest,
+      const parsed = JSON.parse(incomingText);
+      if (isCryptoIngest) validateCryptoSnapshot(parsed);
+      else validateAcceptedSnapshot(parsed);
+      return await serializeMutation(async () => {
+        const { snapshot: current, text: currentText } = await currentSnapshot();
+        let incoming;
+        let identity;
+        if (isCryptoIngest) {
+          const currentGeneratedAt = current.crypto?.generatedAt;
+          const currentCompletedHour = current.crypto?.completedHourOpen;
+          const generatedRollback = isIsoTimestamp(currentGeneratedAt) &&
+            Date.parse(parsed.generatedAt) < Date.parse(currentGeneratedAt);
+          const completedHourRollback = isIsoTimestamp(currentCompletedHour) &&
+            Date.parse(parsed.completedHourOpen) < Date.parse(currentCompletedHour);
+          if (completedHourRollback ||
+              (!isIsoTimestamp(currentCompletedHour) && generatedRollback) ||
+              (isIsoTimestamp(currentCompletedHour) &&
+                Date.parse(parsed.completedHourOpen) === Date.parse(currentCompletedHour) &&
+                generatedRollback)) {
+            return jsonResponse(
+              { status: "rejected", error: "crypto snapshot would move backwards" },
+              409,
+            );
+          }
+          incoming = validateBaseSnapshot({ ...current, crypto: parsed });
+          identity = {
+            completedHourOpen: parsed.completedHourOpen,
+            generatedAt: parsed.generatedAt,
+            sourceRun: parsed.sourceRun,
+          };
+        } else {
+          const currentDate = current.stockSelector?.dataThrough;
+          if (isIsoDate(currentDate) && parsed.stockSelector.dataThrough < currentDate) {
+            return jsonResponse(
+              { status: "rejected", error: "snapshot would move backwards" },
+              409,
+            );
+          }
+          incoming = validateAcceptedSnapshot({ ...parsed, crypto: current.crypto ?? null });
+          identity = { dataThrough: parsed.stockSelector.dataThrough };
+        }
+        const normalized = `${JSON.stringify(incoming, null, 2)}\n`;
+        const digest = sha256(normalized);
+        const disposition = sha256(currentText) === digest ? "reused" : "published";
+        if (disposition === "published") await atomicWrite(snapshotPath, normalized);
+        return jsonResponse({
+          status: "accepted",
+          disposition,
+          ...identity,
+          sha256: digest,
+        });
       });
     } catch (error) {
       return jsonResponse({ status: "rejected", error: String(error?.message ?? error) }, 422);

@@ -59,7 +59,9 @@ test("production launcher serves the UI and private job lifecycle over HTTP", as
 
   const baseUrl = `http://127.0.0.1:${port}`;
   const page = await waitForPage(`${baseUrl}/`, child);
-  assert.match(await page.text(), /Historical data acquisition/);
+  const html = await page.text();
+  assert.match(html, /Market Signals/);
+  assert.doesNotMatch(html, /Historical data acquisition/);
 
   const createdResponse = await fetch(`${baseUrl}/api/data-jobs`, {
     method: "POST",

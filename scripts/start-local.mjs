@@ -134,6 +134,7 @@ const runtimeSnapshotResponse = createRuntimeSnapshotHandler({
   snapshotPath: runtimeSnapshotPath,
   fallbackPath: path.join(clientRoot, "data", "arbitra-snapshot.json"),
   ingestToken: process.env.ARBITRA_UI_INGEST_TOKEN ?? "",
+  cryptoIngestToken: process.env.ARBITRA_UI_CRYPTO_INGEST_TOKEN ?? "",
 });
 const bucketConfigured = [
   "BUCKET_ENDPOINT",

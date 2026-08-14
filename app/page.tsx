@@ -355,7 +355,6 @@ type Snapshot = {
     deploymentAllowed: boolean;
     ordersSubmitted: number;
   } | null;
-  xgbShowcase: XgbShowcaseSnapshot;
   etf: EtfSnapshot | null;
   crypto: CryptoSnapshot | null;
   history: {
@@ -413,8 +412,7 @@ function isSafeRuntimeSnapshot(value: unknown): value is Snapshot {
     (candidate.schemaVersion ?? 0) >= 6 &&
     candidate.deploymentAllowed === false &&
     Array.isArray(candidate.datasets) &&
-    candidate.profiles != null && typeof candidate.profiles === "object" &&
-    candidate.xgbShowcase != null && typeof candidate.xgbShowcase === "object";
+    candidate.profiles != null && typeof candidate.profiles === "object";
 }
 const STOCK_ENTRY_PULLBACK_PERCENT = 1;
 const STOCK_TARGET_PERCENT = 5;
@@ -1437,7 +1435,7 @@ export default function Home() {
         </div>
 
         <div className="authority-strip">
-          <nav aria-label="Market sections"><a href="#data-acquisition">Data jobs</a><a href="#xgb-models">XGB champions</a><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
+          <nav aria-label="Market sections"><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
           <div className="market-state"><i /> completed candles only</div>
           <span>Indicator states are causal · setups are research references · no order routing</span>
         </div>
@@ -1445,8 +1443,6 @@ export default function Home() {
       </header>
 
       <main>
-        <DataAcquisitionConsole />
-        <XgbShowcase showcase={snapshot.xgbShowcase} />
         <section className="crypto-section stock-section" id="daily-longs">
           <div className="crypto-hero">
             <div>

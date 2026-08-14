@@ -123,6 +123,8 @@ The sync task indexes:
 
 For routine stock-selector refreshes, Arbitra's single Railway Yahoo worker sends an accepted snapshot to the UI over Railway's private network after whole-market coverage and freshness gates pass. The Railway UI stores it atomically at `ARBITRA_RUNTIME_SNAPSHOT_PATH` (default `/data/arbitra-snapshot.json`) on its own mounted volume and refreshes the browser feed without changing the protected production branch. `ARBITRA_UI_INGEST_TOKEN` must contain the same secret on the selector and UI services. Failed, stale, holiday, unauthenticated, or under-covered scans leave the last accepted selector untouched. The bundled `public/data/arbitra-snapshot.json` remains the local and Sites fallback. The worker remains research-only and cannot submit orders.
 
+Hourly OKX crypto refreshes use the separate Railway-private `/internal/crypto-selector-snapshot` contract and `ARBITRA_UI_CRYPTO_INGEST_TOKEN`. That endpoint accepts only the research-only crypto surface; it cannot replace stock datasets, profiles, ETF evidence, or model evidence. Stock publications preserve the current crypto surface, and both mutation paths are serialized before atomically replacing the runtime file.
+
 Only green signals whose candle date exactly matches the selected date are eligible. ATR is the parent gate for the BB and EMA variants; BB or EMA never creates a setup on its own. The matrix supplies historical context for a chosen pullback and target, not a forecast or an order.
 
 To rebuild the July 1 onward history and refresh missing Yahoo profiles, run the builder with Arbitra's Python environment before synchronizing the final snapshot:
