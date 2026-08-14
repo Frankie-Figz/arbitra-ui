@@ -59,7 +59,7 @@ The sync task indexes:
 - `docs/ppo-pullback-playbook/data/{atr10,atr10-bb40,atr10-ema20}-*.csv`
 - `public/data/arbitra-daily-history.json`, when the historical builder has generated it
 
-For routine stock-selector refreshes, Arbitra's single Railway Yahoo worker updates only `public/data/arbitra-snapshot.json` after whole-market coverage and freshness gates pass. That commit triggers the UI deployment automatically. Failed, stale, holiday, or under-covered scans leave the last accepted selector untouched. The worker remains research-only and cannot submit orders.
+For routine stock-selector refreshes, Arbitra's single Railway Yahoo worker sends an accepted snapshot to the UI over Railway's private network after whole-market coverage and freshness gates pass. The Railway UI stores it atomically at `ARBITRA_RUNTIME_SNAPSHOT_PATH` (default `/data/arbitra-snapshot.json`) on its own mounted volume and refreshes the browser feed without changing the protected production branch. `ARBITRA_UI_INGEST_TOKEN` must contain the same secret on the selector and UI services. Failed, stale, holiday, unauthenticated, or under-covered scans leave the last accepted selector untouched. The bundled `public/data/arbitra-snapshot.json` remains the local and Sites fallback. The worker remains research-only and cannot submit orders.
 
 Only green signals whose candle date exactly matches the selected date are eligible. ATR is the parent gate for the BB and EMA variants; BB or EMA never creates a setup on its own. The matrix supplies historical context for a chosen pullback and target, not a forecast or an order.
 

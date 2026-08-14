@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import snapshotJson from "../public/data/arbitra-snapshot.json";
 
 type CompanyProfile = {
@@ -367,8 +367,21 @@ type Snapshot = {
   };
 };
 
-const snapshot = snapshotJson as Snapshot;
-const validTradeDatasets = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
+const bundledSnapshot = snapshotJson as Snapshot;
+const bundledTradeDatasets = bundledSnapshot.datasets
+  .filter((dataset) => dataset.assets.length > 0)
+  .slice(0, 30);
+
+function isSafeRuntimeSnapshot(value: unknown): value is Snapshot {
+  if (value == null || typeof value !== "object" || Array.isArray(value)) return false;
+  const candidate = value as Partial<Snapshot>;
+  return Number.isInteger(candidate.schemaVersion) &&
+    (candidate.schemaVersion ?? 0) >= 6 &&
+    candidate.deploymentAllowed === false &&
+    Array.isArray(candidate.datasets) &&
+    candidate.profiles != null && typeof candidate.profiles === "object" &&
+    candidate.xgbShowcase != null && typeof candidate.xgbShowcase === "object";
+}
 const STOCK_ENTRY_PULLBACK_PERCENT = 1;
 const STOCK_TARGET_PERCENT = 5;
 
@@ -1072,8 +1085,48 @@ function XgbShowcase({ showcase }: { showcase: XgbShowcaseSnapshot }) {
 }
 
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState(validTradeDatasets[0]?.date ?? "");
+  const [snapshot, setSnapshot] = useState<Snapshot>(bundledSnapshot);
+  const [selectedDate, setSelectedDate] = useState(bundledTradeDatasets[0]?.date ?? "");
   const [assetSymbol, setAssetSymbol] = useState("");
+  const dateWasSelected = useRef(false);
+  const validTradeDatasets = useMemo(
+    () => snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30),
+    [snapshot],
+  );
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      try {
+        const response = await fetch("/data/arbitra-snapshot.json", {
+          cache: "no-store",
+          headers: { accept: "application/json" },
+        });
+        if (!response.ok) return;
+        const next: unknown = await response.json();
+        if (!active || !isSafeRuntimeSnapshot(next)) return;
+        setSnapshot(next);
+        if (!dateWasSelected.current) {
+          const latest = next.datasets.find((dataset) => dataset.assets.length > 0)?.date ?? "";
+          setSelectedDate(latest);
+          setAssetSymbol("");
+        }
+      } catch {
+        // Preserve the bundled or last accepted snapshot when the runtime feed is unavailable.
+      }
+    };
+    void refresh();
+    const interval = window.setInterval(refresh, 5 * 60 * 1000);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, []);
 
   const dataset = snapshot.datasets.find((item) => item.date === selectedDate);
   const stockAssets = dataset?.assets ?? [];
@@ -1129,6 +1182,7 @@ export default function Home() {
               aria-label="Signal date"
               value={selectedDate}
               onChange={(event) => {
+                dateWasSelected.current = true;
                 setSelectedDate(event.target.value);
                 setAssetSymbol("");
               }}
