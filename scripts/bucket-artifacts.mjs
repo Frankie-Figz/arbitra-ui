@@ -24,12 +24,11 @@ export function createBucketArtifactSigner(environment = process.env) {
       secretAccessKey: requiredEnvironment(environment, "BUCKET_SECRET_ACCESS_KEY"),
     },
   });
-  return async (key, label) => getSignedUrl(
+  return async (key) => getSignedUrl(
     client,
     new GetObjectCommand({
       Bucket: bucket,
       Key: key,
-      ResponseContentDisposition: `attachment; filename="${String(label).replace(/[\r\n"\\/]/g, "_").slice(0, 120)}"`,
     }),
     { expiresIn: 15 * 60 },
   );

@@ -12,15 +12,12 @@ test("creates a short-lived virtual-hosted Railway bucket download", async () =>
     BUCKET_SECRET_ACCESS_KEY: "test-secret-key",
   });
 
-  const signed = new URL(await sign("massive/spy/job/manifest.json", 'manifest\r\n".json'));
+  const signed = new URL(await sign("massive/spy/job/manifest.json", "manifest.json"));
 
   assert.equal(signed.hostname, "arbitra-history-test123.storage.railway.app");
   assert.match(signed.searchParams.get("X-Amz-Signature") ?? "", /^[0-9a-f]{64}$/);
   assert.equal(signed.searchParams.get("X-Amz-Expires"), "900");
-  assert.equal(
-    signed.searchParams.get("response-content-disposition"),
-    'attachment; filename="manifest___.json"',
-  );
+  assert.equal(signed.searchParams.has("response-content-disposition"), false);
 });
 
 test("rejects a non-TLS bucket endpoint before credentials can be used", () => {
