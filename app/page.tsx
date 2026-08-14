@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import snapshotJson from "../public/data/arbitra-snapshot.json";
 
 type CompanyProfile = {
@@ -291,6 +291,45 @@ type EtfSnapshot = {
   } | null;
 };
 
+type XgbModel = {
+  id: string;
+  name: string;
+  title: string;
+  status: string;
+  crown: string;
+  evidenceClass: string;
+  objective: string;
+  macroF1: number | null;
+  balancedAccuracy: number | null;
+  accuracy: number | null;
+  innerBalancedAccuracy: number | null;
+  candidatePolicy: string;
+  trainingRows?: number;
+  trainingCutoff?: string;
+  composition: string[];
+  runId: string | null;
+  registeredVersion: number | null;
+  caution: string;
+  evidencePath: string;
+};
+
+type XgbShowcaseSnapshot = {
+  schemaVersion: number;
+  evidenceAsOf: string;
+  deploymentAllowed: boolean;
+  capitalAuthority: boolean;
+  comparisonHoldout: {
+    rows: number;
+    start: string;
+    end: string;
+    longLabels: number;
+    shortLabels: number;
+  };
+  models: XgbModel[];
+  futureWatch: XgbModel;
+  exclusions: string[];
+};
+
 type Snapshot = {
   schemaVersion: number;
   generatedAt: string;
@@ -298,6 +337,25 @@ type Snapshot = {
   deploymentAllowed: boolean;
   datasets: Dataset[];
   profiles: Record<string, CompanyProfile>;
+  stockSelector: {
+    schemaVersion: number;
+    status: string;
+    provider: string;
+    dataThrough: string;
+    generatedAt: string;
+    sourceRun: string;
+    ruleId: string;
+    universe: number;
+    analyzed: number;
+    stale: number;
+    historyMissing: number;
+    analysisFailed: number;
+    qualityRejected: number;
+    opportunities: number;
+    deploymentAllowed: boolean;
+    ordersSubmitted: number;
+  } | null;
+  xgbShowcase: XgbShowcaseSnapshot;
   etf: EtfSnapshot | null;
   crypto: CryptoSnapshot | null;
   history: {
@@ -309,8 +367,21 @@ type Snapshot = {
   };
 };
 
-const snapshot = snapshotJson as Snapshot;
-const validTradeDatasets = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
+const bundledSnapshot = snapshotJson as Snapshot;
+const bundledTradeDatasets = bundledSnapshot.datasets
+  .filter((dataset) => dataset.assets.length > 0)
+  .slice(0, 30);
+
+function isSafeRuntimeSnapshot(value: unknown): value is Snapshot {
+  if (value == null || typeof value !== "object" || Array.isArray(value)) return false;
+  const candidate = value as Partial<Snapshot>;
+  return Number.isInteger(candidate.schemaVersion) &&
+    (candidate.schemaVersion ?? 0) >= 6 &&
+    candidate.deploymentAllowed === false &&
+    Array.isArray(candidate.datasets) &&
+    candidate.profiles != null && typeof candidate.profiles === "object" &&
+    candidate.xgbShowcase != null && typeof candidate.xgbShowcase === "object";
+}
 const STOCK_ENTRY_PULLBACK_PERCENT = 1;
 const STOCK_TARGET_PERCENT = 5;
 
@@ -358,6 +429,10 @@ function percentage(value: number | null | undefined, digits = 1) {
 
 function points(value: number | null | undefined, digits = 2) {
   return value == null || !Number.isFinite(value) ? "—" : value.toFixed(digits);
+}
+
+function modelMetric(value: number | null | undefined) {
+  return value == null || !Number.isFinite(value) ? "—" : value.toFixed(4);
 }
 
 function formatTimestamp(value: string) {
@@ -904,9 +979,154 @@ function CryptoOpportunities({ crypto }: { crypto: CryptoSnapshot }) {
   );
 }
 
+function XgbShowcase({ showcase }: { showcase: XgbShowcaseSnapshot }) {
+  const models = [...showcase.models, showcase.futureWatch];
+  const defaultModel = showcase.models.find((model) => model.id === "chatty-pruned") ?? showcase.futureWatch;
+  const [selectedId, setSelectedId] = useState(defaultModel.id);
+  const selected = models.find((model) => model.id === selectedId) ?? defaultModel;
+  const holdout = showcase.comparisonHoldout;
+
+  return (
+    <section className="xgb-showcase" id="xgb-models">
+      <div className="xgb-hero">
+        <div>
+          <p className="eyebrow">Arbitra model lineage · evidence first</p>
+          <h1>Call the champions<br />forth from the shadows.</h1>
+          <p>Four XGBoost lineages have earned a place in the light—each for a different, explicitly labeled kind of evidence. Select a model to inspect its crown, basket, and burden of proof.</p>
+        </div>
+        <div className="xgb-seal" aria-label="Research-only model status">
+          <span>MODELS</span>
+          <strong>{models.length}</strong>
+          <small>deployment locked</small>
+        </div>
+      </div>
+
+      <div className="xgb-ledger" aria-label="XGBoost evidence summary">
+        <div><span>Frozen holdout</span><strong>{holdout.rows}</strong><small>{holdout.start} → {holdout.end}</small></div>
+        <div><span>Class balance</span><strong>{holdout.longLabels} / {holdout.shortLabels}</strong><small>LONG / SHORT labels</small></div>
+        <div><span>Research crowns</span><strong>{showcase.models.length}</strong><small>raw, balance, and composite</small></div>
+        <div><span>Future watch</span><strong>01</strong><small>no historical holdout claim</small></div>
+      </div>
+
+      <div className="xgb-stage">
+        <div className="xgb-model-grid" role="list" aria-label="XGBoost model champions">
+          {models.map((model, index) => (
+            <button
+              type="button"
+              className={`xgb-model-card ${model.id === selected.id ? "selected" : ""} ${model.id === showcase.futureWatch.id ? "future" : ""}`}
+              onClick={() => setSelectedId(model.id)}
+              aria-pressed={model.id === selected.id}
+              aria-label={`${model.name}, ${model.title}; open model evidence`}
+              key={model.id}
+            >
+              <div className="xgb-card-index"><span>0{index + 1}</span><b>{model.id === showcase.futureWatch.id ? "WATCH" : "CROWN"}</b></div>
+              <div className="xgb-card-name"><small>{model.title}</small><strong>{model.name}</strong></div>
+              <p>{model.crown}</p>
+              <div className="xgb-card-score">
+                <span>{model.innerBalancedAccuracy != null ? "Inner WF BA" : "Macro F1"}</span>
+                <strong>{modelMetric(model.innerBalancedAccuracy ?? model.macroF1)}</strong>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <article className="xgb-model-detail" aria-live="polite">
+          <div className="xgb-detail-head">
+            <div><p className="eyebrow">Selected lineage</p><h2>{selected.name}</h2><span>{selected.title}</span></div>
+            <b>{selected.status}</b>
+          </div>
+
+          <div className="xgb-metric-grid">
+            <div><span>Macro F1</span><strong>{modelMetric(selected.macroF1)}</strong></div>
+            <div><span>Balanced accuracy</span><strong>{modelMetric(selected.balancedAccuracy)}</strong></div>
+            <div><span>Accuracy</span><strong>{modelMetric(selected.accuracy)}</strong></div>
+            <div><span>Inner WF BA</span><strong>{modelMetric(selected.innerBalancedAccuracy)}</strong></div>
+          </div>
+
+          <div className="xgb-detail-body">
+            <div>
+              <span className="xgb-label">Why it stands here</span>
+              <h3>{selected.crown}</h3>
+              <p>{selected.evidenceClass} · {selected.objective}</p>
+              <dl className="xgb-facts">
+                <div><dt>Basket</dt><dd>{selected.candidatePolicy}</dd></div>
+                {selected.trainingRows && <div><dt>Training rows</dt><dd>{selected.trainingRows.toLocaleString()}</dd></div>}
+                {selected.trainingCutoff && <div><dt>Frozen cutoff</dt><dd>{selected.trainingCutoff}</dd></div>}
+                {selected.runId && <div><dt>Evidence run</dt><dd>{selected.runId}</dd></div>}
+                {selected.registeredVersion && <div><dt>Registered</dt><dd>Version {selected.registeredVersion}</dd></div>}
+              </dl>
+            </div>
+            <div>
+              <span className="xgb-label">Surviving basket</span>
+              <ul className="xgb-feature-list">
+                {selected.composition.map((feature) => <li key={feature}>{feature}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          <div className="xgb-caution">
+            <div><span>Burden of proof</span><p>{selected.caution}</p></div>
+            <small>Evidence ledger · {selected.evidencePath}</small>
+          </div>
+        </article>
+      </div>
+
+      <div className="xgb-exclusions">
+        <span>Kept out of the spotlight</span>
+        {showcase.exclusions.map((exclusion) => <p key={exclusion}>{exclusion}</p>)}
+      </div>
+
+      <div className="xgb-guardrail">
+        <span>Research only · frozen evidence, not live trade authority</span>
+        <strong>{showcase.deploymentAllowed || showcase.capitalAuthority ? "AUTHORITY ENABLED" : "deployment_allowed = false · capital_authority = false"}</strong>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState(validTradeDatasets[0]?.date ?? "");
+  const [snapshot, setSnapshot] = useState<Snapshot>(bundledSnapshot);
+  const [selectedDate, setSelectedDate] = useState(bundledTradeDatasets[0]?.date ?? "");
   const [assetSymbol, setAssetSymbol] = useState("");
+  const dateWasSelected = useRef(false);
+  const validTradeDatasets = useMemo(
+    () => snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30),
+    [snapshot],
+  );
+
+  useEffect(() => {
+    let active = true;
+    const refresh = async () => {
+      try {
+        const response = await fetch("/data/arbitra-snapshot.json", {
+          cache: "no-store",
+          headers: { accept: "application/json" },
+        });
+        if (!response.ok) return;
+        const next: unknown = await response.json();
+        if (!active || !isSafeRuntimeSnapshot(next)) return;
+        setSnapshot(next);
+        if (!dateWasSelected.current) {
+          const latest = next.datasets.find((dataset) => dataset.assets.length > 0)?.date ?? "";
+          setSelectedDate(latest);
+          setAssetSymbol("");
+        }
+      } catch {
+        // Preserve the bundled or last accepted snapshot when the runtime feed is unavailable.
+      }
+    };
+    void refresh();
+    const interval = window.setInterval(refresh, 5 * 60 * 1000);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, []);
 
   const dataset = snapshot.datasets.find((item) => item.date === selectedDate);
   const stockAssets = dataset?.assets ?? [];
@@ -916,6 +1136,7 @@ export default function Home() {
   const targetPrice = entryPrice == null ? null : entryPrice * (1 + STOCK_TARGET_PERCENT / 100);
   const fullyConfirmed = stockAssets.filter((item) => stockIndicatorCount(item) === 4).length;
   const parentOnly = stockAssets.filter((item) => stockIndicatorCount(item) === 1).length;
+  const selector = snapshot.stockSelector;
 
   return (
     <div className="app-shell">
@@ -961,6 +1182,7 @@ export default function Home() {
               aria-label="Signal date"
               value={selectedDate}
               onChange={(event) => {
+                dateWasSelected.current = true;
                 setSelectedDate(event.target.value);
                 setAssetSymbol("");
               }}
@@ -975,7 +1197,7 @@ export default function Home() {
         </div>
 
         <div className="authority-strip">
-          <nav aria-label="Market sections"><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
+          <nav aria-label="Market sections"><a href="#xgb-models">XGB champions</a><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
           <div className="market-state"><i /> completed candles only</div>
           <span>Indicator states are causal · setups are research references · no order routing</span>
         </div>
@@ -983,6 +1205,7 @@ export default function Home() {
       </header>
 
       <main>
+        <XgbShowcase showcase={snapshot.xgbShowcase} />
         <section className="crypto-section stock-section" id="daily-longs">
           <div className="crypto-hero">
             <div>
@@ -991,9 +1214,9 @@ export default function Home() {
               <p>Each card shows the parent signal, the complementary indicators currently lit, and a concrete reference entry and exit. Click any card to open its company detail.</p>
             </div>
             <div className="crypto-scan-meta">
-              <span><i /> daily scan complete</span>
-              <strong>{formatDate(dataset?.date ?? "")}</strong>
-              <small>{formatTimestamp(dataset?.generatedAt ?? "")}</small>
+              <span><i /> {selector?.status === "accepted" ? "latest market scan accepted" : selector ? "latest local market scan" : "daily scan complete"}</span>
+              <strong>{formatDate(selector?.dataThrough ?? dataset?.date ?? "")}</strong>
+              <small>{selector ? `${selector.opportunities} setup${selector.opportunities === 1 ? "" : "s"} · ${selector.analyzed.toLocaleString()} analyzed · ${selector.provider}` : formatTimestamp(dataset?.generatedAt ?? "")}</small>
             </div>
           </div>
 

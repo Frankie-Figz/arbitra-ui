@@ -15,12 +15,20 @@ async function render() {
   );
 }
 
-test("server-renders indicator-led stock, ETF, and crypto workspaces", async () => {
+test("server-renders XGBoost champions and indicator-led market workspaces", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, /Arbitra Market Signals/);
+  assert.match(html, /Call the champions/);
+  assert.match(html, /XGB champions/);
+  assert.match(html, /Raw holdout leader/);
+  assert.match(html, /Balance crown/);
+  assert.match(html, /Composite crown/);
+  assert.match(html, /Frozen for the future/);
+  assert.match(html, /0\.5190/);
+  assert.match(html, /deployment_allowed = false/);
   assert.match(html, /Setups,/);
   assert.match(html, /Daily stock opportunities/);
   assert.match(html, /Indicator-lit setups/);
@@ -60,6 +68,18 @@ test("ships exact-date stock signals with complementary indicator states", async
   );
   assert.equal(snapshot.schemaVersion, 6);
   assert.equal(snapshot.deploymentAllowed, false);
+  assert.equal(snapshot.stockSelector.status, "legacy_snapshot");
+  assert.equal(snapshot.stockSelector.deploymentAllowed, false);
+  assert.equal(snapshot.stockSelector.ordersSubmitted, 0);
+  assert.ok(snapshot.stockSelector.universe >= 5000);
+  assert.equal(snapshot.xgbShowcase.deploymentAllowed, false);
+  assert.equal(snapshot.xgbShowcase.capitalAuthority, false);
+  assert.equal(snapshot.xgbShowcase.comparisonHoldout.rows, 569);
+  assert.equal(snapshot.xgbShowcase.models.length, 3);
+  assert.equal(snapshot.xgbShowcase.models.find((model) => model.id === "able-logistic").macroF1, 0.530516);
+  assert.equal(snapshot.xgbShowcase.models.find((model) => model.id === "mary-prior").balancedAccuracy, 0.526253);
+  assert.equal(snapshot.xgbShowcase.models.find((model) => model.id === "chatty-pruned").macroF1, 0.519046);
+  assert.equal(snapshot.xgbShowcase.futureWatch.innerBalancedAccuracy, 0.544335);
   const august11 = snapshot.datasets.find((dataset) => dataset.date === "2026-08-11");
   assert.ok(august11);
   assert.deepEqual(
@@ -81,7 +101,7 @@ test("ships exact-date stock signals with complementary indicator states", async
   assert.ok(august10.assets.every((asset) => asset.signalDate === august10.date));
   assert.equal(august10.assets.filter((asset) => asset.atr10Pass).length, 0);
 
-  assert.equal(snapshot.datasets.length, 43);
+  assert.equal(snapshot.datasets.length, 44);
   const validTradeDates = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
   assert.ok(validTradeDates.length <= 30);
   assert.ok(validTradeDates.every((dataset) => dataset.assets.length > 0));

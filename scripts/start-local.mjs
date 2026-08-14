@@ -5,9 +5,13 @@ import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
+import { createRuntimeSnapshotHandler } from "./runtime-snapshot.mjs";
+
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const clientRoot = path.join(projectRoot, "dist", "client");
 const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+const runtimeSnapshotPath = process.env.ARBITRA_RUNTIME_SNAPSHOT_PATH ??
+  "/data/arbitra-snapshot.json";
 
 const contentTypes = new Map([
   [".avif", "image/avif"],
@@ -123,11 +127,17 @@ const assets = {
     return (await staticResponse(request)) ?? new Response("Not found", { status: 404 });
   },
 };
+const runtimeSnapshotResponse = createRuntimeSnapshotHandler({
+  snapshotPath: runtimeSnapshotPath,
+  fallbackPath: path.join(clientRoot, "data", "arbitra-snapshot.json"),
+  ingestToken: process.env.ARBITRA_UI_INGEST_TOKEN ?? "",
+});
 
 const server = createServer(async (request, response) => {
   try {
     const webRequest = toWebRequest(request, hostname, port);
-    const result = (await staticResponse(webRequest)) ??
+    const result = (await runtimeSnapshotResponse(webRequest)) ??
+      (await staticResponse(webRequest)) ??
       (await worker.fetch(webRequest, { ASSETS: assets }, executionContext));
     await writeResponse(response, result, webRequest.method);
   } catch (error) {
