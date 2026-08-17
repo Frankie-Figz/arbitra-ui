@@ -12,6 +12,18 @@ export const OASIS_MIGRATIONS = Object.freeze([
   "005_upstream_evidence",
 ]);
 
+// Worker-path functions granted to oasis_ingest by 004_ingestion_ledger. The
+// migration readiness check cannot see these, so a connection holding only
+// oasis_api passes readiness and then fails every claim at runtime.
+export const OASIS_INGEST_FUNCTIONS = Object.freeze([
+  "operations.claim_next_ingestion_run(text, integer, timestamptz)",
+  "operations.heartbeat_ingestion_run(text, text, bigint, jsonb, jsonb, integer, timestamptz)",
+  "operations.acknowledge_ingestion_object(text, text, bigint, text, text, text, timestamptz)",
+  "operations.complete_ingestion_run(text, text, bigint, text, jsonb, timestamptz)",
+  "operations.complete_legacy_ingestion_run(text, text, bigint, jsonb, jsonb, jsonb, timestamptz)",
+  "operations.finish_ingestion_run(text, text, bigint, text, text, text, timestamptz)",
+]);
+
 function canonicalValue(value) {
   if (Array.isArray(value)) return value.map(canonicalValue);
   if (value && typeof value === "object") {
@@ -145,6 +157,18 @@ export class OasisPostgresJobStore {
     const ready = actual.length === OASIS_MIGRATIONS.length &&
       actual.every((item, index) => item === OASIS_MIGRATIONS[index]);
     return { ready, expectedMigrations: OASIS_MIGRATIONS, actualMigrations: actual };
+  }
+
+  async ingestReadiness() {
+    const result = await this.pool.query(
+      `SELECT name, has_function_privilege(name, 'EXECUTE') AS granted
+       FROM unnest($1::text[]) AS name`,
+      [[...OASIS_INGEST_FUNCTIONS]],
+    );
+    const missingExecute = result.rows
+      .filter((row) => !row.granted)
+      .map((row) => row.name);
+    return { ready: missingExecute.length === 0, missingExecute };
   }
 
   async listJobs(limit = 100) {

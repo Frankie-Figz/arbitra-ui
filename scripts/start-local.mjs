@@ -170,6 +170,14 @@ if (oasisPool) {
   if (!workerReadiness.ready) {
     throw new Error("Great Data Oasis worker database migrations are missing or unexpected");
   }
+  const ingestReadiness = await workerJobStore.ingestReadiness();
+  if (!ingestReadiness.ready) {
+    throw new Error(
+      "Great Data Oasis worker connection lacks EXECUTE on " +
+        `${ingestReadiness.missingExecute.join(", ")}. ` +
+        "Set ARBITRA_INGEST_DATABASE_URL to a login granted oasis_ingest.",
+    );
+  }
   dataJobsResponse = createOasisDataJobsHandler({
     store: jobStore,
     workerStore: workerJobStore,
