@@ -171,6 +171,21 @@ export class OasisPostgresJobStore {
     return { ready: missingExecute.length === 0, missingExecute };
   }
 
+  // A superuser connection satisfies every privilege check by definition, so
+  // ingestReadiness() and the append-only grants cannot detect it. Railway's
+  // managed Postgres exposes exactly such a URL as DATABASE_URL, which
+  // start-local.mjs accepts as a fallback -- so an unset ARBITRA_DATABASE_URL
+  // would otherwise run the whole platform as superuser and silently void the
+  // role separation this increment exists to enforce.
+  async roleSeparation() {
+    const result = await this.pool.query(
+      `SELECT current_user AS role_name,
+              COALESCE((SELECT rolsuper FROM pg_roles WHERE rolname = current_user), false) AS superuser`,
+    );
+    const { role_name: roleName, superuser } = result.rows[0];
+    return { separated: !superuser, roleName, superuser };
+  }
+
   async listJobs(limit = 100) {
     const result = await this.pool.query(
       `SELECT * FROM operations.ingestion_run

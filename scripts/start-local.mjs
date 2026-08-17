@@ -170,6 +170,17 @@ if (oasisPool) {
   if (!workerReadiness.ready) {
     throw new Error("Great Data Oasis worker database migrations are missing or unexpected");
   }
+  for (const [label, store] of [["API", jobStore], ["worker", workerJobStore]]) {
+    const separation = await store.roleSeparation();
+    if (!separation.separated) {
+      throw new Error(
+        `Great Data Oasis ${label} connection uses superuser "${separation.roleName}". ` +
+          "Bind ARBITRA_DATABASE_URL to an oasis_api login and " +
+          "ARBITRA_INGEST_DATABASE_URL to an oasis_ingest login. A superuser " +
+          "passes every privilege check and voids the append-only guarantees.",
+      );
+    }
+  }
   const ingestReadiness = await workerJobStore.ingestReadiness();
   if (!ingestReadiness.ready) {
     throw new Error(
