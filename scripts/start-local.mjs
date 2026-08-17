@@ -7,6 +7,13 @@ import path from "node:path";
 
 import { createBucketArtifactSigner } from "./bucket-artifacts.mjs";
 import { createDataJobsHandler } from "./data-jobs.mjs";
+import { createOasisCatalogHandler } from "./oasis-catalog.mjs";
+import { createOasisDataJobsHandler } from "./oasis-data-jobs.mjs";
+import {
+  OasisPostgresCatalogStore,
+  OasisPostgresJobStore,
+  createOasisPool,
+} from "./oasis-postgres.mjs";
 import { createRuntimeSnapshotHandler } from "./runtime-snapshot.mjs";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
@@ -142,17 +149,53 @@ const bucketConfigured = [
   "BUCKET_ACCESS_KEY_ID",
   "BUCKET_SECRET_ACCESS_KEY",
 ].every((name) => Boolean(process.env[name]));
-const dataJobsResponse = createDataJobsHandler({
-  jobsRoot: dataJobsRoot,
-  adminToken: process.env.ARBITRA_PLATFORM_JOB_TOKEN ?? "",
-  workerToken: process.env.ARBITRA_DATA_WORKER_TOKEN ?? "",
-  signArtifact: bucketConfigured ? createBucketArtifactSigner(process.env) : null,
-});
+const signArtifact = bucketConfigured ? createBucketArtifactSigner(process.env) : null;
+const databaseUrl = process.env.ARBITRA_DATABASE_URL ?? process.env.DATABASE_URL ?? "";
+const oasisPool = databaseUrl ? createOasisPool(databaseUrl) : null;
+const ingestDatabaseUrl = process.env.ARBITRA_INGEST_DATABASE_URL ?? databaseUrl;
+const oasisIngestPool = oasisPool && ingestDatabaseUrl !== databaseUrl
+  ? createOasisPool(ingestDatabaseUrl)
+  : oasisPool;
+let oasisCatalogResponse = async () => null;
+let dataJobsResponse;
+if (oasisPool) {
+  const jobStore = new OasisPostgresJobStore({ pool: oasisPool });
+  const workerJobStore = new OasisPostgresJobStore({ pool: oasisIngestPool });
+  const catalogStore = new OasisPostgresCatalogStore({ pool: oasisPool });
+  const readiness = await jobStore.readiness();
+  if (!readiness.ready) {
+    throw new Error("Great Data Oasis database migrations are missing or unexpected");
+  }
+  const workerReadiness = await workerJobStore.readiness();
+  if (!workerReadiness.ready) {
+    throw new Error("Great Data Oasis worker database migrations are missing or unexpected");
+  }
+  dataJobsResponse = createOasisDataJobsHandler({
+    store: jobStore,
+    workerStore: workerJobStore,
+    adminToken: process.env.ARBITRA_PLATFORM_JOB_TOKEN ?? "",
+    workerToken: process.env.ARBITRA_DATA_WORKER_TOKEN ?? "",
+    signArtifact,
+  });
+  oasisCatalogResponse = createOasisCatalogHandler({
+    store: catalogStore,
+    adminToken: process.env.ARBITRA_PLATFORM_JOB_TOKEN ?? "",
+    signArtifact,
+  });
+} else {
+  dataJobsResponse = createDataJobsHandler({
+    jobsRoot: dataJobsRoot,
+    adminToken: process.env.ARBITRA_PLATFORM_JOB_TOKEN ?? "",
+    workerToken: process.env.ARBITRA_DATA_WORKER_TOKEN ?? "",
+    signArtifact,
+  });
+}
 
 const server = createServer(async (request, response) => {
   try {
     const webRequest = toWebRequest(request, hostname, port);
-    const result = (await dataJobsResponse(webRequest)) ??
+    const result = (await oasisCatalogResponse(webRequest)) ??
+      (await dataJobsResponse(webRequest)) ??
       (await runtimeSnapshotResponse(webRequest)) ??
       (await staticResponse(webRequest)) ??
       (await worker.fetch(webRequest, { ASSETS: assets }, executionContext));
@@ -167,3 +210,12 @@ const server = createServer(async (request, response) => {
 server.listen(port, hostname, () => {
   console.log(`Arbitra Daily Longs: http://${hostname}:${port}`);
 });
+
+async function shutdown() {
+  server.close();
+  if (oasisIngestPool && oasisIngestPool !== oasisPool) await oasisIngestPool.end();
+  if (oasisPool) await oasisPool.end();
+}
+
+process.once("SIGTERM", shutdown);
+process.once("SIGINT", shutdown);
