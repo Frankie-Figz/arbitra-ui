@@ -7,11 +7,18 @@ function requiredEnvironment(environment, name) {
   return value;
 }
 
+// Mirrors _safe_platform_url in arbitra_elijah_worker.py: plaintext is allowed
+// only to a loopback host, so a local S3-compatible store such as MinIO can
+// exercise the real presigning path. Every non-loopback endpoint still requires
+// HTTPS, so a deployed bucket cannot be reached in plaintext.
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
+
 export function createBucketArtifactSigner(environment = process.env) {
   const endpoint = requiredEnvironment(environment, "BUCKET_ENDPOINT");
   const parsedEndpoint = new URL(endpoint);
-  if (parsedEndpoint.protocol !== "https:") {
-    throw new Error("BUCKET_ENDPOINT must use HTTPS for artifact downloads");
+  const loopback = LOOPBACK_HOSTS.has(parsedEndpoint.hostname);
+  if (parsedEndpoint.protocol !== "https:" && !(loopback && parsedEndpoint.protocol === "http:")) {
+    throw new Error("BUCKET_ENDPOINT must use HTTPS unless it is a loopback address");
   }
   const region = environment.BUCKET_REGION || "auto";
   const bucket = requiredEnvironment(environment, "BUCKET_NAME");
