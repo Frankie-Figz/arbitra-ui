@@ -5,7 +5,7 @@
   },
   "deploy": {
     "startCommand": "node scripts/start-local.mjs --hostname 0.0.0.0",
-    "healthcheckPath": "/",
+    "healthcheckPath": "/api/data-catalog/v1/health",
     "healthcheckTimeout": 300
   }
 }

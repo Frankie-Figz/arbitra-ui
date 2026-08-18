@@ -34,6 +34,25 @@ async function waitForPage(url, child) {
   throw new Error("platform HTTP smoke did not become ready");
 }
 
+function eligibleRange(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const today = new Date(`${values.year}-${values.month}-${values.day}T00:00:00Z`);
+  const rangeStart = new Date(today);
+  rangeStart.setUTCFullYear(rangeStart.getUTCFullYear() - 2);
+  const rangeEnd = new Date(today);
+  rangeEnd.setUTCDate(rangeEnd.getUTCDate() - 1);
+  return {
+    rangeStart: rangeStart.toISOString().slice(0, 10),
+    rangeEnd: rangeEnd.toISOString().slice(0, 10),
+  };
+}
+
 test("production launcher serves the UI and private job lifecycle over HTTP", async (context) => {
   const directory = await mkdtemp(path.join(os.tmpdir(), "arbitra-platform-http-"));
   const port = await unusedPort();
@@ -70,8 +89,7 @@ test("production launcher serves the UI and private job lifecycle over HTTP", as
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      rangeStart: "2024-08-14",
-      rangeEnd: "2026-08-13",
+      ...eligibleRange(),
       universe: { type: "top_weighted", limit: 1 },
     }),
   });
