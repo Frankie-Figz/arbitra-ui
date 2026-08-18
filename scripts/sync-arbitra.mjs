@@ -811,6 +811,18 @@ const stockSelector = newestScan
       ordersSubmitted: 0,
     }
   : null;
+// stockSelector and crypto are owned by the runtime ingest routes, not by
+// artifacts. When this sync has no artifact-derived replacement it carries the
+// existing surface forward instead of writing null: regenerating the bundle
+// must never drop a surface it does not produce. Writing null left the tracked
+// snapshot failing its own fixture tests and erased the last accepted selector
+// state from the deployable bundle.
+const previousSnapshot = await readFile(outputPath, "utf8")
+  .then((text) => JSON.parse(text))
+  .catch(() => ({}));
+const retainedStockSelector = stockSelector ?? previousSnapshot.stockSelector ?? null;
+const retainedCrypto = crypto ?? previousSnapshot.crypto ?? null;
+
 const snapshot = {
   schemaVersion: 6,
   generatedAt: new Date().toISOString(),
@@ -822,10 +834,10 @@ const snapshot = {
   datasets,
   matrices,
   profiles: historical?.profiles ?? {},
-  stockSelector,
+  stockSelector: retainedStockSelector,
   xgbShowcase,
   etf,
-  crypto,
+  crypto: retainedCrypto,
   history: {
     startDate: historical?.startDate ?? datasets.at(-1)?.date ?? null,
     endDate: datasets[0]?.date ?? null,
@@ -840,5 +852,5 @@ const snapshot = {
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
 console.log(
-  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, and ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : "no crypto run"}.`,
+  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, and ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : retainedCrypto ? "no crypto run (existing crypto surface retained)" : "no crypto run"}.${stockSelector ? "" : retainedStockSelector ? " Existing stock selector surface retained." : ""}`,
 );
