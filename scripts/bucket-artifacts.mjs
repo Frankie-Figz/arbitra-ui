@@ -1,24 +1,26 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+import { LOOPBACK_HOSTS, loopbackAllowed } from "./runtime-environment.mjs";
+
 function requiredEnvironment(environment, name) {
   const value = environment[name];
   if (!value) throw new Error(`${name} is required for artifact downloads`);
   return value;
 }
 
-// Mirrors _safe_platform_url in arbitra_elijah_worker.py: plaintext is allowed
-// only to a loopback host, so a local S3-compatible store such as MinIO can
-// exercise the real presigning path. Every non-loopback endpoint still requires
-// HTTPS, so a deployed bucket cannot be reached in plaintext.
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
-
 export function createBucketArtifactSigner(environment = process.env) {
   const endpoint = requiredEnvironment(environment, "BUCKET_ENDPOINT");
   const parsedEndpoint = new URL(endpoint);
-  const loopback = LOOPBACK_HOSTS.has(parsedEndpoint.hostname);
-  if (parsedEndpoint.protocol !== "https:" && !(loopback && parsedEndpoint.protocol === "http:")) {
-    throw new Error("BUCKET_ENDPOINT must use HTTPS unless it is a loopback address");
+  // On Railway this is unchanged: the bucket endpoint must use HTTPS. Off
+  // Railway a loopback endpoint may use plaintext, so a local S3-compatible
+  // store such as MinIO exercises the real presigning path. A deployed bucket
+  // can never be reached in plaintext, and no public host ever may.
+  const plaintextAllowed = LOOPBACK_HOSTS.has(parsedEndpoint.hostname) &&
+    loopbackAllowed(environment);
+  if (parsedEndpoint.protocol !== "https:" &&
+      !(plaintextAllowed && parsedEndpoint.protocol === "http:")) {
+    throw new Error("BUCKET_ENDPOINT must use HTTPS unless it is a loopback address off Railway");
   }
   const region = environment.BUCKET_REGION || "auto";
   const bucket = requiredEnvironment(environment, "BUCKET_NAME");
