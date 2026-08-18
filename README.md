@@ -50,7 +50,7 @@ provider-facing Python worker remains in the Arbitra repository behind the
 
 ```text
 browser administrator
-  -> arbitra-platform job API + volume ledger
+  -> arbitra-platform job API + Great Data Oasis PostgreSQL ledger
   -> Railway-private worker API
   -> Elijah's Ravens worker -> Massive + State Street
   -> private Railway Bucket
@@ -65,8 +65,15 @@ service.
 For local development, copy the variable names from `.env.example` into an
 ignored `.env` or your shell. The Node launcher reads:
 
-- `ARBITRA_DATA_JOBS_ROOT` — durable JSON ledger root; use a Railway volume path
-  such as `/data/arbitra-jobs` in production.
+- `ARBITRA_DATABASE_URL` — Railway-private PostgreSQL connection for the
+  versioned data catalog and fenced job ledger. The service refuses startup if
+  the exact Great Data Oasis migration set is absent or unexpected.
+- `ARBITRA_INGEST_DATABASE_URL` — optional second PostgreSQL login granted only
+  `oasis_ingest`. The API login should receive `oasis_api`; omitting the worker
+  URL reuses the API connection only for backward-compatible local setup.
+- `ARBITRA_DATA_JOBS_ROOT` — local compatibility ledger used only when no
+  PostgreSQL URL is configured. Existing JSON jobs remain historical evidence;
+  they are not silently rewritten into database rows.
 - `ARBITRA_PLATFORM_JOB_TOKEN` — bearer secret entered by the administrator in
   the private console.
 - `ARBITRA_DATA_WORKER_TOKEN` — distinct bearer secret shared only with the
@@ -77,12 +84,27 @@ ignored `.env` or your shell. The Node launcher reads:
 - `BUCKET_FORCE_PATH_STYLE=true` — only for legacy buckets whose Railway
   Credentials tab explicitly requires path-style URLs.
 
-In Railway, keep the UI at one replica while it uses the file ledger and mount
-its existing volume at `/data`. Add a private Railway Bucket and map its
-provided `BUCKET`, `ENDPOINT`, `REGION`, `ACCESS_KEY_ID`, and
-`SECRET_ACCESS_KEY` variables to the names above. The API emits a presigned GET
-only after a job reaches `completed`; neither bucket credentials nor the
-Massive key are returned to the browser.
+In Railway, bind the two database URLs to separate `oasis_api` and
+`oasis_ingest` logins on the private PostgreSQL service, and apply the versioned
+migrations from the Arbitra repository before starting the UI. Retain the
+private Railway Bucket and map its provided `BUCKET`, `ENDPOINT`,
+`REGION`, `ACCESS_KEY_ID`, and `SECRET_ACCESS_KEY` variables to the names above.
+The API emits a presigned GET only after a job reaches `completed`; neither
+bucket credentials nor the Massive key are returned to the browser. Keep one
+worker replica until the fenced restart smoke has passed.
+
+The read-only `/api/data-catalog/v1` surface resolves registered dataset IDs,
+quality assessments, upstream evidence/unavailable ledgers, experiment
+references and parameter locks directly from PostgreSQL. It never discovers
+records by listing the bucket. Dataset downloads use the same bounded presigner
+as historical job artifacts.
+
+The worker-only `/internal/data-jobs/:id/admit` route accepts a bounded, strict
+Oasis publication under the current lease fence. It transactionally registers
+catalog identities, content locators, dataset versions, parent relationships,
+quality assessments and artifacts. `/complete-manifest` succeeds only after the
+result record and object acknowledgements exist. The legacy `/complete` route is
+retained for old jobs and remains visibly labelled `legacy_unadmitted`.
 
 Useful local checks are:
 

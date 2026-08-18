@@ -1,6 +1,6 @@
 {
   "schemaVersion": 6,
-  "generatedAt": "2026-08-14T15:25:14.983Z",
+  "generatedAt": "2026-08-18T01:51:20.031Z",
   "source": "Arbitra causal daily history plus completed-daily scan artifacts",
   "deploymentAllowed": false,
   "methodologies": [
@@ -14877,611 +14877,6 @@
   ],
   "matrices": [
     {
-      "methodologyId": "smc-ppo",
-      "cells": [
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9007481296758105,
-          "successPerSignal": 0.736541598694943
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8643391521197007,
-          "successPerSignal": 0.7067699836867863
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8254364089775561,
-          "successPerSignal": 0.6749592169657422
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.7840399002493765,
-          "successPerSignal": 0.6411092985318108
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.7446384039900249,
-          "successPerSignal": 0.6088907014681892
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7087281795511222,
-          "successPerSignal": 0.5795269168026101
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.6773067331670823,
-          "successPerSignal": 0.5538336052202284
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.6458852867830424,
-          "successPerSignal": 0.5281402936378466
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.6189526184538653,
-          "successPerSignal": 0.5061174551386624
-        },
-        {
-          "pullbackPercent": 0.5,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.5875311720698254,
-          "successPerSignal": 0.4804241435562806
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9003322259136213,
-          "successPerSignal": 0.6631321370309952
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8743078626799557,
-          "successPerSignal": 0.6439641109298532
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8449612403100775,
-          "successPerSignal": 0.6223491027732463
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.805094130675526,
-          "successPerSignal": 0.5929853181076672
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.7679955703211517,
-          "successPerSignal": 0.5656606851549756
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7259136212624585,
-          "successPerSignal": 0.5346655791190864
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.698781838316722,
-          "successPerSignal": 0.5146818923327896
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.6677740863787376,
-          "successPerSignal": 0.49184339314845027
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.636766334440753,
-          "successPerSignal": 0.46900489396411094
-        },
-        {
-          "pullbackPercent": 1,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.6090808416389811,
-          "successPerSignal": 0.44861337683523655
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9133374308543332,
-          "successPerSignal": 0.6060358890701468
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8813767670559312,
-          "successPerSignal": 0.5848287112561175
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8555623847572219,
-          "successPerSignal": 0.567699836867863
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8236017209588199,
-          "successPerSignal": 0.5464926590538336
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.791641057160418,
-          "successPerSignal": 0.5252854812398042
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7523048555623848,
-          "successPerSignal": 0.499184339314845
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.720958819913952,
-          "successPerSignal": 0.47838499184339317
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.6914566687154272,
-          "successPerSignal": 0.4588091353996737
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.6588813767670559,
-          "successPerSignal": 0.4371941272430669
-        },
-        {
-          "pullbackPercent": 1.5,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.6306084818684696,
-          "successPerSignal": 0.4184339314845024
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9153583617747441,
-          "successPerSignal": 0.5469004893964111
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8901023890784983,
-          "successPerSignal": 0.531810766721044
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8641638225255973,
-          "successPerSignal": 0.5163132137030995
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8327645051194539,
-          "successPerSignal": 0.49755301794453505
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8075085324232082,
-          "successPerSignal": 0.48246329526916804
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.774061433447099,
-          "successPerSignal": 0.4624796084828711
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.7460750853242321,
-          "successPerSignal": 0.44575856443719414
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.7133105802047781,
-          "successPerSignal": 0.42618270799347474
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.6887372013651877,
-          "successPerSignal": 0.41150081566068514
-        },
-        {
-          "pullbackPercent": 2,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.6566552901023891,
-          "successPerSignal": 0.3923327895595432
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9050151975683891,
-          "successPerSignal": 0.4857259380097879
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8890577507598785,
-          "successPerSignal": 0.47716150081566067
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8632218844984803,
-          "successPerSignal": 0.4632952691680261
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8351063829787234,
-          "successPerSignal": 0.44820554649265903
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8069908814589666,
-          "successPerSignal": 0.433115823817292
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7796352583586627,
-          "successPerSignal": 0.4184339314845024
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.7515197568389058,
-          "successPerSignal": 0.4033442088091354
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.7249240121580547,
-          "successPerSignal": 0.3890701468189233
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.689209726443769,
-          "successPerSignal": 0.3699021207177814
-        },
-        {
-          "pullbackPercent": 2.5,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.6641337386018237,
-          "successPerSignal": 0.3564437194127243
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9085570469798657,
-          "successPerSignal": 0.4416802610114193
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8875838926174496,
-          "successPerSignal": 0.43148450244698205
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8666107382550335,
-          "successPerSignal": 0.42128874388254484
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8414429530201343,
-          "successPerSignal": 0.40905383360522024
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8171140939597316,
-          "successPerSignal": 0.3972267536704731
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7869127516778524,
-          "successPerSignal": 0.3825448613376835
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.7684563758389261,
-          "successPerSignal": 0.3735725938009788
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.735738255033557,
-          "successPerSignal": 0.3576672104404568
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.714765100671141,
-          "successPerSignal": 0.3474714518760196
-        },
-        {
-          "pullbackPercent": 3,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.6862416107382551,
-          "successPerSignal": 0.333605220228385
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9025069637883009,
-          "successPerSignal": 0.3964110929853181
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8867223769730733,
-          "successPerSignal": 0.3894779771615008
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8635097493036211,
-          "successPerSignal": 0.3792822185970636
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8384401114206128,
-          "successPerSignal": 0.3682707993474715
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8133704735376045,
-          "successPerSignal": 0.3572593800978793
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7855153203342619,
-          "successPerSignal": 0.3450244698205546
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.7650882079851439,
-          "successPerSignal": 0.3360522022838499
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.7465181058495822,
-          "successPerSignal": 0.3278955954323002
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.7186629526462396,
-          "successPerSignal": 0.31566068515497553
-        },
-        {
-          "pullbackPercent": 3.5,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.7000928505106778,
-          "successPerSignal": 0.3075040783034258
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9061855670103093,
-          "successPerSignal": 0.3584828711256117
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8865979381443299,
-          "successPerSignal": 0.35073409461663946
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8701030927835052,
-          "successPerSignal": 0.3442088091353997
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8402061855670103,
-          "successPerSignal": 0.3323817292006525
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8154639175257732,
-          "successPerSignal": 0.3225938009787928
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7958762886597938,
-          "successPerSignal": 0.31484502446982054
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.7731958762886598,
-          "successPerSignal": 0.30587275693311583
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.7546391752577319,
-          "successPerSignal": 0.29853181076672103
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.7350515463917526,
-          "successPerSignal": 0.29078303425774876
-        },
-        {
-          "pullbackPercent": 4,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.7103092783505155,
-          "successPerSignal": 0.28099510603588906
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.905788876276958,
-          "successPerSignal": 0.3254486133768352
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8910329171396141,
-          "successPerSignal": 0.3201468189233279
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.8694665153234961,
-          "successPerSignal": 0.31239804241435565
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8479001135073779,
-          "successPerSignal": 0.3046492659053834
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8206583427922814,
-          "successPerSignal": 0.2948613376835236
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.7968217934165721,
-          "successPerSignal": 0.28629690048939643
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.7786606129398411,
-          "successPerSignal": 0.2797716150081566
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.757094211123723,
-          "successPerSignal": 0.27202283849918435
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.7377979568671964,
-          "successPerSignal": 0.26508972267536707
-        },
-        {
-          "pullbackPercent": 4.5,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.7219069239500567,
-          "successPerSignal": 0.25938009787928223
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 0.5,
-          "conditionalHitRate": 0.9049429657794676,
-          "successPerSignal": 0.2911908646003263
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 1,
-          "conditionalHitRate": 0.8859315589353612,
-          "successPerSignal": 0.28507340946166393
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 1.5,
-          "conditionalHitRate": 0.870722433460076,
-          "successPerSignal": 0.2801794453507341
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 2,
-          "conditionalHitRate": 0.8403041825095057,
-          "successPerSignal": 0.2703915171288744
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 2.5,
-          "conditionalHitRate": 0.8187579214195184,
-          "successPerSignal": 0.2634584013050571
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 3,
-          "conditionalHitRate": 0.788339670468948,
-          "successPerSignal": 0.2536704730831974
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 3.5,
-          "conditionalHitRate": 0.770595690747782,
-          "successPerSignal": 0.24796084828711257
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 4,
-          "conditionalHitRate": 0.7579214195183777,
-          "successPerSignal": 0.24388254486133767
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 4.5,
-          "conditionalHitRate": 0.7300380228136882,
-          "successPerSignal": 0.23491027732463296
-        },
-        {
-          "pullbackPercent": 5,
-          "targetPercent": 5,
-          "conditionalHitRate": 0.7097591888466414,
-          "successPerSignal": 0.22838499184339314
-        }
-      ]
-    },
-    {
       "methodologyId": "smc-ppo-atr10",
       "cells": [
         {
@@ -18671,10 +18066,10 @@
   },
   "etf": {
     "schemaVersion": 1,
-    "generatedAt": "2026-08-13T21:05:57.349350+00:00",
-    "sourceRun": "daily-20260813T210547Z",
+    "generatedAt": "2026-08-18T00:23:38.678104+00:00",
+    "sourceRun": "daily-20260818T002332Z",
     "completedCandleDates": [
-      "2026-08-13"
+      "2026-08-17"
     ],
     "universeId": "arbitra.godmode.registered_etf_transfer.v1",
     "universeSymbols": 10,
@@ -19045,49 +18440,49 @@
         "symbol": "AGG",
         "name": "iShares Core U.S. Aggregate Bond ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 97.69000244140625,
-        "wt0": 46.7300446028519,
-        "wt1": 40.20256619002756,
-        "previousWt1": 37.591574824897826,
-        "slope": 0.7247976470202646,
+        "candleTime": "2026-08-17",
+        "close": 97.25,
+        "wt0": 36.74166956406537,
+        "wt1": 39.53850490178549,
+        "previousWt1": 40.657239036873534,
+        "slope": 0.7056023708975367,
         "extremity": 0,
-        "mfi14": 58.42646783553669,
-        "previousMfi14": 57.51423720943143,
+        "mfi14": 44.77486302747957,
+        "previousMfi14": 53.29836771215903,
         "mfiAddOnAvailable": true,
-        "mfi14Rising": true,
+        "mfi14Rising": false,
         "confirmedLongTransition": false
       },
       {
         "symbol": "BND",
         "name": "Vanguard Total Bond Market ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 72.4800033569336,
-        "wt0": 48.08524873662736,
-        "wt1": 40.37448267822569,
-        "previousWt1": 37.29017625486502,
-        "slope": 0.7408443314474031,
+        "candleTime": "2026-08-17",
+        "close": 72.16000366210938,
+        "wt0": 38.63120706456213,
+        "wt1": 40.454141018773974,
+        "previousWt1": 41.183314600458715,
+        "slope": 0.7333901265065308,
         "extremity": 0,
-        "mfi14": 63.44364993934743,
-        "previousMfi14": 59.550476730266276,
+        "mfi14": 52.758356668280605,
+        "previousMfi14": 58.341405770185,
         "mfiAddOnAvailable": true,
-        "mfi14Rising": true,
+        "mfi14Rising": false,
         "confirmedLongTransition": false
       },
       {
         "symbol": "IEFA",
         "name": "iShares Core MSCI EAFE ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 101.20999908447266,
-        "wt0": 72.30126965906406,
-        "wt1": 70.20595278100299,
-        "previousWt1": 69.36782602977857,
-        "slope": -0.17180532189533645,
+        "candleTime": "2026-08-17",
+        "close": 101.02999877929688,
+        "wt0": 70.45982540723313,
+        "wt1": 70.18758643327588,
+        "previousWt1": 70.07869084369298,
+        "slope": -0.6653579146409238,
         "extremity": 1,
-        "mfi14": 64.35176031468964,
-        "previousMfi14": 65.09468660780828,
+        "mfi14": 52.75290651280632,
+        "previousMfi14": 59.07669960657094,
         "mfiAddOnAvailable": true,
         "mfi14Rising": false,
         "confirmedLongTransition": false
@@ -19096,32 +18491,32 @@
         "symbol": "IVV",
         "name": "iShares Core S&P 500 ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 781.469970703125,
-        "wt0": 72.20526310267223,
-        "wt1": 69.53978864805791,
-        "previousWt1": 68.47359886621219,
-        "slope": 1.2075186901426789,
-        "extremity": 0,
-        "mfi14": 72.02325809365561,
-        "previousMfi14": 72.60966356579829,
+        "candleTime": "2026-08-17",
+        "close": 776.2899780273438,
+        "wt0": 72.26214866219375,
+        "wt1": 71.128140921653,
+        "previousWt1": 70.67453782543669,
+        "slope": -0.4326024038951494,
+        "extremity": 1,
+        "mfi14": 70.50913606954838,
+        "previousMfi14": 68.21988669794644,
         "mfiAddOnAvailable": true,
-        "mfi14Rising": false,
+        "mfi14Rising": true,
         "confirmedLongTransition": false
       },
       {
         "symbol": "QQQ",
         "name": "Invesco QQQ Trust",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 732.0700073242188,
-        "wt0": 66.15861071637114,
-        "wt1": 59.412143842547955,
-        "previousWt1": 56.713557093018686,
-        "slope": 1.82944521765019,
+        "candleTime": "2026-08-17",
+        "close": 729.8699951171875,
+        "wt0": 70.56576252738242,
+        "wt1": 64.5545765494897,
+        "previousWt1": 62.1501021583326,
+        "slope": 0.2253607864842794,
         "extremity": 0,
-        "mfi14": 64.17803998915966,
-        "previousMfi14": 57.78340746441644,
+        "mfi14": 73.41235757229407,
+        "previousMfi14": 70.54795662557186,
         "mfiAddOnAvailable": true,
         "mfi14Rising": true,
         "confirmedLongTransition": false
@@ -19130,49 +18525,49 @@
         "symbol": "SPY",
         "name": "SPDR S&P 500 ETF Trust",
         "evidenceRole": "discovery",
-        "candleTime": "2026-08-13",
-        "close": 777.8800048828125,
-        "wt0": 72.25266877657883,
-        "wt1": 69.6725813796343,
-        "previousWt1": 68.6405464208565,
-        "slope": 1.1044816787628269,
-        "extremity": 0,
-        "mfi14": 72.01888448652451,
-        "previousMfi14": 72.52976184642299,
+        "candleTime": "2026-08-17",
+        "close": 772.6699829101562,
+        "wt0": 72.25801921472183,
+        "wt1": 71.07113335561013,
+        "previousWt1": 70.59637901196544,
+        "slope": -0.5174329611827142,
+        "extremity": 1,
+        "mfi14": 68.40509239008247,
+        "previousMfi14": 67.17709257152598,
         "mfiAddOnAvailable": true,
-        "mfi14Rising": false,
+        "mfi14Rising": true,
         "confirmedLongTransition": false
       },
       {
         "symbol": "VEA",
         "name": "Vanguard FTSE Developed Markets ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 73.54000091552734,
-        "wt0": 67.75511517243173,
-        "wt1": 63.864016942170394,
-        "previousWt1": 62.307577650065866,
-        "slope": 0.886983169765723,
+        "candleTime": "2026-08-17",
+        "close": 73.69000244140625,
+        "wt0": 72.45444993328051,
+        "wt1": 67.5237306938562,
+        "previousWt1": 65.55144299808647,
+        "slope": -0.5283732975356386,
         "extremity": 0,
-        "mfi14": 58.883120484371226,
-        "previousMfi14": 59.43931601029358,
+        "mfi14": 64.43723177194319,
+        "previousMfi14": 58.544027520789996,
         "mfiAddOnAvailable": true,
-        "mfi14Rising": false,
+        "mfi14Rising": true,
         "confirmedLongTransition": false
       },
       {
         "symbol": "VOO",
         "name": "Vanguard S&P 500 ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 714.9500122070312,
-        "wt0": 72.25721485663884,
-        "wt1": 69.73777720485543,
-        "previousWt1": 68.73000214414206,
-        "slope": 1.088752061123001,
-        "extremity": 0,
-        "mfi14": 72.24096944399255,
-        "previousMfi14": 72.76724790363514,
+        "candleTime": "2026-08-17",
+        "close": 710.27001953125,
+        "wt0": 71.55309560987074,
+        "wt1": 70.8395183505362,
+        "previousWt1": 70.55408744680237,
+        "slope": -0.667117465231189,
+        "extremity": 1,
+        "mfi14": 66.45469557688315,
+        "previousMfi14": 66.67190670313843,
         "mfiAddOnAvailable": true,
         "mfi14Rising": false,
         "confirmedLongTransition": false
@@ -19181,15 +18576,15 @@
         "symbol": "VTI",
         "name": "Vanguard Total Stock Market ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 384.29998779296875,
-        "wt0": 71.65145074752489,
-        "wt1": 68.97817224220002,
-        "previousWt1": 67.90886084007008,
-        "slope": 1.2646219805408003,
-        "extremity": 0,
-        "mfi14": 69.53425719559115,
-        "previousMfi14": 69.66613840602844,
+        "candleTime": "2026-08-17",
+        "close": 382.1300048828125,
+        "wt0": 72.22760873232416,
+        "wt1": 70.830244944686,
+        "previousWt1": 70.27129942963074,
+        "slope": -0.4581802523550207,
+        "extremity": 1,
+        "mfi14": 67.69136579470884,
+        "previousMfi14": 69.25905362137316,
         "mfiAddOnAvailable": true,
         "mfi14Rising": false,
         "confirmedLongTransition": false
@@ -19198,15 +18593,15 @@
         "symbol": "VXUS",
         "name": "Vanguard Total International Stock ETF",
         "evidenceRole": "transfer",
-        "candleTime": "2026-08-13",
-        "close": 87.72000122070312,
-        "wt0": 68.41968510844198,
-        "wt1": 64.60448268885368,
-        "previousWt1": 63.07840172101836,
-        "slope": 0.7418008903768586,
+        "candleTime": "2026-08-17",
+        "close": 87.87000274658203,
+        "wt0": 72.95102450815313,
+        "wt1": 68.18322954065782,
+        "previousWt1": 66.2761115536597,
+        "slope": -0.6686928599689332,
         "extremity": 0,
-        "mfi14": 64.72745610537973,
-        "previousMfi14": 58.95242696958944,
+        "mfi14": 71.08662654336193,
+        "previousMfi14": 64.76787859170727,
         "mfiAddOnAvailable": true,
         "mfi14Rising": true,
         "confirmedLongTransition": false

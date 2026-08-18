@@ -6,6 +6,9 @@ export const PUBLIC_SNAPSHOT_PATH = "/data/arbitra-snapshot.json";
 export const INGEST_SNAPSHOT_PATH = "/internal/stock-selector-snapshot";
 export const CRYPTO_INGEST_SNAPSHOT_PATH = "/internal/crypto-selector-snapshot";
 
+// Surfaces written by the ingest routes; everything else comes from the bundle.
+export const RUNTIME_OWNED_SURFACES = Object.freeze(["stockSelector", "crypto"]);
+
 const JSON_HEADERS = {
   "cache-control": "no-store",
   "content-type": "application/json; charset=utf-8",
@@ -234,13 +237,59 @@ export function createRuntimeSnapshotHandler({
     }
   }
 
+  // The accepted runtime file stores a whole snapshot, but only stockSelector
+  // and crypto are runtime-owned; everything else belongs to the deployed
+  // bundle. Reading that file wholesale meant that once a single publish had
+  // happened, later bundles -- fresh datasets, profiles and the ETF surface,
+  // which reach the UI only through a rebuild -- were shadowed indefinitely by
+  // whatever those surfaces looked like at the moment of that publish.
+  //
+  // Re-base instead: take the bundle as the base and overlay only the surfaces
+  // the ingest routes own, so a redeploy takes effect immediately without
+  // discarding accepted selector state.
   async function currentSnapshotText() {
-    try {
-      return await readFile(snapshotPath, "utf8");
-    } catch (error) {
-      if (error?.code !== "ENOENT") throw error;
-      return readFile(fallbackPath, "utf8");
+    const read = async (target) => {
+      try {
+        return await readFile(target, "utf8");
+      } catch (error) {
+        if (error?.code !== "ENOENT") throw error;
+        return null;
+      }
+    };
+    const storedText = await read(snapshotPath);
+    const fallbackText = await read(fallbackPath);
+    if (storedText === null) {
+      if (fallbackText === null) {
+        throw Object.assign(new Error("no snapshot is available"), { code: "ENOENT" });
+      }
+      return fallbackText;
     }
+    if (fallbackText === null) return storedText;
+    const base = JSON.parse(fallbackText);
+    const stored = JSON.parse(storedText);
+    for (const surface of RUNTIME_OWNED_SURFACES) {
+      if (stored[surface] != null) base[surface] = stored[surface];
+    }
+    // datasets are jointly owned. The bundle supplies history from artifacts,
+    // and an accepted stock publish adds the row for its own scan date, which
+    // validateAcceptedSnapshot then requires to reconcile against
+    // stockSelector. Taking either side wholesale breaks something: the bundle
+    // alone drops the accepted row and the next publish is rejected, while the
+    // stored copy alone re-shadows newly synced history. Merge by date with the
+    // stored row winning, newest first.
+    if (Array.isArray(stored.datasets) && Array.isArray(base.datasets)) {
+      const byDate = new Map();
+      for (const dataset of base.datasets) {
+        if (isObject(dataset) && typeof dataset.date === "string") byDate.set(dataset.date, dataset);
+      }
+      for (const dataset of stored.datasets) {
+        if (isObject(dataset) && typeof dataset.date === "string") byDate.set(dataset.date, dataset);
+      }
+      base.datasets = [...byDate.values()].sort((left, right) =>
+        right.date.localeCompare(left.date)
+      );
+    }
+    return `${JSON.stringify(base, null, 2)}\n`;
   }
 
   async function currentSnapshot() {
