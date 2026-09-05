@@ -1,0 +1,4767 @@
+{
+  "available": true,
+  "schemaVersion": 1,
+  "producerSchemaVersion": 1,
+  "generatedAt": "2026-08-01T00:05:00+00:00",
+  "runId": "d5c0a73b29b3c563",
+  "evaluatorVersion": "oscillator-alpha-watch-evaluator/0.1.0",
+  "trackingOnly": true,
+  "deploymentAllowed": false,
+  "capitalAuthority": false,
+  "orderAuthority": false,
+  "notEstablishedAsDistinguishableFromSearchNoise": true,
+  "purpose": {
+    "quoted": "Forward signal tracking only. Each entry is a frozen fast/slow oscillator rule gated by a recent regular divergence on the SLOW oscillator. Emitting BUY/SELL records an observation; it is not a recommendation and carries no order authority."
+  },
+  "knownLimitations": [
+    {
+      "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+    },
+    {
+      "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+    },
+    {
+      "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+    },
+    {
+      "quoted": "No shifted-label or permutation null has been run against these survivors."
+    },
+    {
+      "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+    }
+  ],
+  "evidenceWindowEndsUtc": "2026-08-01T00:00:00+00:00",
+  "vocabulary": {
+    "source": "registry",
+    "asset": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "OIL",
+      "SPY",
+      "XRPUSDT"
+    ],
+    "timeframe": [
+      "12h",
+      "1h",
+      "2h",
+      "30m",
+      "3h",
+      "4h",
+      "8h"
+    ],
+    "oscillator": [
+      "ta_awesome_oscillator",
+      "ta_ppo",
+      "ta_pvo",
+      "ta_roc",
+      "ta_rsi",
+      "ta_stc",
+      "ta_stoch_rsi",
+      "ta_ultimate_oscillator"
+    ],
+    "exitFamily": [
+      "atr",
+      "opposite_signal"
+    ],
+    "frozenLabel": [
+      "ao_05_24",
+      "ao_24_140",
+      "ppo_02_05",
+      "ppo_03_07",
+      "ppo_04_09",
+      "ppo_06_14",
+      "ppo_24_56",
+      "pvo_02_05",
+      "pvo_03_07",
+      "pvo_04_09",
+      "pvo_06_14",
+      "pvo_09_21",
+      "pvo_12_26",
+      "pvo_18_42",
+      "pvo_24_56",
+      "pvo_32_70",
+      "roc_07",
+      "roc_42",
+      "rsi_21",
+      "rsi_70",
+      "stc_05_12_03",
+      "stc_16_34_07",
+      "stoch_rsi_09",
+      "stoch_rsi_14",
+      "uo_02_03_05",
+      "uo_03_05_09",
+      "uo_07_14_28",
+      "uo_18_35_70"
+    ],
+    "frozenParameter": [
+      "cycle",
+      "smooth1",
+      "smooth2",
+      "weight1",
+      "weight2",
+      "weight3",
+      "window",
+      "window1",
+      "window2",
+      "window3",
+      "window_fast",
+      "window_sign",
+      "window_slow"
+    ],
+    "frozenValue": [],
+    "divergenceInput": [
+      "slow_oscillator"
+    ],
+    "registryId": [
+      "oscillator-alpha-watch-v1"
+    ]
+  },
+  "registry": {
+    "registryId": "oscillator-alpha-watch-v1",
+    "sha256": "de4ba6d1613abbbe6a1675f2bab8a63c21a7c8e941c944c22f605b0d127d07ec",
+    "selectionRule": {
+      "quoted": "Cells positive on BOTH the optimizer holdout and the retrospective confirmation segment, with at least 10 trades on each. 16 of 437 eligible multi-asset cells qualified, plus the separately-run BTCUSDT RSI 30m cell."
+    },
+    "cellsTotal": 17,
+    "cellsActive": 15,
+    "cellsDeferred": 2
+  },
+  "runtime": {
+    "python": "3.14.7",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "ta": "0.11.0",
+    "matchesFrozenProtocol": false,
+    "frozenProtocolRuntime": {
+      "python": "3.12.13",
+      "numpy": "2.3.5",
+      "pandas": "2.3.3",
+      "ta": "0.11.0"
+    }
+  },
+  "parity": {
+    "frozenFiles": 8,
+    "reimplementedLogic": 6,
+    "assertionsChecked": 212245,
+    "assertionsPassed": 212245,
+    "assertionsFailed": 0
+  },
+  "protocol": {
+    "exits": {
+      "atr": {
+        "atrPeriod": 14,
+        "maximumHoldingBars": 4,
+        "stopAtr": 1,
+        "targetAtr": 0.8
+      },
+      "oppositeSignal": {
+        "quoted": "next fully qualified opposite divergence pulse"
+      }
+    },
+    "friction": {
+      "feeBpsRoundTrip": 12,
+      "slippageBpsRoundTrip": 6,
+      "totalBpsRoundTrip": 18,
+      "appliedToRecordedPrices": false
+    },
+    "retrospectiveConfirmation": {
+      "quoted": "[2025-11-29T00:00:00+00:00, 2026-08-01T00:00:00+00:00)"
+    },
+    "selection": {
+      "quoted": "[2023-03-25T00:00:00+00:00, 2025-03-29T00:00:00+00:00)"
+    }
+  },
+  "ledger": {
+    "directory": "data/oscillator-alpha-watch/ledger",
+    "totalRecords": 321,
+    "partitions": 3,
+    "partitionsRead": 3,
+    "linesUnreadable": 0,
+    "firstBarUtc": "2026-06-01T00:00:00+00:00",
+    "lastBarUtc": "2026-08-01T00:05:00+00:00",
+    "policy": {
+      "quoted": "append-only; partitions are never rewritten, compacted or pruned"
+    },
+    "expectedRecordsPerMonth": 44.7,
+    "expectedRecordsPerMonthBasis": {
+      "quoted": "360 trades across the 15 active cells over the 245-day retrospective confirmation window [2025-11-29, 2026-08-01) = 44.7 signal records per month, before fill and exit continuations. Base rate to read it against: that is the rate the SELECTED cells produced on the segment they were retained on but not selected on; it describes the past and forecasts nothing. Per the registry these cells are not established as distinguishable from search noise. XRPUSDT ta_pvo 2h alone contributes 86 of the 360."
+    }
+  },
+  "counts": {
+    "cellsTotal": 17,
+    "activeLong": 2,
+    "activeShort": 5,
+    "flat": 7,
+    "insufficientHistory": 0,
+    "sourceUnavailable": 0,
+    "deferred": 2,
+    "lifecycleTerminatedBankrupt": 1,
+    "cellsEvaluated": 15,
+    "signalsThisRun": 147,
+    "fillsThisRun": 90,
+    "exitsThisRun": 83
+  },
+  "cells": [
+    {
+      "watchId": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "asset": "BTCUSDT",
+      "oscillator": "ta_rsi",
+      "indicatorClass": "RSIIndicator",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "cellFingerprint": "e13ffbdab5ce12d2645f42f0d827bd5d60465830fd2ac140b8452648edc08b7f",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 152,
+        "registryBarsRequired": null,
+        "adapterBarsComputed": 152,
+        "source": "adapter_computed_registry_null",
+        "satisfied": true
+      },
+      "barsAvailable": 58800,
+      "stateBar": {
+        "openUtc": "2026-07-31T23:30:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 62887.88,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "rsi_21",
+        "slowLabel": "rsi_70",
+        "fastValue": 37.746739817790456,
+        "slowValue": 43.39466026351403,
+        "spread": -5.647920445723571,
+        "relation": "fast_below_slow",
+        "atr": 175.19256325309163
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "short",
+        "signalId": "55ae1cfc8bfaee1383bd65e81a479db407397460562b6c0f4fca3811b7154ac8",
+        "signalBarOpenUtc": "2026-07-22T16:00:00+00:00",
+        "entryBarOpenUtc": "2026-07-22T16:30:00+00:00",
+        "entryPrice": 66026.09,
+        "barsHeld": 446,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": 0.047529847670822245
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 58648,
+        "tradesReturned": 146,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 168,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T23:30:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 30,
+          "netReturn": 0.4101282819330736,
+          "profitFactor": 2.283648556287351,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 32,
+          "netReturn": 0.9171,
+          "profitFactor": 2.691,
+          "note": {
+            "quoted": "campaign calls this the sealed segment; drop-best +0.6797, drop-top3 +0.4527, 16 long / 16 short, 31 of 32 exits by opposite signal"
+          }
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "rsi_21",
+          "rank": null,
+          "parameters": [
+            {
+              "name": "window",
+              "value": 21
+            }
+          ]
+        },
+        "slow": {
+          "label": "rsi_70",
+          "rank": null,
+          "parameters": [
+            {
+              "name": "window",
+              "value": 70
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "rsi",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 8,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults"
+          }
+        },
+        "candidatesSearchedInCell": 288
+      },
+      "provenance": {
+        "campaignId": "btcusdt-rsi-fast-slow-slow-divergence-mtf-v1",
+        "cellArtifactPath": "30m/opposite_signal"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_awesome_oscillator.1h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_awesome_oscillator",
+      "indicatorClass": "AwesomeOscillatorIndicator",
+      "timeframe": "1h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "270ba0e60ea88faf5c2f510f9c0f81d13f46ff10fc5c3c49f3e4a03e614740a3",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 214,
+        "registryBarsRequired": 214,
+        "adapterBarsComputed": 214,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 29400,
+      "stateBar": {
+        "openUtc": "2026-07-31T23:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "ao_05_24",
+        "slowLabel": "ao_24_140",
+        "fastValue": -19.38958333333312,
+        "slowValue": -24.609023809523705,
+        "spread": 5.219440476190584,
+        "relation": "fast_above_slow",
+        "atr": 10.869209007540709
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 29186,
+        "tradesReturned": 108,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 0,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T23:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 14,
+          "netReturn": 0.027052091348155782,
+          "profitFactor": 1.6281956010615974,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 16,
+          "netReturn": 0.028526719206673157,
+          "profitFactor": 1.893455088781532,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "ao_05_24",
+          "rank": 3,
+          "parameters": [
+            {
+              "name": "window1",
+              "value": 5
+            },
+            {
+              "name": "window2",
+              "value": 24
+            }
+          ]
+        },
+        "slow": {
+          "label": "ao_24_140",
+          "rank": 8,
+          "parameters": [
+            {
+              "name": "window1",
+              "value": 24
+            },
+            {
+              "name": "window2",
+              "value": 140
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "awesome_oscillator",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 0,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_awesome_oscillator/1h/atr"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_ppo.1h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ppo",
+      "indicatorClass": "PercentagePriceOscillator",
+      "timeframe": "1h",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "cellFingerprint": "8783e7d6c5315ecf5472772c6ba040b5f06d3669515e3cf37c520ae23b068247",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 130,
+        "registryBarsRequired": 130,
+        "adapterBarsComputed": 130,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 29400,
+      "stateBar": {
+        "openUtc": "2026-07-31T23:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "ppo_04_09",
+        "slowLabel": "ppo_24_56",
+        "fastValue": -0.1888495809978688,
+        "slowValue": -0.7117530201071354,
+        "spread": 0.5229034391092666,
+        "relation": "fast_above_slow",
+        "atr": 10.869209007540709
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "short",
+        "signalId": "63df256554805e59deccb6c5396ee7d1e019d3be44ff3204f07c85e3406a1876",
+        "signalBarOpenUtc": "2026-07-04T00:00:00+00:00",
+        "entryBarOpenUtc": "2026-07-04T01:00:00+00:00",
+        "entryPrice": 1758.7,
+        "barsHeld": 670,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": -0.05907772786717458
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 29270,
+        "tradesReturned": 75,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 106,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T23:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 16,
+          "netReturn": 0.1266576560342847,
+          "profitFactor": 1.5649006356971902,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 16,
+          "netReturn": 0.4610155627089554,
+          "profitFactor": 2.1333447257553857,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "ppo_04_09",
+          "rank": 2,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 4
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 9
+            }
+          ]
+        },
+        "slow": {
+          "label": "ppo_24_56",
+          "rank": 7,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 24
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 56
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "ppo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 0,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_ppo/1h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_ppo.8h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ppo",
+      "indicatorClass": "PercentagePriceOscillator",
+      "timeframe": "8h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "3b0557972de2b580b3d90fae640c3f5830b2a0e1565a50c4d45bc46847870e4c",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 114,
+        "registryBarsRequired": 114,
+        "adapterBarsComputed": 114,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 3675,
+      "stateBar": {
+        "openUtc": "2026-07-31T16:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "ppo_02_05",
+        "slowLabel": "ppo_03_07",
+        "fastValue": -0.805659990983801,
+        "slowValue": -0.7952306074424211,
+        "spread": -0.0104293835413799,
+        "relation": "fast_below_slow",
+        "atr": 38.38994946449346
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 3561,
+        "tradesReturned": 61,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 0,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T16:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 15,
+          "netReturn": 0.035310596651033865,
+          "profitFactor": 1.2717156204853575,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 10,
+          "netReturn": 0.015137246509352664,
+          "profitFactor": 1.231175701381455,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "ppo_02_05",
+          "rank": 0,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 2
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 5
+            }
+          ]
+        },
+        "slow": {
+          "label": "ppo_03_07",
+          "rank": 1,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 3
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 7
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "ppo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 5,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_ppo/8h/atr"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_stc.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_stc",
+      "indicatorClass": "STCIndicator",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "274b8ad232a1c00a9a30ed5ae965e92c4a216c458a7044369ff1e944a664152a",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 158,
+        "registryBarsRequired": 158,
+        "adapterBarsComputed": 158,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 2450,
+      "stateBar": {
+        "openUtc": "2026-07-31T12:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "stc_05_12_03",
+        "slowLabel": "stc_16_34_07",
+        "fastValue": 20.84124011993743,
+        "slowValue": 0.7378089720066706,
+        "spread": 20.10343114793076,
+        "relation": "fast_above_slow",
+        "atr": 45.490013575138455
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 2292,
+        "tradesReturned": 41,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 0,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T12:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 13,
+          "netReturn": 0.14874801674003657,
+          "profitFactor": 2.073640702431154,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 10,
+          "netReturn": 0.0321587284381184,
+          "profitFactor": 1.2869534369837332,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "stc_05_12_03",
+          "rank": 0,
+          "parameters": [
+            {
+              "name": "cycle",
+              "value": 3
+            },
+            {
+              "name": "smooth1",
+              "value": 3
+            },
+            {
+              "name": "smooth2",
+              "value": 3
+            },
+            {
+              "name": "window_fast",
+              "value": 5
+            },
+            {
+              "name": "window_slow",
+              "value": 12
+            }
+          ]
+        },
+        "slow": {
+          "label": "stc_16_34_07",
+          "rank": 3,
+          "parameters": [
+            {
+              "name": "cycle",
+              "value": 7
+            },
+            {
+              "name": "smooth1",
+              "value": 3
+            },
+            {
+              "name": "smooth2",
+              "value": 3
+            },
+            {
+              "name": "window_fast",
+              "value": 16
+            },
+            {
+              "name": "window_slow",
+              "value": 34
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "stc",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 4,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_stc/12h/atr"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_stoch_rsi.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_stoch_rsi",
+      "indicatorClass": "StochRSIIndicator",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "0d3cfe24d006ce14771bdbc83b65d27da1a74c638540176f60b5aa79193a77ad",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 107,
+        "registryBarsRequired": 107,
+        "adapterBarsComputed": 107,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 2450,
+      "stateBar": {
+        "openUtc": "2026-07-31T12:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "stoch_rsi_09",
+        "slowLabel": "stoch_rsi_14",
+        "fastValue": 0.12082840875175638,
+        "slowValue": 0.12362982296166573,
+        "spread": -0.002801414209909356,
+        "relation": "fast_below_slow",
+        "atr": 45.490013575138455
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 2343,
+        "tradesReturned": 50,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 0,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T12:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 12,
+          "netReturn": 0.1134104783138532,
+          "profitFactor": 1.912646758972265,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 14,
+          "netReturn": 0.14613422113869734,
+          "profitFactor": 2.751783225077469,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "stoch_rsi_09",
+          "rank": 2,
+          "parameters": [
+            {
+              "name": "smooth1",
+              "value": 3
+            },
+            {
+              "name": "smooth2",
+              "value": 3
+            },
+            {
+              "name": "window",
+              "value": 9
+            }
+          ]
+        },
+        "slow": {
+          "label": "stoch_rsi_14",
+          "rank": 3,
+          "parameters": [
+            {
+              "name": "smooth1",
+              "value": 3
+            },
+            {
+              "name": "smooth2",
+              "value": 3
+            },
+            {
+              "name": "window",
+              "value": 14
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "stochrsi_k",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 3,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_stoch_rsi/12h/atr"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "indicatorClass": "UltimateOscillator",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "aed437f35d0042bd0a9c9828d1432bee3d7f466daf6c86dcc0b8c4c6f50a16ec",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 103,
+        "registryBarsRequired": 103,
+        "adapterBarsComputed": 103,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 2450,
+      "stateBar": {
+        "openUtc": "2026-07-31T12:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "uo_02_03_05",
+        "slowLabel": "uo_07_14_28",
+        "fastValue": 23.37971122007521,
+        "slowValue": 55.32153127196275,
+        "spread": -31.941820051887536,
+        "relation": "fast_below_slow",
+        "atr": 45.490013575138455
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 2347,
+        "tradesReturned": 57,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 1,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T12:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 11,
+          "netReturn": 0.029545502778256516,
+          "profitFactor": 1.221829773399318,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 12,
+          "netReturn": 0.07862225945442813,
+          "profitFactor": 1.7996923555893436,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "uo_02_03_05",
+          "rank": 0,
+          "parameters": [
+            {
+              "name": "weight1",
+              "value": 4
+            },
+            {
+              "name": "weight2",
+              "value": 2
+            },
+            {
+              "name": "weight3",
+              "value": 1
+            },
+            {
+              "name": "window1",
+              "value": 2
+            },
+            {
+              "name": "window2",
+              "value": 3
+            },
+            {
+              "name": "window3",
+              "value": 5
+            }
+          ]
+        },
+        "slow": {
+          "label": "uo_07_14_28",
+          "rank": 5,
+          "parameters": [
+            {
+              "name": "weight1",
+              "value": 4
+            },
+            {
+              "name": "weight2",
+              "value": 2
+            },
+            {
+              "name": "weight3",
+              "value": 1
+            },
+            {
+              "name": "window1",
+              "value": 7
+            },
+            {
+              "name": "window2",
+              "value": 14
+            },
+            {
+              "name": "window3",
+              "value": 28
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "ultimate_oscillator",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 1,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_ultimate_oscillator/12h/atr"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "indicatorClass": "UltimateOscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "cellFingerprint": "21c78485adf4bc690a7569706aef25c5d3c2a20d3c114803df1940d60be794f7",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 145,
+        "registryBarsRequired": 145,
+        "adapterBarsComputed": 145,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 14700,
+      "stateBar": {
+        "openUtc": "2026-07-31T22:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "uo_07_14_28",
+        "slowLabel": "uo_18_35_70",
+        "fastValue": 41.1188011444436,
+        "slowValue": 42.65652172435383,
+        "spread": -1.5377205799102285,
+        "relation": "fast_below_slow",
+        "atr": 16.86062457084195
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "short",
+        "signalId": "f667dd4132425eff8f0252b8a1301891740ba5c8fd5475ec7291c6187b153ef3",
+        "signalBarOpenUtc": "2026-07-13T00:00:00+00:00",
+        "entryBarOpenUtc": "2026-07-13T02:00:00+00:00",
+        "entryPrice": 1806.84,
+        "barsHeld": 226,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": -0.030860507847955576
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 14555,
+        "tradesReturned": 96,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 82,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T22:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 19,
+          "netReturn": 0.8406831648571773,
+          "profitFactor": 2.348592898342408,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 23,
+          "netReturn": 0.5550325630648896,
+          "profitFactor": 1.8944453173457099,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "uo_07_14_28",
+          "rank": 5,
+          "parameters": [
+            {
+              "name": "weight1",
+              "value": 4
+            },
+            {
+              "name": "weight2",
+              "value": 2
+            },
+            {
+              "name": "weight3",
+              "value": 1
+            },
+            {
+              "name": "window1",
+              "value": 7
+            },
+            {
+              "name": "window2",
+              "value": 14
+            },
+            {
+              "name": "window3",
+              "value": 28
+            }
+          ]
+        },
+        "slow": {
+          "label": "uo_18_35_70",
+          "rank": 8,
+          "parameters": [
+            {
+              "name": "weight1",
+              "value": 4
+            },
+            {
+              "name": "weight2",
+              "value": 2
+            },
+            {
+              "name": "weight3",
+              "value": 1
+            },
+            {
+              "name": "window1",
+              "value": 18
+            },
+            {
+              "name": "window2",
+              "value": 35
+            },
+            {
+              "name": "window3",
+              "value": 70
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "ultimate_oscillator",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 1,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_ultimate_oscillator/2h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.4h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "indicatorClass": "UltimateOscillator",
+      "timeframe": "4h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "7eb7cf7ce70fdcd3af8b1966da1d5526d85aecd28f9e86106f8306162783f00b",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 146,
+        "registryBarsRequired": 146,
+        "adapterBarsComputed": 146,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 7350,
+      "stateBar": {
+        "openUtc": "2026-07-31T20:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "uo_03_05_09",
+        "slowLabel": "uo_18_35_70",
+        "fastValue": 34.2005539715631,
+        "slowValue": 44.87867005778727,
+        "spread": -10.678116086224165,
+        "relation": "fast_below_slow",
+        "atr": 26.439971437716064
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 7204,
+        "tradesReturned": 141,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 0,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T20:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 32,
+          "netReturn": 0.06071923550493197,
+          "profitFactor": 1.2942719663183213,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 21,
+          "netReturn": 0.04662962075451049,
+          "profitFactor": 1.3589634807024196,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "uo_03_05_09",
+          "rank": 2,
+          "parameters": [
+            {
+              "name": "weight1",
+              "value": 4
+            },
+            {
+              "name": "weight2",
+              "value": 2
+            },
+            {
+              "name": "weight3",
+              "value": 1
+            },
+            {
+              "name": "window1",
+              "value": 3
+            },
+            {
+              "name": "window2",
+              "value": 5
+            },
+            {
+              "name": "window3",
+              "value": 9
+            }
+          ]
+        },
+        "slow": {
+          "label": "uo_18_35_70",
+          "rank": 8,
+          "parameters": [
+            {
+              "name": "weight1",
+              "value": 4
+            },
+            {
+              "name": "weight2",
+              "value": 2
+            },
+            {
+              "name": "weight3",
+              "value": 1
+            },
+            {
+              "name": "window1",
+              "value": 18
+            },
+            {
+              "name": "window2",
+              "value": 35
+            },
+            {
+              "name": "window3",
+              "value": 70
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "ultimate_oscillator",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 2,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/ethusdt/ta_ultimate_oscillator/4h/atr"
+      }
+    },
+    {
+      "watchId": "OIL.ta_pvo.2h.opposite_signal",
+      "asset": "OIL",
+      "oscillator": "ta_pvo",
+      "indicatorClass": "PercentageVolumeOscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "status": "deferred",
+      "cellFingerprint": "ba5c24300fa7c31dfdc0e8097d03cfd1277ca513ca3d50a89326ee2f12d1b51e",
+      "evaluatedThisRun": false,
+      "deferred": {
+        "isDeferred": true,
+        "reason": {
+          "quoted": "Deferred by human decision. The OIL cells require Databento CL continuous futures with the contract-roll handling the frozen protocol mandates (protocol.frozen.json -> futures.roll_policy: \"force flat and reset adapter/divergence/evaluator state\"), implemented by RollResetAdapter and RollResetLifecycleEvaluator. The candle data exists (data/databento-futures/cl/1min/); the roll-reset evaluation path is what is missing. No adapter is instantiated and no signal is produced for these cells. Their warmup_bars_required values (156 and 124) are reproducible from the frozen adapter, so a later OIL build has a checkable target."
+        }
+      },
+      "availability": {
+        "status": "deferred",
+        "lastSuccessfulEvaluationUtc": null,
+        "consecutiveFailedRuns": 0,
+        "detail": {
+          "quoted": "Deferred by human decision. The OIL cells require Databento CL continuous futures with the contract-roll handling the frozen protocol mandates (protocol.frozen.json -> futures.roll_policy: \"force flat and reset adapter/divergence/evaluator state\"), implemented by RollResetAdapter and RollResetLifecycleEvaluator. The candle data exists (data/databento-futures/cl/1min/); the roll-reset evaluation path is what is missing. No adapter is instantiated and no signal is produced for these cells. Their warmup_bars_required values (156 and 124) are reproducible from the frozen adapter, so a later OIL build has a checkable target."
+        }
+      },
+      "warmup": {
+        "effectiveBarsRequired": 156,
+        "registryBarsRequired": 156,
+        "adapterBarsComputed": 156,
+        "source": "registry",
+        "satisfied": false
+      },
+      "barsAvailable": null,
+      "stateBar": null,
+      "oscillatorState": null,
+      "divergenceArmed": null,
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": null,
+      "finalBucket": null,
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 27,
+          "netReturn": 0.07391576616311601,
+          "profitFactor": 1.3848724535219505,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 18,
+          "netReturn": 0.16102598500726528,
+          "profitFactor": 1.6221188992297897,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "pvo_12_26",
+          "rank": 5,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 12
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 26
+            }
+          ]
+        },
+        "slow": {
+          "label": "pvo_18_42",
+          "rank": 6,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 18
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 42
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "pvo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 32,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/oil/ta_pvo/2h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "OIL.ta_roc.1h.opposite_signal",
+      "asset": "OIL",
+      "oscillator": "ta_roc",
+      "indicatorClass": "ROCIndicator",
+      "timeframe": "1h",
+      "exitFamily": "opposite_signal",
+      "status": "deferred",
+      "cellFingerprint": "bd6314e9a041591d57ea52f705e319870953dd344e8c413773e815ad99a2fd7f",
+      "evaluatedThisRun": false,
+      "deferred": {
+        "isDeferred": true,
+        "reason": {
+          "quoted": "Deferred by human decision. The OIL cells require Databento CL continuous futures with the contract-roll handling the frozen protocol mandates (protocol.frozen.json -> futures.roll_policy: \"force flat and reset adapter/divergence/evaluator state\"), implemented by RollResetAdapter and RollResetLifecycleEvaluator. The candle data exists (data/databento-futures/cl/1min/); the roll-reset evaluation path is what is missing. No adapter is instantiated and no signal is produced for these cells. Their warmup_bars_required values (156 and 124) are reproducible from the frozen adapter, so a later OIL build has a checkable target."
+        }
+      },
+      "availability": {
+        "status": "deferred",
+        "lastSuccessfulEvaluationUtc": null,
+        "consecutiveFailedRuns": 0,
+        "detail": {
+          "quoted": "Deferred by human decision. The OIL cells require Databento CL continuous futures with the contract-roll handling the frozen protocol mandates (protocol.frozen.json -> futures.roll_policy: \"force flat and reset adapter/divergence/evaluator state\"), implemented by RollResetAdapter and RollResetLifecycleEvaluator. The candle data exists (data/databento-futures/cl/1min/); the roll-reset evaluation path is what is missing. No adapter is instantiated and no signal is produced for these cells. Their warmup_bars_required values (156 and 124) are reproducible from the frozen adapter, so a later OIL build has a checkable target."
+        }
+      },
+      "warmup": {
+        "effectiveBarsRequired": 124,
+        "registryBarsRequired": 124,
+        "adapterBarsComputed": 124,
+        "source": "registry",
+        "satisfied": false
+      },
+      "barsAvailable": null,
+      "stateBar": null,
+      "oscillatorState": null,
+      "divergenceArmed": null,
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": null,
+      "finalBucket": null,
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 22,
+          "netReturn": 0.015536606139174847,
+          "profitFactor": 1.1287164748111207,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 23,
+          "netReturn": 0.022262279628866066,
+          "profitFactor": 1.1509718916017895,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "roc_07",
+          "rank": 1,
+          "parameters": [
+            {
+              "name": "window",
+              "value": 7
+            }
+          ]
+        },
+        "slow": {
+          "label": "roc_42",
+          "rank": 6,
+          "parameters": [
+            {
+              "name": "window",
+              "value": 42
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "roc",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 8,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/oil/ta_roc/1h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "indicatorClass": "PercentageVolumeOscillator",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "cellFingerprint": "7c42fd0011795e5605170f55eaea3f1457e2710ad416b5be6070bd1ba7444867",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 130,
+        "registryBarsRequired": 130,
+        "adapterBarsComputed": 130,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 12620,
+      "stateBar": {
+        "openUtc": "2026-07-31T19:30:00+00:00",
+        "closeUtc": "2026-07-31T20:00:00+00:00",
+        "close": 746.79,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "pvo_09_21",
+        "slowLabel": "pvo_24_56",
+        "fastValue": 22.5559667176849,
+        "slowValue": 12.927673397660088,
+        "spread": 9.628293320024811,
+        "relation": "fast_above_slow",
+        "atr": 2.0884579325554427
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "short",
+        "signalId": "2e5e4547d727c89032340057497e7116f7285bd83dcee8b32b3dc4732ec09f80",
+        "signalBarOpenUtc": "2026-07-28T12:30:00+00:00",
+        "entryBarOpenUtc": "2026-07-28T13:30:00+00:00",
+        "entryPrice": 739.165,
+        "barsHeld": 62,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": -0.010315694060189617
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 12490,
+        "tradesReturned": 176,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 130,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T19:30:00+00:00",
+        "bucketCloseUtc": "2026-07-31T20:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 37,
+          "netReturn": 0.017161927527876042,
+          "profitFactor": 1.0954239077552597,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 48,
+          "netReturn": 0.03161217545549522,
+          "profitFactor": 1.1507398991112647,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "pvo_09_21",
+          "rank": 4,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 9
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 21
+            }
+          ]
+        },
+        "slow": {
+          "label": "pvo_24_56",
+          "rank": 7,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 24
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 56
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "pvo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 0,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/spy/ta_pvo/30m/opposite_signal"
+      }
+    },
+    {
+      "watchId": "SPY.ta_pvo.4h.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "indicatorClass": "PercentageVolumeOscillator",
+      "timeframe": "4h",
+      "exitFamily": "opposite_signal",
+      "status": "active_long",
+      "cellFingerprint": "04973b5d81b86a0b72539d30e41b98767d482ecc3b00558146226ad3670c318c",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 124,
+        "registryBarsRequired": 124,
+        "adapterBarsComputed": 124,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 2400,
+      "stateBar": {
+        "openUtc": "2026-07-31T16:00:00+00:00",
+        "closeUtc": "2026-07-31T20:00:00+00:00",
+        "close": 746.79,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "pvo_02_05",
+        "slowLabel": "pvo_18_42",
+        "fastValue": 21.86855495391739,
+        "slowValue": 3.7220603900115776,
+        "spread": 18.14649456390581,
+        "relation": "fast_above_slow",
+        "atr": 5.3695717439383115
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "long",
+        "signalId": "2ce6a5665114ccd7aa5fea92564072e0c8823d64bedfd7f2a6e5bac82574ee8b",
+        "signalBarOpenUtc": "2026-07-27T16:00:00+00:00",
+        "entryBarOpenUtc": "2026-07-28T12:00:00+00:00",
+        "entryPrice": 739.31,
+        "barsHeld": 10,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": 0.010117542032435756
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 2276,
+        "tradesReturned": 42,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 27,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T16:00:00+00:00",
+        "bucketCloseUtc": "2026-07-31T20:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 0.9820359281437125
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 10,
+          "netReturn": 0.12827467766793976,
+          "profitFactor": 5.014559181219584,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 12,
+          "netReturn": 0.1083555022984728,
+          "profitFactor": 4.3534119099870745,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "pvo_02_05",
+          "rank": 0,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 2
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 5
+            }
+          ]
+        },
+        "slow": {
+          "label": "pvo_18_42",
+          "rank": 6,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 18
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 42
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "pvo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 0,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/spy/ta_pvo/4h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "XRPUSDT.ta_ppo.2h.atr",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_ppo",
+      "indicatorClass": "PercentagePriceOscillator",
+      "timeframe": "2h",
+      "exitFamily": "atr",
+      "status": "flat",
+      "cellFingerprint": "a679589358d4ee7c4f03ba581e2014b42490062cb01631221a141be1611f4e68",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 134,
+        "registryBarsRequired": 134,
+        "adapterBarsComputed": 134,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 14700,
+      "stateBar": {
+        "openUtc": "2026-07-31T22:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1.0619,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "ppo_06_14",
+        "slowLabel": "ppo_24_56",
+        "fastValue": -0.5096300524157901,
+        "slowValue": -0.5341844955903988,
+        "spread": 0.024554443174608753,
+        "relation": "fast_above_slow",
+        "atr": 0.008610961674662555
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 14566,
+        "tradesReturned": 78,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 0,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T22:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 20,
+          "netReturn": 0.04692339047192773,
+          "profitFactor": 1.4900066721562373,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 18,
+          "netReturn": 0.01263924713277409,
+          "profitFactor": 1.236157475382202,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "ppo_06_14",
+          "rank": 3,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 6
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 14
+            }
+          ]
+        },
+        "slow": {
+          "label": "ppo_24_56",
+          "rank": 7,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 24
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 56
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "ppo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 4,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/xrpusdt/ta_ppo/2h/atr"
+      }
+    },
+    {
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "indicatorClass": "PercentageVolumeOscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "cellFingerprint": "1e2160ff7b802e16e593722942812cddef9ecf588bd8a79f3572db05da78b087",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 132,
+        "registryBarsRequired": 132,
+        "adapterBarsComputed": 132,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 14700,
+      "stateBar": {
+        "openUtc": "2026-07-31T22:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1.0619,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "pvo_02_05",
+        "slowLabel": "pvo_03_07",
+        "fastValue": -35.573130468355515,
+        "slowValue": -26.403932841421774,
+        "spread": -9.169197626933741,
+        "relation": "fast_below_slow",
+        "atr": 0.008610961674662555
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "short",
+        "signalId": "67119a2daae47c73707226afd035f9d55ceecd0ce5e760cca165a6868bb895a6",
+        "signalBarOpenUtc": "2026-07-29T22:00:00+00:00",
+        "entryBarOpenUtc": "2026-07-30T00:00:00+00:00",
+        "entryPrice": 1.0737,
+        "barsHeld": 23,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": 0.010990034460277576
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 14568,
+        "tradesReturned": 388,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 279,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T22:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 90,
+          "netReturn": 3.191113513859099,
+          "profitFactor": 2.37434779964437,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 86,
+          "netReturn": 0.032567988491432276,
+          "profitFactor": 1.0908019350972278,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "pvo_02_05",
+          "rank": 0,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 2
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 5
+            }
+          ]
+        },
+        "slow": {
+          "label": "pvo_03_07",
+          "rank": 1,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 3
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 7
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "pvo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 8,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/xrpusdt/ta_pvo/2h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "indicatorClass": "PercentageVolumeOscillator",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "status": "active_long",
+      "cellFingerprint": "85930627e1824b067ae33d8d2a030274ccbab07927a7ff1e2bfa37bfcb2a2a4b",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "ok",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": null
+      },
+      "warmup": {
+        "effectiveBarsRequired": 124,
+        "registryBarsRequired": 124,
+        "adapterBarsComputed": 124,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 9800,
+      "stateBar": {
+        "openUtc": "2026-07-31T21:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1.0619,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "pvo_04_09",
+        "slowLabel": "pvo_06_14",
+        "fastValue": -9.878627651286017,
+        "slowValue": -6.20519229299131,
+        "spread": -3.6734353582947072,
+        "relation": "fast_below_slow",
+        "atr": 0.010555935958223833
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": {
+        "direction": "long",
+        "signalId": "4ec16950ffd983524b7513e3117180e482100a65918e53e98d22337c4e4333b9",
+        "signalBarOpenUtc": "2026-07-24T09:00:00+00:00",
+        "entryBarOpenUtc": "2026-07-24T12:00:00+00:00",
+        "entryPrice": 1.1039,
+        "barsHeld": 59,
+        "evaluatorClass": "SignalLifecycleEvaluator",
+        "atrAtSignal": null,
+        "stopPrice": null,
+        "targetPrice": null,
+        "maximumHoldingBars": null,
+        "unrealisedGrossReturn": -0.03804692454026637
+      },
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 9676,
+        "tradesReturned": 126,
+        "bankruptTrades": 0,
+        "terminated": false,
+        "termination": null,
+        "predictedDeclined": 94,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T21:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 23,
+          "netReturn": 0.18704828085812286,
+          "profitFactor": 1.532320403977615,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 29,
+          "netReturn": 0.1646848233934901,
+          "profitFactor": 1.4334981694511617,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "pvo_04_09",
+          "rank": 2,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 4
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 9
+            }
+          ]
+        },
+        "slow": {
+          "label": "pvo_06_14",
+          "rank": 3,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 6
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 14
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "pvo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 0,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/xrpusdt/ta_pvo/3h/opposite_signal"
+      }
+    },
+    {
+      "watchId": "XRPUSDT.ta_pvo.4h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "indicatorClass": "PercentageVolumeOscillator",
+      "timeframe": "4h",
+      "exitFamily": "opposite_signal",
+      "status": "lifecycle_terminated_bankrupt",
+      "cellFingerprint": "5ba347a36a12790218451cce279465e6e465a163aef9758caf2d446ba0df3282",
+      "evaluatedThisRun": true,
+      "deferred": {
+        "isDeferred": false,
+        "reason": null
+      },
+      "availability": {
+        "status": "unavailable",
+        "lastSuccessfulEvaluationUtc": "2026-08-01T00:05:00+00:00",
+        "consecutiveFailedRuns": 0,
+        "detail": {
+          "quoted": "XRPUSDT.ta_pvo.4h.opposite_signal: the frozen SignalLifecycleEvaluator stopped at a bankrupt short signalled 2024-10-28T20:00:00+00:00: 0.5195 -> 2.1447 is a -3.1284 gross move, clipped by the frozen evaluator to net -1.0. It returned 36 trades and abandoned the segment. 3487 bars and 61 entry pulses after 2024-12-27T16:00:00+00:00 were NEVER evaluated. This cell is not flat and has no knowable position; it must not be presented as healthy. Resolving it is a human decision -- see replay_start_policy."
+        }
+      },
+      "warmup": {
+        "effectiveBarsRequired": 152,
+        "registryBarsRequired": 152,
+        "adapterBarsComputed": 152,
+        "source": "registry",
+        "satisfied": true
+      },
+      "barsAvailable": 7350,
+      "stateBar": {
+        "openUtc": "2026-07-31T20:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1.0619,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastLabel": "pvo_24_56",
+        "slowLabel": "pvo_32_70",
+        "fastValue": 3.1387806601269523,
+        "slowValue": 2.6010678328867085,
+        "spread": 0.5377128272402438,
+        "relation": "fast_above_slow",
+        "atr": 0.012306054005860023
+      },
+      "divergenceArmed": {
+        "bullish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "bearish": {
+          "armed": false,
+          "confirmationBarUtc": null,
+          "ageBars": null,
+          "expiresAfterBars": null
+        },
+        "parityAssertionPassed": true
+      },
+      "position": null,
+      "pendingEntry": null,
+      "lifecycle": {
+        "replayStartPolicy": "anchor",
+        "replayStartPolicyDefault": "anchor",
+        "barsReplayed": 7198,
+        "tradesReturned": 36,
+        "bankruptTrades": 1,
+        "terminated": true,
+        "termination": {
+          "reason": {
+            "code": "bankrupt_trade"
+          },
+          "exitBarUtc": "2024-12-27T16:00:00+00:00",
+          "exitPrice": 2.1447,
+          "exitReason": {
+            "code": "opposite_signal"
+          },
+          "netReturnAfterFrozenFriction": -1,
+          "tradesBeforeTermination": 36,
+          "unevaluatedBars": 3487,
+          "unevaluatedEntryPulses": 61,
+          "detail": {
+            "quoted": "XRPUSDT.ta_pvo.4h.opposite_signal: the frozen SignalLifecycleEvaluator stopped at a bankrupt short signalled 2024-10-28T20:00:00+00:00: 0.5195 -> 2.1447 is a -3.1284 gross move, clipped by the frozen evaluator to net -1.0. It returned 36 trades and abandoned the segment. 3487 bars and 61 entry pulses after 2024-12-27T16:00:00+00:00 were NEVER evaluated. This cell is not flat and has no knowable position; it must not be presented as healthy. Resolving it is a human decision -- see replay_start_policy."
+          }
+        },
+        "predictedDeclined": 34,
+        "predictedDeclinedButFrozenFilled": 0
+      },
+      "finalBucket": {
+        "bucketOpenUtc": "2026-07-31T20:00:00+00:00",
+        "bucketCloseUtc": "2026-08-01T00:00:00+00:00",
+        "truncated": false,
+        "trailingMissing": 0,
+        "historicallyComplete": true,
+        "provisional": false,
+        "signalsWithheld": 0,
+        "directionsWithheld": [],
+        "bucketOfWeekCompleteRate": 1
+      },
+      "knownLimitations": [
+        {
+          "quoted": "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise."
+        },
+        {
+          "quoted": "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate."
+        },
+        {
+          "quoted": "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases."
+        },
+        {
+          "quoted": "No shifted-label or permutation null has been run against these survivors."
+        },
+        {
+          "quoted": "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+        }
+      ],
+      "evidence": {
+        "holdout": {
+          "trades": 14,
+          "netReturn": 0.021337971652880094,
+          "profitFactor": 1.2177550464492553,
+          "note": null
+        },
+        "retrospectiveConfirmation": {
+          "trades": 13,
+          "netReturn": 0.12210518609544696,
+          "profitFactor": 1.4619669427651854,
+          "note": null
+        },
+        "qualityStatus": "QUALIFIED"
+      },
+      "frozen": {
+        "fast": {
+          "label": "pvo_24_56",
+          "rank": 7,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 24
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 56
+            }
+          ]
+        },
+        "slow": {
+          "label": "pvo_32_70",
+          "rank": 8,
+          "parameters": [
+            {
+              "name": "window_fast",
+              "value": 32
+            },
+            {
+              "name": "window_sign",
+              "value": 9
+            },
+            {
+              "name": "window_slow",
+              "value": 70
+            }
+          ]
+        },
+        "polarity": "higher_is_bullish",
+        "primaryOutput": "pvo",
+        "divergence": {
+          "computedOn": "slow_oscillator",
+          "maxEventAgeBars": 8,
+          "pivotLeft": 5,
+          "pivotRight": 2,
+          "maxDivergenceBars": 60,
+          "note": {
+            "quoted": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+          }
+        },
+        "candidatesSearchedInCell": null
+      },
+      "provenance": {
+        "campaignId": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+        "cellArtifactPath": "cells/xrpusdt/ta_pvo/4h/opposite_signal"
+      }
+    }
+  ],
+  "activeSignals": [
+    {
+      "watchId": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "asset": "BTCUSDT",
+      "oscillator": "ta_rsi",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalId": "55ae1cfc8bfaee1383bd65e81a479db407397460562b6c0f4fca3811b7154ac8",
+      "signalBarOpenUtc": "2026-07-22T16:00:00+00:00",
+      "entryBarOpenUtc": "2026-07-22T16:30:00+00:00",
+      "entryPrice": 66026.09,
+      "barsHeld": 446,
+      "unrealisedGrossReturn": 0.047529847670822245,
+      "stateBar": {
+        "openUtc": "2026-07-31T23:30:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 62887.88,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    },
+    {
+      "watchId": "ETHUSDT.ta_ppo.1h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ppo",
+      "timeframe": "1h",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalId": "63df256554805e59deccb6c5396ee7d1e019d3be44ff3204f07c85e3406a1876",
+      "signalBarOpenUtc": "2026-07-04T00:00:00+00:00",
+      "entryBarOpenUtc": "2026-07-04T01:00:00+00:00",
+      "entryPrice": 1758.7,
+      "barsHeld": 670,
+      "unrealisedGrossReturn": -0.05907772786717458,
+      "stateBar": {
+        "openUtc": "2026-07-31T23:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    },
+    {
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalId": "f667dd4132425eff8f0252b8a1301891740ba5c8fd5475ec7291c6187b153ef3",
+      "signalBarOpenUtc": "2026-07-13T00:00:00+00:00",
+      "entryBarOpenUtc": "2026-07-13T02:00:00+00:00",
+      "entryPrice": 1806.84,
+      "barsHeld": 226,
+      "unrealisedGrossReturn": -0.030860507847955576,
+      "stateBar": {
+        "openUtc": "2026-07-31T22:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1862.6,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    },
+    {
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalId": "2e5e4547d727c89032340057497e7116f7285bd83dcee8b32b3dc4732ec09f80",
+      "signalBarOpenUtc": "2026-07-28T12:30:00+00:00",
+      "entryBarOpenUtc": "2026-07-28T13:30:00+00:00",
+      "entryPrice": 739.165,
+      "barsHeld": 62,
+      "unrealisedGrossReturn": -0.010315694060189617,
+      "stateBar": {
+        "openUtc": "2026-07-31T19:30:00+00:00",
+        "closeUtc": "2026-07-31T20:00:00+00:00",
+        "close": 746.79,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    },
+    {
+      "watchId": "SPY.ta_pvo.4h.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "4h",
+      "exitFamily": "opposite_signal",
+      "status": "active_long",
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalId": "2ce6a5665114ccd7aa5fea92564072e0c8823d64bedfd7f2a6e5bac82574ee8b",
+      "signalBarOpenUtc": "2026-07-27T16:00:00+00:00",
+      "entryBarOpenUtc": "2026-07-28T12:00:00+00:00",
+      "entryPrice": 739.31,
+      "barsHeld": 10,
+      "unrealisedGrossReturn": 0.010117542032435756,
+      "stateBar": {
+        "openUtc": "2026-07-31T16:00:00+00:00",
+        "closeUtc": "2026-07-31T20:00:00+00:00",
+        "close": 746.79,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    },
+    {
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "status": "active_short",
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalId": "67119a2daae47c73707226afd035f9d55ceecd0ce5e760cca165a6868bb895a6",
+      "signalBarOpenUtc": "2026-07-29T22:00:00+00:00",
+      "entryBarOpenUtc": "2026-07-30T00:00:00+00:00",
+      "entryPrice": 1.0737,
+      "barsHeld": 23,
+      "unrealisedGrossReturn": 0.010990034460277576,
+      "stateBar": {
+        "openUtc": "2026-07-31T22:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1.0619,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    },
+    {
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "status": "active_long",
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalId": "4ec16950ffd983524b7513e3117180e482100a65918e53e98d22337c4e4333b9",
+      "signalBarOpenUtc": "2026-07-24T09:00:00+00:00",
+      "entryBarOpenUtc": "2026-07-24T12:00:00+00:00",
+      "entryPrice": 1.1039,
+      "barsHeld": 59,
+      "unrealisedGrossReturn": -0.03804692454026637,
+      "stateBar": {
+        "openUtc": "2026-07-31T21:00:00+00:00",
+        "closeUtc": "2026-08-01T00:00:00+00:00",
+        "close": 1.0619,
+        "completeBucket": true,
+        "coverage": 1,
+        "trailingMissing": 0
+      },
+      "trackingOnly": true,
+      "orderAuthority": false
+    }
+  ],
+  "pendingEntries": [],
+  "history": [
+    {
+      "recordId": "e0b17a07f7686c361e238643e588922c95e2f3f575b4308d00d6aa2def428fc5",
+      "recordType": "outage",
+      "signalId": null,
+      "watchId": "XRPUSDT.ta_pvo.4h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "4h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": true,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "transition": {
+        "code": "entered"
+      },
+      "fromUtc": "2026-08-01T00:05:00+00:00",
+      "toUtc": null,
+      "reason": {
+        "code": "lifecycle_terminated_bankrupt"
+      },
+      "detail": {
+        "quoted": "XRPUSDT.ta_pvo.4h.opposite_signal: the frozen SignalLifecycleEvaluator stopped at a bankrupt short signalled 2024-10-28T20:00:00+00:00: 0.5195 -> 2.1447 is a -3.1284 gross move, clipped by the frozen evaluator to net -1.0. It returned 36 trades and abandoned the segment. 3487 bars and 61 entry pulses after 2024-12-27T16:00:00+00:00 were NEVER evaluated. This cell is not flat and has no knowable position; it must not be presented as healthy. Resolving it is a human decision -- see replay_start_policy."
+      },
+      "barsMissed": null
+    },
+    {
+      "recordId": "0008e727157634bb7106e162aa93871e845465f99ccf06bb5c0f12558c8fe784",
+      "recordType": "signal",
+      "signalId": "48ee9b0f1d907e5fb33655b711474d4d412c12c88d4bb694407b7f51d27ffa35",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalBar": {
+        "openUtc": "2026-07-30T18:00:00+00:00",
+        "closeUtc": "2026-07-30T20:00:00+00:00",
+        "close": 1.0898,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": -12.948368618953946,
+        "slowValue": -6.4029072831050415,
+        "spread": -6.545461335848905,
+        "atr": 0.010029265911150142
+      },
+      "divergenceEvent": {
+        "kind": "regular_bearish",
+        "confirmationBarUtc": "2026-07-30T18:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 8
+      },
+      "priceReference": {
+        "value": 1.0898,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "not_taken",
+          "entryBarOpenUtc": null,
+          "notTakenReason": {
+            "code": "position_already_open"
+          },
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": null
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "0178c1c1b6f9e1f643856482e92f15f72d08603c29718c11c19504ac92779aa0",
+      "recordType": "exit",
+      "signalId": "570b3cdd89adbc390a0c9c1189011ded3096e0faddd8455f937fa64aed3bb66e",
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-07-13T02:00:00+00:00",
+      "exitPrice": 1806.84,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 45,
+      "grossReturn": 0.03053670221867333,
+      "netReturnAfterFrozenFriction": 0.02873670221867333,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "01c5b5a56bfb3e8663284ffd7cb2d1a163d22e0498097439ae7ff61e6d229188",
+      "recordType": "signal",
+      "signalId": "3aaeef1623199b291f102cd57ba40455df5d640b19efdbb776b776354324f6bc",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-06-10T19:30:00+00:00",
+        "closeUtc": "2026-06-10T20:00:00+00:00",
+        "close": 725.58,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 11.844678225691917,
+        "slowValue": 7.998838902055485,
+        "spread": 3.845839323636432,
+        "atr": 3.191327118029773
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-06-10T19:30:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 725.58,
+        "quote": "USD",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-06-10T20:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "7fa0a9625b30bec96d4cf64b50967327fa644f44aa6b6d5e3b1d7965fcb07090"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Alpaca US equity SPY 5Min, IEX feed, raw adjustment, venue-partial volume (data/alpaca-bars-macro-5m-* + data.alpaca.markets)"
+        },
+        "baseIntervalMinutes": 5,
+        "lastBaseBarCloseUtc": "2026-07-31T20:00:00+00:00",
+        "completeRequired": false
+      }
+    },
+    {
+      "recordId": "0396d4b8e116cd0302a5588b9bc4f2335a9b21019d9779b4dad32d87ad9f51f7",
+      "recordType": "exit",
+      "signalId": "5a1d02aaf2fd784b3c9b28fca9c37eac6df47006679ebccf13c5cfb49d33fcdc",
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "exitBarUtc": "2026-07-09T08:00:00+00:00",
+      "exitPrice": 1753.3,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 67,
+      "grossReturn": -0.008692950713097947,
+      "netReturnAfterFrozenFriction": -0.010492950713097946,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "049f9fdb651d6fff07f642135c38515bcd395843791818e2e8607a8dc2d52e62",
+      "recordType": "signal",
+      "signalId": "a768c2802b97b184b84c3b86e48bcca5c6a9c99182136d4e3d81453a228884f5",
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-06-23T06:00:00+00:00",
+        "closeUtc": "2026-06-23T09:00:00+00:00",
+        "close": 1.1003,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 16.30708432551314,
+        "slowValue": 16.162019990749663,
+        "spread": 0.1450643347634788,
+        "atr": 0.01490552909298422
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-06-23T06:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 1.1003,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-06-23T09:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "215d9a020d7df55a141d0d2c587a30da0513356115318852a7c03b870d05b57d"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "04be5485211b967afd3a48f3046d15ae56b4be95bea8954a8457dd7d1f5bd293",
+      "recordType": "exit",
+      "signalId": "84040976156857de54081f88f8db0863f84f24e08becb54215ec7e559f747896",
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-06-21T06:00:00+00:00",
+      "exitPrice": 1733.46,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 131,
+      "grossReturn": 0.05692335833180917,
+      "netReturnAfterFrozenFriction": 0.05512335833180917,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "07db67b9bc1c65a173cbfce56d8dc30dbe6650eeb7cc123e1c774fb5152af7cf",
+      "recordType": "fill",
+      "signalId": "c7f78ed8d8cbdfd9b83170ee81f631dbcd1b41f5bcf28a053971ada368b61a79",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "entryBarOpenUtc": "2026-07-02T12:00:00+00:00",
+      "entryPrice": 747.13
+    },
+    {
+      "recordId": "07e7fa9f3f84352fd9ae58ad674d8c5f8f16db24a1f6ad062ce03c9bf101c396",
+      "recordType": "exit",
+      "signalId": "56ddb00bdd7b0797fc5ad55433da15ea1046c07b7e61b4a3c9cb669993367e10",
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.4h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "4h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-07-01T00:00:00+00:00",
+      "exitPrice": 1593.6129824517473,
+      "exitReason": {
+        "code": "atr_target"
+      },
+      "barsHeld": 0,
+      "grossReturn": 0.01374871657235821,
+      "netReturnAfterFrozenFriction": 0.011948716572358211,
+      "evaluatorClass": "AtrBracketLifecycleEvaluator"
+    },
+    {
+      "recordId": "08b310d9c103383743cc335e8f6811970745791a90680bda33858ec0fc7a22d5",
+      "recordType": "signal",
+      "signalId": "6308fa5f172f8d95c3deacc12b2851484cfdf9639328c7cb572d1e9d04d3b424",
+      "watchId": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "asset": "BTCUSDT",
+      "oscillator": "ta_rsi",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-06-05T04:00:00+00:00",
+        "closeUtc": "2026-06-05T04:30:00+00:00",
+        "close": 63240.32,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 47.12009957795774,
+        "slowValue": 43.26446048414917,
+        "spread": 3.85563909380857,
+        "atr": 502.56464676966283
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-06-05T04:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 8
+      },
+      "priceReference": {
+        "value": 63240.32,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "not_taken",
+          "entryBarOpenUtc": null,
+          "notTakenReason": {
+            "code": "position_already_open"
+          },
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": null
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot BTCUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "08d201b14f009650a08cbf1ff07972b78b12355a44fb5b5261f42dbc27288578",
+      "recordType": "fill",
+      "signalId": "ed244012caebc5899eb84abf41f1346d62fa0fad801e3b56208dd3dbc5db343e",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-06-11T22:00:00+00:00",
+      "entryPrice": 1.1413
+    },
+    {
+      "recordId": "0935a28f66c0839efd6c280db99350de7b44a9866ac90fd4adcff7b2417e99aa",
+      "recordType": "signal",
+      "signalId": "8b0d9ad33a9e1165ab9ec1b06164dbf3aa2e98c7f2e3fa8b9b013df96326d1ee",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-07-16T12:00:00+00:00",
+        "closeUtc": "2026-07-16T12:30:00+00:00",
+        "close": 751.83,
+        "coverage": 0.3333333333333333,
+        "completeBucket": false,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 6.100283927450914,
+        "slowValue": 1.9288848526307905,
+        "spread": 4.171399074820124,
+        "atr": 1.585644200027624
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-07-16T12:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 751.83,
+        "quote": "USD",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-07-16T13:30:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "91a2d8bdaf1847db977d02c4bd405493434cf4a2bbafaf5aa8003ebeefb8df4f"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Alpaca US equity SPY 5Min, IEX feed, raw adjustment, venue-partial volume (data/alpaca-bars-macro-5m-* + data.alpaca.markets)"
+        },
+        "baseIntervalMinutes": 5,
+        "lastBaseBarCloseUtc": "2026-07-31T20:00:00+00:00",
+        "completeRequired": false
+      }
+    },
+    {
+      "recordId": "0ada1a3e5627252af61dc04efd148100b2a9fda103d4712c7d553fa4afcebb76",
+      "recordType": "exit",
+      "signalId": "c7f78ed8d8cbdfd9b83170ee81f631dbcd1b41f5bcf28a053971ada368b61a79",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-07-07T13:30:00+00:00",
+      "exitPrice": 750.21,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 32,
+      "grossReturn": 0.004122441877584926,
+      "netReturnAfterFrozenFriction": 0.002322441877584926,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "0ae6ae2ee6b6b17d727288de3b53a84591e01b127834a16ae217d31fd239cf74",
+      "recordType": "fill",
+      "signalId": "f088d8ade4ae8a85ac52c07a4cb84032ca849658b8e6dff79b398510245468e5",
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.4h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "4h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-07-31T08:00:00+00:00",
+      "entryPrice": 1890.2
+    },
+    {
+      "recordId": "0c1fce36fbaf3d52931c0d62d5284405270d0f4c93b84a3016b4a45429d9a587",
+      "recordType": "fill",
+      "signalId": "c5f977e73ba581a556c0f3e44b4caf32d2738637dd7bcd00ebf5b9a3e88e0df4",
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-07-22T00:00:00+00:00",
+      "entryPrice": 1.1437
+    },
+    {
+      "recordId": "0c973034e8f0434d35717ef9122e20699b19494b231b4796a42eb9f75a2c1229",
+      "recordType": "exit",
+      "signalId": "6fb4b730d9c4c2a27ee58dbfcc57878bd8c232691e4432783a082470371ee5c8",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "exitBarUtc": "2026-07-25T04:00:00+00:00",
+      "exitPrice": 1.0915,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 52,
+      "grossReturn": 0.02265401146131818,
+      "netReturnAfterFrozenFriction": 0.02085401146131818,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "0d7915adf325f8692a36148f786090d7a2c8cb34e12f931bb0ce601c59b293e5",
+      "recordType": "fill",
+      "signalId": "ebaaa617b8538147a63826debcd1d3dc2bd245e6378fe5dfbfb5c2a8625857d4",
+      "watchId": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "asset": "BTCUSDT",
+      "oscillator": "ta_rsi",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-06-16T08:00:00+00:00",
+      "entryPrice": 66372
+    },
+    {
+      "recordId": "0fb13df4d4172b54fe387dccde2365aaf09cc449b1320b6523b6f7c9db1b8fea",
+      "recordType": "exit",
+      "signalId": "031122b95340d80280c28eb546a53f593ab3478e3161298a0c630552ed406a50",
+      "watchId": "ETHUSDT.ta_stc.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_stc",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "exitBarUtc": "2026-07-14T12:00:00+00:00",
+      "exitPrice": 1823.6797056791024,
+      "exitReason": {
+        "code": "atr_stop"
+      },
+      "barsHeld": 1,
+      "grossReturn": -0.0264363377698682,
+      "netReturnAfterFrozenFriction": -0.0282363377698682,
+      "evaluatorClass": "AtrBracketLifecycleEvaluator"
+    },
+    {
+      "recordId": "0fbfb904c034edca73db79f422e581e6b2d72d6cb426b685bf8dae9bee52a163",
+      "recordType": "fill",
+      "signalId": "67119a2daae47c73707226afd035f9d55ceecd0ce5e760cca165a6868bb895a6",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-07-30T00:00:00+00:00",
+      "entryPrice": 1.0737
+    },
+    {
+      "recordId": "10051bfe581dd7f0c78ac31ee0481f157567e35145f733fd614f4658837eee02",
+      "recordType": "fill",
+      "signalId": "fb3daa9b5369c39f3f4fadc5efecc8a724f96fbf42165ed0ee2294df833dcf60",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "entryBarOpenUtc": "2026-06-15T12:00:00+00:00",
+      "entryPrice": 1.2325
+    },
+    {
+      "recordId": "11a7d4c7e49781040f43d50fc1cc04bf4eb6ecc030140fdf27678d23155eab96",
+      "recordType": "fill",
+      "signalId": "97d5d648252772633670288f0673f5d99e906171818397ab86fd16b515e5e0f0",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "entryBarOpenUtc": "2026-07-08T14:30:00+00:00",
+      "entryPrice": 743.05
+    },
+    {
+      "recordId": "11f42179441eede4db5833602645fe1d1b28f68484cdb29e037286ef7eddef94",
+      "recordType": "exit",
+      "signalId": "009053428e040c7515e8307a97cb1a163185b413941d49d82126523297a486a6",
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-07-22T00:00:00+00:00",
+      "exitPrice": 1.1437,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 35,
+      "grossReturn": 0.056535796766743474,
+      "netReturnAfterFrozenFriction": 0.05473579676674347,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "1345e50f8c08e0583e6825976bda5a737b93f09c7786b512c50fe00775357fca",
+      "recordType": "signal",
+      "signalId": "8d3963e5c4adfcfe6dece15e6d34b64e774e7847e89ee64d7ec3602340275789",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalBar": {
+        "openUtc": "2026-07-06T20:30:00+00:00",
+        "closeUtc": "2026-07-06T21:00:00+00:00",
+        "close": 751.63,
+        "coverage": 0.5,
+        "completeBucket": false,
+        "trailingMissing": 3
+      },
+      "oscillatorState": {
+        "fastValue": -4.667047730942897,
+        "slowValue": -1.5370172983962636,
+        "spread": -3.130030432546633,
+        "atr": 1.317926374203051
+      },
+      "divergenceEvent": {
+        "kind": "regular_bearish",
+        "confirmationBarUtc": "2026-07-06T20:30:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 751.63,
+        "quote": "USD",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-07-07T13:30:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "946c3fc66f7fff379d3abc476c00ab4175c9fb2e1ff9c3120617f9534cb2e536"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Alpaca US equity SPY 5Min, IEX feed, raw adjustment, venue-partial volume (data/alpaca-bars-macro-5m-* + data.alpaca.markets)"
+        },
+        "baseIntervalMinutes": 5,
+        "lastBaseBarCloseUtc": "2026-07-31T20:00:00+00:00",
+        "completeRequired": false
+      }
+    },
+    {
+      "recordId": "1363fbf6b49e7d928e06066888b834fb14f7dc3a1e24ee19007b6f4be6926755",
+      "recordType": "signal",
+      "signalId": "68638c71c2b9ad6fd898420ec9102e21e97a809e7389176de273b2e48fee7b3a",
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalBar": {
+        "openUtc": "2026-07-15T21:00:00+00:00",
+        "closeUtc": "2026-07-16T00:00:00+00:00",
+        "close": 1.1133,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": -9.710540785910654,
+        "slowValue": -4.3443643467465805,
+        "spread": -5.366176439164073,
+        "atr": 0.012986045256224425
+      },
+      "divergenceEvent": {
+        "kind": "regular_bearish",
+        "confirmationBarUtc": "2026-07-15T21:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 1.1133,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-07-16T00:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "35e63dc396add259ae57d82eafd5ea99a8be7674a22f082d71daa6f0e35a98e4"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "138aafe9b9afbb568f254763c01b5905e6c54e0431b85fbf4ad9572f305f0548",
+      "recordType": "signal",
+      "signalId": "0aa4f79abe241fa0b3cefb4657d551ae33a5827b11fda516e6c6786f95de710d",
+      "watchId": "XRPUSDT.ta_ppo.2h.atr",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_ppo",
+      "timeframe": "2h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalBar": {
+        "openUtc": "2026-07-22T20:00:00+00:00",
+        "closeUtc": "2026-07-22T22:00:00+00:00",
+        "close": 1.1426,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 0.1609373479129693,
+        "slowValue": 1.2176871578575252,
+        "spread": -1.056749809944556,
+        "atr": 0.010277599625395185
+      },
+      "divergenceEvent": {
+        "kind": "regular_bearish",
+        "confirmationBarUtc": "2026-07-22T20:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 4
+      },
+      "priceReference": {
+        "value": 1.1426,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-07-22T22:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "b8311afdf7fe83545b09a00682517c08b93f7118ff45a2d943749ea1c4cacf32"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "14159270e56e036b32a3f6c01765e7d78aad3b7bae89be68ac2eb8a7422d0b95",
+      "recordType": "fill",
+      "signalId": "fe1217623fa5e8f04a1c7f2b0def3cfe7b5743d926fd1b7f162fe7210e92cff6",
+      "watchId": "ETHUSDT.ta_stc.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_stc",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-07-18T12:00:00+00:00",
+      "entryPrice": 1845.56
+    },
+    {
+      "recordId": "14ccbb25f8204788e0a02d3dd86f2941a7fb55f39b3225d8e455f20254f87e2f",
+      "recordType": "fill",
+      "signalId": "1b51be68d42de6486509f85b2c706ffb117ed7d4f868d5cb545361459bba4426",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "entryBarOpenUtc": "2026-06-17T04:00:00+00:00",
+      "entryPrice": 1.2162
+    },
+    {
+      "recordId": "14f07b942723c21a4c15bb4df1d6fd5a8b65b69fab0d2ca8180d196755bc73c1",
+      "recordType": "fill",
+      "signalId": "66cb75b3cff508bf839cad434bd608b3b248a5688c2f7afcc0cb08a752522f1c",
+      "watchId": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "asset": "BTCUSDT",
+      "oscillator": "ta_rsi",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-06-01T04:30:00+00:00",
+      "entryPrice": 73408.01
+    },
+    {
+      "recordId": "15b492b6b7beea4616ab02745674ebda1af0a5f4717d1e2768746b62c23fa6b2",
+      "recordType": "exit",
+      "signalId": "9b5514924a384a99276acdd0f360a235195dcc38dff31773d2055f2ae6b76dd1",
+      "watchId": "ETHUSDT.ta_stc.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_stc",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "exitBarUtc": "2026-06-24T12:00:00+00:00",
+      "exitPrice": 1623.9169667784238,
+      "exitReason": {
+        "code": "atr_target"
+      },
+      "barsHeld": 1,
+      "grossReturn": 0.025920614002253206,
+      "netReturnAfterFrozenFriction": 0.024120614002253207,
+      "evaluatorClass": "AtrBracketLifecycleEvaluator"
+    },
+    {
+      "recordId": "16611e448536a2b0ca84f4825e2312b5dfe44ef31f7653568005609579d7dd79",
+      "recordType": "signal",
+      "signalId": "2ce6a5665114ccd7aa5fea92564072e0c8823d64bedfd7f2a6e5bac82574ee8b",
+      "watchId": "SPY.ta_pvo.4h.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "4h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-07-27T16:00:00+00:00",
+        "closeUtc": "2026-07-27T20:00:00+00:00",
+        "close": 738.85,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 18.25410030132362,
+        "slowValue": -3.6708239080077423,
+        "spread": 21.924924209331365,
+        "atr": 4.436416028571381
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-07-27T16:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 738.85,
+        "quote": "USD",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-07-28T12:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "bf8fcb88e2abf7f848896c037591771e290c19cdc6709051dfbbc700b7e87939"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Alpaca US equity SPY 5Min, IEX feed, raw adjustment, venue-partial volume (data/alpaca-bars-macro-5m-* + data.alpaca.markets)"
+        },
+        "baseIntervalMinutes": 5,
+        "lastBaseBarCloseUtc": "2026-07-31T20:00:00+00:00",
+        "completeRequired": false
+      }
+    },
+    {
+      "recordId": "168fb1bb6655c63469230bec0da451404b4cd5d1f31d8d59e22445c9a53df312",
+      "recordType": "fill",
+      "signalId": "579344324110158b537f21a9d7f5104e6ed808995afb552d877b9d1d9c223990",
+      "watchId": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-07-15T18:00:00+00:00",
+      "entryPrice": 1.1176
+    },
+    {
+      "recordId": "172f4b8e35c3619c0f7d8c2b5158b3d68e05dd435a071692a7b79558934d08dc",
+      "recordType": "exit",
+      "signalId": "a72cff7949f9aefba1f64c373844943cfd72bc866e090f9e2338a6019373e02b",
+      "watchId": "XRPUSDT.ta_ppo.2h.atr",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_ppo",
+      "timeframe": "2h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-06-22T10:00:00+00:00",
+      "exitPrice": 1.1401636448492378,
+      "exitReason": {
+        "code": "atr_target"
+      },
+      "barsHeld": 3,
+      "grossReturn": 0.00890509233628678,
+      "netReturnAfterFrozenFriction": 0.00710509233628678,
+      "evaluatorClass": "AtrBracketLifecycleEvaluator"
+    },
+    {
+      "recordId": "1861d6f35e30020cbcc8759c541e17e820086cecedd5f96cfaab265c97a3b409",
+      "recordType": "fill",
+      "signalId": "8b0fce8f41172ca9acbec67a0344777ef1f3c238dd6cb6615be311dc22b5150f",
+      "watchId": "ETHUSDT.ta_awesome_oscillator.1h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_awesome_oscillator",
+      "timeframe": "1h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "entryBarOpenUtc": "2026-07-13T04:00:00+00:00",
+      "entryPrice": 1780.54
+    },
+    {
+      "recordId": "18f5e5a81de8a8481dd60a99640f8932aebd517def6eb3ac0dd74e001dc52752",
+      "recordType": "exit",
+      "signalId": "fe1217623fa5e8f04a1c7f2b0def3cfe7b5743d926fd1b7f162fe7210e92cff6",
+      "watchId": "ETHUSDT.ta_stc.12h.atr",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_stc",
+      "timeframe": "12h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "exitBarUtc": "2026-07-20T00:00:00+00:00",
+      "exitPrice": 1892.2140093862615,
+      "exitReason": {
+        "code": "atr_stop"
+      },
+      "barsHeld": 3,
+      "grossReturn": -0.0252790531796645,
+      "netReturnAfterFrozenFriction": -0.0270790531796645,
+      "evaluatorClass": "AtrBracketLifecycleEvaluator"
+    },
+    {
+      "recordId": "1ac98d04dd355cb030b4c2d5fd0ca2b0ef244f3dc6f5e0e179356f0a5e6b757c",
+      "recordType": "signal",
+      "signalId": "39d6d850a5f306b30922404517fa74f592af995ce74581e2c3e75f995bea66f0",
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalBar": {
+        "openUtc": "2026-06-11T21:00:00+00:00",
+        "closeUtc": "2026-06-12T00:00:00+00:00",
+        "close": 1.1428,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": -7.440090628563972,
+        "slowValue": -6.139347683060601,
+        "spread": -1.3007429455033712,
+        "atr": 0.020568560449842246
+      },
+      "divergenceEvent": {
+        "kind": "regular_bearish",
+        "confirmationBarUtc": "2026-06-11T21:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 0
+      },
+      "priceReference": {
+        "value": 1.1428,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-06-12T00:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "810ff0adba7a6c472b46b155867b6148bb895d4b53eb1975d72c78bec06aa509"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "1acb7be1c1c6e6d1c23b64f4b31f5a218b332d1c18f76b05e2521c8efcd779fd",
+      "recordType": "signal",
+      "signalId": "8b374af478611776740d8d186f97d264b75455e17266a15ce79baf244e782a92",
+      "watchId": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "asset": "BTCUSDT",
+      "oscillator": "ta_rsi",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-06-10T12:30:00+00:00",
+        "closeUtc": "2026-06-10T13:00:00+00:00",
+        "close": 61564.01,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 49.111436409711864,
+        "slowValue": 47.17913873513484,
+        "spread": 1.932297674577022,
+        "atr": 338.16496738553417
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-06-10T10:00:00+00:00",
+        "ageBars": 5,
+        "maxEventAgeBars": 8
+      },
+      "priceReference": {
+        "value": 61564.01,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "not_taken",
+          "entryBarOpenUtc": null,
+          "notTakenReason": {
+            "code": "position_already_open"
+          },
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": null
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot BTCUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "1b8187e1cf959418c6b4f5b7f9f500bb728b77a58f3cd5f0f6954f14d0e790e2",
+      "recordType": "signal",
+      "signalId": "86aa1a04dd8faa184d5d6a725f4933cd8f52b533f56171b37c5b898f63b89926",
+      "watchId": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "asset": "ETHUSDT",
+      "oscillator": "ta_ultimate_oscillator",
+      "timeframe": "2h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "short",
+      "uiLabel": "SELL",
+      "signalBar": {
+        "openUtc": "2026-07-20T06:00:00+00:00",
+        "closeUtc": "2026-07-20T08:00:00+00:00",
+        "close": 1863.95,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": 51.92619967242009,
+        "slowValue": 52.29178450382513,
+        "spread": -0.3655848314050374,
+        "atr": 15.673872543164038
+      },
+      "divergenceEvent": {
+        "kind": "regular_bearish",
+        "confirmationBarUtc": "2026-07-20T06:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 1
+      },
+      "priceReference": {
+        "value": 1863.95,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "not_taken",
+          "entryBarOpenUtc": null,
+          "notTakenReason": {
+            "code": "position_already_open"
+          },
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": null
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "1c4cce29da7e5ac119501e4572e96296dc031d05c7bca3b64bd67e001ded0a73",
+      "recordType": "exit",
+      "signalId": "4967d501498b33cb95350dc0e87b7e64a91843ddc1d0aa1bff86a7a76c13764c",
+      "watchId": "SPY.ta_pvo.30m.opposite_signal",
+      "asset": "SPY",
+      "oscillator": "ta_pvo",
+      "timeframe": "30m",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-06-04T16:30:00+00:00",
+      "exitPrice": 756.51,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 13,
+      "grossReturn": 0.0006613669131361188,
+      "netReturnAfterFrozenFriction": -0.0011386330868638811,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    },
+    {
+      "recordId": "1d10a4c963f5c61880f130d384127353d5bf47fc52482b0d5f7dc644611de352",
+      "recordType": "signal",
+      "signalId": "a72cff7949f9aefba1f64c373844943cfd72bc866e090f9e2338a6019373e02b",
+      "watchId": "XRPUSDT.ta_ppo.2h.atr",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_ppo",
+      "timeframe": "2h",
+      "exitFamily": "atr",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "uiLabel": "BUY",
+      "signalBar": {
+        "openUtc": "2026-06-22T02:00:00+00:00",
+        "closeUtc": "2026-06-22T04:00:00+00:00",
+        "close": 1.1301,
+        "coverage": 1,
+        "completeBucket": true,
+        "trailingMissing": 0
+      },
+      "oscillatorState": {
+        "fastValue": -0.3204058963970907,
+        "slowValue": -0.7968118261376244,
+        "spread": 0.47640592974053364,
+        "atr": 0.012579556061547089
+      },
+      "divergenceEvent": {
+        "kind": "regular_bullish",
+        "confirmationBarUtc": "2026-06-22T02:00:00+00:00",
+        "ageBars": 0,
+        "maxEventAgeBars": 4
+      },
+      "priceReference": {
+        "value": 1.1301,
+        "quote": "USDT",
+        "intendedEntry": {
+          "rule": {
+            "code": "open(t+1)"
+          },
+          "state": "filled",
+          "entryBarOpenUtc": "2026-06-22T04:00:00+00:00",
+          "notTakenReason": null,
+          "earliestPossibleEntryBarOpenUtc": null,
+          "fillRecordId": "29f0e4b71b69a5d32bd8655d3114fb81b5a94c3f2bcad53b0761f256311722ea"
+        }
+      },
+      "dataSource": {
+        "provider": {
+          "quoted": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)"
+        },
+        "baseIntervalMinutes": 15,
+        "lastBaseBarCloseUtc": "2026-08-01T00:00:00+00:00",
+        "completeRequired": true
+      }
+    },
+    {
+      "recordId": "1e0edad115880d89694168ae69e63481ee76dfb918e0d76b1902dea60ef8b58b",
+      "recordType": "exit",
+      "signalId": "a768c2802b97b184b84c3b86e48bcca5c6a9c99182136d4e3d81453a228884f5",
+      "watchId": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "asset": "XRPUSDT",
+      "oscillator": "ta_pvo",
+      "timeframe": "3h",
+      "exitFamily": "opposite_signal",
+      "emittedAtUtc": "2026-08-01T00:05:00+00:00",
+      "afterEvidenceWindow": false,
+      "contextSha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21",
+      "trackingOnly": true,
+      "orderAuthority": false,
+      "direction": "long",
+      "exitBarUtc": "2026-07-04T03:00:00+00:00",
+      "exitPrice": 1.1356,
+      "exitReason": {
+        "code": "opposite_signal"
+      },
+      "barsHeld": 86,
+      "grossReturn": 0.03198836786623027,
+      "netReturnAfterFrozenFriction": 0.030188367866230272,
+      "evaluatorClass": "SignalLifecycleEvaluator"
+    }
+  ],
+  "historyCap": 40,
+  "historyTruncated": true,
+  "historyRecordsAvailable": 321,
+  "historyRecordsObserved": 321,
+  "historyRecordsReported": 321,
+  "historyOrder": "emitted_at_desc_then_record_type_then_record_id",
+  "historyDistinctEmittedAt": 1,
+  "historyKindsObserved": {
+    "signal": 147,
+    "fill": 90,
+    "exit": 83,
+    "outage": 1
+  },
+  "historyKindsShown": {
+    "signal": 13,
+    "fill": 13,
+    "exit": 13,
+    "outage": 1
+  },
+  "projectionSha256": "8a93c666607432d311c159fec0c7238489f26815b7fc642eff8f7ce787189fc3"
+}

@@ -2,13 +2,38 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { collectOscillatorWatch } from "./oscillator-watch.mjs";
 
 const uiRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const arbitraRoot = resolve(
   process.env.ARBITRA_REPO ?? resolve(uiRoot, "..", "Arbitra"),
 );
-const outputPath = resolve(uiRoot, "public", "data", "arbitra-snapshot.json");
-const historyPath = resolve(uiRoot, "public", "data", "arbitra-daily-history.json");
+// Output paths are overridable so a sync can be exercised end to end into a
+// scratch directory without rewriting the checked-in artifacts. A relative
+// override resolves against the current working directory, not against uiRoot.
+const outputPath = resolve(
+  process.env.ARBITRA_SNAPSHOT_OUT ?? resolve(uiRoot, "public", "data", "arbitra-snapshot.json"),
+);
+// The daily history is an INPUT to the sync: it is read and never written. It
+// was once called ARBITRA_HISTORY_OUT, which invited exactly the mistake the
+// name implies — pointing it at a scratch directory to keep a test run away from
+// the checked-in artifacts silently redirected the READ to a file that does not
+// exist, and the sync produced a snapshot with no history and no profiles rather
+// than saying so. The old name still works and says it is deprecated.
+const historyDefaultPath = resolve(uiRoot, "public", "data", "arbitra-daily-history.json");
+const historyOverride = process.env.ARBITRA_HISTORY_IN ?? process.env.ARBITRA_HISTORY_OUT ?? null;
+if (process.env.ARBITRA_HISTORY_IN == null && process.env.ARBITRA_HISTORY_OUT != null) {
+  console.warn(
+    "warning: ARBITRA_HISTORY_OUT is deprecated and names an input, not an output. Use ARBITRA_HISTORY_IN.",
+  );
+}
+const historyPath = resolve(historyOverride ?? historyDefaultPath);
+// Build-time projection of the oscillator-alpha-watch tracker. app/page.tsx
+// imports it directly, so the tracker keeps rendering even when the runtime
+// snapshot feed is republished by a producer that does not carry the block.
+const oscillatorOutputPath = resolve(
+  process.env.ARBITRA_OSCILLATOR_OUT ?? resolve(uiRoot, "app", "data", "oscillator-alpha-watch.json"),
+);
 
 const methodologies = [
   {
@@ -775,13 +800,32 @@ async function collectEtfOpportunities() {
   };
 }
 
-const [scanDatasets, matrices, historical, etf, crypto] = await Promise.all([
+// Never substitute a neutral value for an input that was asked for by name. An
+// explicit override naming a file that is not there is a mistake, not an empty
+// history: it is refused outright. A missing file at the default path is the
+// genuine fresh-checkout case, and it says so loudly instead of reporting zero.
+if (!existsSync(historyPath)) {
+  if (historyOverride != null) {
+    throw new Error(
+      `the daily history file ${historyPath} does not exist. It is an input to the sync and was named explicitly; refusing to publish a snapshot with no history rather than silently reporting zero completed dates and zero profiles.`,
+    );
+  }
+  console.warn(
+    `warning: no daily history at ${historyPath}. The snapshot will carry only the completed-daily scan artifacts — no causal history and no company profiles.`,
+  );
+}
+
+const [scanDatasets, matrices, historical, etf, crypto, oscillatorWatchResult] = await Promise.all([
   collectDailyScans(),
   collectMatrices(),
   existsSync(historyPath) ? readJson(historyPath) : Promise.resolve(null),
   collectEtfOpportunities(),
   collectCryptoOpportunities(),
+  collectOscillatorWatch(arbitraRoot),
 ]);
+// A missing, partial or dishonest tracker degrades to a stated reason; it is
+// never partially surfaced and never breaks the rest of the sync.
+const oscillatorWatch = oscillatorWatchResult.available ? oscillatorWatchResult : null;
 const historicalDatasets = historical?.datasets ?? [];
 const historicalLatest = historicalDatasets[0]?.date ?? "";
 const datasets = historicalDatasets.length
@@ -826,6 +870,7 @@ const snapshot = {
   xgbShowcase,
   etf,
   crypto,
+  oscillatorWatch,
   history: {
     startDate: historical?.startDate ?? datasets.at(-1)?.date ?? null,
     endDate: datasets[0]?.date ?? null,
@@ -839,6 +884,12 @@ const snapshot = {
 
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+await mkdir(dirname(oscillatorOutputPath), { recursive: true });
+await writeFile(
+  oscillatorOutputPath,
+  `${JSON.stringify(oscillatorWatchResult, null, 2)}\n`,
+  "utf8",
+);
 console.log(
-  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, and ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : "no crypto run"}.`,
+  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : "no crypto run"}, and ${oscillatorWatch ? `${oscillatorWatch.counts.cellsTotal} oscillator watch cells (${oscillatorWatch.counts.activeLong}L / ${oscillatorWatch.counts.activeShort}S recorded, ${oscillatorWatch.history.length} ledger records, tracking only)` : `no oscillator watch block (${oscillatorWatchResult.reason})`}.`,
 );

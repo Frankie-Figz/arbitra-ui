@@ -113,6 +113,21 @@ By default, the synchronizer reads a sibling repository named `Arbitra`. Point i
 ARBITRA_REPO=/path/to/Arbitra npm run sync:data
 ```
 
+### The oscillator alpha watch is bundled at build time — sync before you build
+
+`npm run sync:data` also writes `app/data/oscillator-alpha-watch.json`, and unlike the
+snapshot that file is **imported into the bundle at build time** rather than fetched at
+runtime. `npm run build` therefore ships whatever that file said when the build ran.
+
+A stale bundle is never shown as current: the honesty gate refuses a block it cannot vouch
+for, and the whole section is replaced by a "withheld by the honesty gate" notice. That is
+the honest failure, but it is a surprising one to meet in production, and its usual cause is
+simply a build that ran without a fresh sync.
+
+**Run `npm run sync:data` before `npm run build` on every deploy.** `npm run build` prints a
+warning when the bundled projection looks stale, and the rendered-HTML tests skip with a
+stated reason rather than asserting against a dist built from different data.
+
 The sync task indexes:
 
 - `artifacts/yahoo-liquidity-sniper/*/report.json`

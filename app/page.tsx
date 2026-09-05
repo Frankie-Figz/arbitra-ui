@@ -2,6 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import snapshotJson from "../public/data/arbitra-snapshot.json";
+import oscillatorWatchJson from "./data/oscillator-alpha-watch.json";
+import {
+  describeOscillatorUnavailable,
+  oscillatorWatchHonestyViolation,
+} from "../scripts/oscillator-honesty.mjs";
+import { describeCoded, describeIdentifier } from "../scripts/oscillator-vocabulary.mjs";
 
 type CompanyProfile = {
   symbol: string;
@@ -330,6 +336,437 @@ type XgbShowcaseSnapshot = {
   exclusions: string[];
 };
 
+// ── Oscillator alpha watch ────────────────────────────────────────────────────
+// Projection of the Arbitra oscillator-alpha-watch tracker (scripts/oscillator-watch.mjs).
+// Enum-like fields stay `string`: the shared gate in scripts/oscillator-honesty.mjs
+// is the enforcement point, and a degraded status must reach the roster as itself
+// rather than be normalised into "flat" by the type. What the gate will not admit
+// is a status OUTSIDE the enum — that refuses the whole block, because the status
+// is a printed headline rather than an internal routing value (N2).
+/**
+ * INVARIANT A, stated in the type system.
+ *
+ * A producer value in claim position is NOT a string on this side of the wire.
+ * It is one of these two objects, and an object is not a ReactNode - so
+ * {record.reason} and {record.detail} are COMPILE ERRORS rather than the
+ * echoing fall-through that produced N6. The only way to put one of these on the
+ * page is to pass it through <ProducerQuoted> or <CodedPhrase> below, both of
+ * which write this interface own prose and quote the producer value as a value.
+ * There is no third path, and adding a field cannot create one: an unwrapped
+ * producer string never reaches here, because the shared gate refuses a block
+ * that carries one (scripts/oscillator-vocabulary.mjs).
+ */
+type ProducerQuote = { quoted: string; truncated?: true };
+type ProducerCoded = { code: string } | ProducerQuote;
+/**
+ * A PRINTED identifier. Either a member of a closed set the block declares and
+ * the frozen registry supplied, or - for anything outside it - a quoted
+ * fragment. There is no third case, and in particular there is no case in which
+ * an identifier this interface cannot place is printed bare.
+ *
+ * The member case is a plain string because the gate has already checked it
+ * against that set, which is what `enum:` has always done for `status` and
+ * `direction`. `token` used to be the third case, and it was the hole:
+ * `[A-Za-z0-9._:+/-]{0,95}` holds CAPITAL-AUTHORITY-GRANTED comfortably.
+ */
+type ProducerIdentifierValue = string | ProducerQuote;
+
+type OscillatorFrozenLeg = {
+  label: ProducerIdentifierValue | null;
+  rank: number | null;
+  parameters: { name: ProducerIdentifierValue; value: number | ProducerIdentifierValue }[];
+};
+
+type OscillatorFrozen = {
+  fast: OscillatorFrozenLeg | null;
+  slow: OscillatorFrozenLeg | null;
+  polarity: string | null;
+  primaryOutput: string | null;
+  divergence: {
+    computedOn: ProducerIdentifierValue | null;
+    maxEventAgeBars: number | null;
+    pivotLeft: number | null;
+    pivotRight: number | null;
+    maxDivergenceBars: number | null;
+    note: ProducerQuote | null;
+  };
+  candidatesSearchedInCell: number | null;
+};
+
+type OscillatorStateBar = {
+  openUtc: string | null;
+  closeUtc: string | null;
+  close: number | null;
+  completeBucket: boolean | null;
+  coverage: number | null;
+  trailingMissing: number | null;
+};
+
+type OscillatorDivergenceLeg = {
+  armed: boolean;
+  confirmationBarUtc: string | null;
+  ageBars: number | null;
+  expiresAfterBars: number | null;
+};
+
+type OscillatorEvidenceLeg = {
+  trades: number | null;
+  netReturn: number | null;
+  profitFactor: number | null;
+  note: ProducerQuote | null;
+};
+
+type OscillatorCell = {
+  watchId: string;
+  asset: ProducerIdentifierValue | null;
+  oscillator: ProducerIdentifierValue | null;
+  indicatorClass: string | null;
+  timeframe: ProducerIdentifierValue | null;
+  exitFamily: ProducerIdentifierValue | null;
+  status: string;
+  cellFingerprint: string | null;
+  evaluatedThisRun: boolean;
+  deferred: { isDeferred: boolean; reason: ProducerQuote | null };
+  availability: {
+    status: string | null;
+    lastSuccessfulEvaluationUtc: string | null;
+    consecutiveFailedRuns: number;
+    detail: ProducerQuote | null;
+  };
+  warmup: {
+    effectiveBarsRequired: number | null;
+    registryBarsRequired: number | null;
+    adapterBarsComputed: number | null;
+    source: string | null;
+    satisfied: boolean;
+  };
+  barsAvailable: number | null;
+  stateBar: OscillatorStateBar | null;
+  oscillatorState: {
+    fastLabel: ProducerIdentifierValue | null;
+    slowLabel: ProducerIdentifierValue | null;
+    fastValue: number | null;
+    slowValue: number | null;
+    spread: number | null;
+    relation: string | null;
+    atr: number | null;
+  } | null;
+  divergenceArmed: {
+    bullish: OscillatorDivergenceLeg;
+    bearish: OscillatorDivergenceLeg;
+    parityAssertionPassed: boolean | null;
+  } | null;
+  position: {
+    direction: string | null;
+    signalId: string | null;
+    signalBarOpenUtc: string | null;
+    entryBarOpenUtc: string | null;
+    entryPrice: number | null;
+    barsHeld: number | null;
+    evaluatorClass: string | null;
+    atrAtSignal: number | null;
+    stopPrice: number | null;
+    targetPrice: number | null;
+    maximumHoldingBars: number | null;
+    unrealisedGrossReturn: number | null;
+  } | null;
+  pendingEntry: {
+    direction: string | null;
+    signalId: string | null;
+    signalBarOpenUtc: string | null;
+    earliestPossibleEntryBarOpenUtc: string | null;
+  } | null;
+  lifecycle: {
+    replayStartPolicy: string | null;
+    replayStartPolicyDefault: string | null;
+    barsReplayed: number | null;
+    tradesReturned: number | null;
+    bankruptTrades: number | null;
+    terminated: boolean;
+    termination: {
+      reason: ProducerCoded | null;
+      exitBarUtc: string | null;
+      exitPrice: number | null;
+      exitReason: ProducerCoded | null;
+      netReturnAfterFrozenFriction: number | null;
+      tradesBeforeTermination: number | null;
+      unevaluatedBars: number | null;
+      unevaluatedEntryPulses: number | null;
+      detail: ProducerQuote | null;
+    } | null;
+    predictedDeclined: number | null;
+    predictedDeclinedButFrozenFilled: number | null;
+  } | null;
+  finalBucket: {
+    bucketOpenUtc: string | null;
+    bucketCloseUtc: string | null;
+    truncated: boolean;
+    trailingMissing: number | null;
+    historicallyComplete: boolean;
+    provisional: boolean;
+    signalsWithheld: number;
+    directionsWithheld: string[];
+    bucketOfWeekCompleteRate: number | null;
+  } | null;
+  /** Verbatim per-cell echo of the registry caveat. Never empty: the projection
+   *  refuses the whole block rather than surface a cell without it. */
+  knownLimitations: ProducerQuote[];
+  evidence: {
+    holdout: OscillatorEvidenceLeg | null;
+    retrospectiveConfirmation: OscillatorEvidenceLeg | null;
+    qualityStatus: string | null;
+  };
+  frozen: OscillatorFrozen | null;
+  provenance: { campaignId: string | null; cellArtifactPath: string | null };
+};
+
+type OscillatorActiveSignal = {
+  watchId: string;
+  asset: ProducerIdentifierValue | null;
+  /** Joined from the roster cell. The watch id is a join key, not a caption. */
+  oscillator: ProducerIdentifierValue | null;
+  timeframe: ProducerIdentifierValue | null;
+  exitFamily: ProducerIdentifierValue | null;
+  status: string | null;
+  direction: string | null;
+  /** Presentation label only. Carries no instruction. */
+  uiLabel: string | null;
+  signalId: string | null;
+  signalBarOpenUtc: string | null;
+  entryBarOpenUtc: string | null;
+  entryPrice: number | null;
+  barsHeld: number | null;
+  unrealisedGrossReturn: number | null;
+  stateBar: OscillatorStateBar | null;
+  trackingOnly: boolean;
+  orderAuthority: boolean;
+};
+
+type OscillatorPendingEntry = {
+  watchId: string;
+  asset: ProducerIdentifierValue | null;
+  oscillator: ProducerIdentifierValue | null;
+  timeframe: ProducerIdentifierValue | null;
+  exitFamily: ProducerIdentifierValue | null;
+  direction: string | null;
+  uiLabel: string | null;
+  signalId: string | null;
+  signalBarOpenUtc: string | null;
+  entryBarOpenUtc: string | null;
+  trackingOnly: boolean;
+  orderAuthority: boolean;
+};
+
+type OscillatorRecord = {
+  recordId: string;
+  recordType: string;
+  signalId: string | null;
+  watchId: string;
+  asset: ProducerIdentifierValue | null;
+  oscillator: ProducerIdentifierValue | null;
+  timeframe: ProducerIdentifierValue | null;
+  exitFamily: ProducerIdentifierValue | null;
+  emittedAtUtc: string;
+  afterEvidenceWindow: boolean;
+  contextSha256: string | null;
+  /** From the record's own honesty block. A record revoking either refuses the whole block. */
+  trackingOnly: boolean;
+  orderAuthority: boolean;
+  direction?: string | null;
+  uiLabel?: string | null;
+  signalBar?: {
+    openUtc: string | null;
+    closeUtc: string | null;
+    close: number | null;
+    coverage: number | null;
+    completeBucket: boolean | null;
+    trailingMissing: number | null;
+  } | null;
+  oscillatorState?: {
+    fastValue: number | null;
+    slowValue: number | null;
+    spread: number | null;
+    atr: number | null;
+  } | null;
+  divergenceEvent?: {
+    kind: string | null;
+    confirmationBarUtc: string | null;
+    ageBars: number | null;
+    maxEventAgeBars: number | null;
+  } | null;
+  priceReference?: {
+    value: number | null;
+    quote: string | null;
+    intendedEntry: {
+      /** The frozen entry rule, carried from the producer rather than asserted here. */
+      rule: ProducerCoded | null;
+      /** "not_taken" is a pulse the frozen evaluator declined. It is never a fill. */
+      state: string | null;
+      entryBarOpenUtc: string | null;
+      notTakenReason: ProducerCoded | null;
+      earliestPossibleEntryBarOpenUtc: string | null;
+      fillRecordId: string | null;
+    };
+  } | null;
+  dataSource?: {
+    provider: ProducerQuote | null;
+    baseIntervalMinutes: number | null;
+    lastBaseBarCloseUtc: string | null;
+    completeRequired: boolean;
+  } | null;
+  entryBarOpenUtc?: string | null;
+  entryPrice?: number | null;
+  exitBarUtc?: string | null;
+  exitPrice?: number | null;
+  exitReason?: ProducerCoded | null;
+  barsHeld?: number | null;
+  grossReturn?: number | null;
+  netReturnAfterFrozenFriction?: number | null;
+  evaluatorClass?: string | null;
+  transition?: ProducerCoded | null;
+  fromUtc?: string | null;
+  toUtc?: string | null;
+  reason?: ProducerCoded | null;
+  detail?: ProducerQuote | null;
+  barsMissed?: number | null;
+};
+
+type OscillatorWatchSnapshot = {
+  available: true;
+  schemaVersion: number;
+  producerSchemaVersion: number;
+  generatedAt: string | null;
+  runId: ProducerIdentifierValue | null;
+  evaluatorVersion: string | null;
+  trackingOnly: boolean;
+  deploymentAllowed: boolean;
+  capitalAuthority: boolean;
+  orderAuthority: boolean;
+  notEstablishedAsDistinguishableFromSearchNoise: boolean;
+  purpose: ProducerQuote;
+  knownLimitations: ProducerQuote[];
+  evidenceWindowEndsUtc: string | null;
+  /**
+   * The closed sets this block may print an identifier from, derived by the
+   * projection from the frozen registry (or, with no registry document beside
+   * the tracker, from the block's own roster - which is what `source` says).
+   * Carried in the block because the ingest server and this client never see
+   * the registry document and still have to check membership against the set
+   * the build-time projection used.
+   */
+  vocabulary: {
+    source: string;
+    asset: string[];
+    timeframe: string[];
+    oscillator: string[];
+    exitFamily: string[];
+    frozenLabel: string[];
+    frozenParameter: string[];
+    frozenValue: string[];
+    divergenceInput: string[];
+    registryId: string[];
+  };
+  registry: {
+    registryId: ProducerIdentifierValue | null;
+    sha256: string | null;
+    selectionRule: ProducerQuote | null;
+    cellsTotal: number;
+    cellsActive: number;
+    cellsDeferred: number;
+  };
+  runtime: {
+    python: ProducerIdentifierValue | null;
+    numpy: ProducerIdentifierValue | null;
+    pandas: ProducerIdentifierValue | null;
+    ta: ProducerIdentifierValue | null;
+    matchesFrozenProtocol: boolean;
+    frozenProtocolRuntime: {
+      python: ProducerIdentifierValue | null;
+      numpy: ProducerIdentifierValue | null;
+      pandas: ProducerIdentifierValue | null;
+      ta: ProducerIdentifierValue | null;
+    } | null;
+  };
+  parity: {
+    frozenFiles: number;
+    reimplementedLogic: number;
+    assertionsChecked: number;
+    assertionsPassed: number;
+    assertionsFailed: number;
+  };
+  protocol: {
+    exits: {
+      atr: {
+        atrPeriod: number | null;
+        maximumHoldingBars: number | null;
+        stopAtr: number | null;
+        targetAtr: number | null;
+      };
+      oppositeSignal: ProducerQuote | null;
+    };
+    friction: {
+      feeBpsRoundTrip: number | null;
+      slippageBpsRoundTrip: number | null;
+      totalBpsRoundTrip: number | null;
+      appliedToRecordedPrices: boolean;
+    };
+    retrospectiveConfirmation: ProducerQuote | null;
+    selection: ProducerQuote | null;
+  } | null;
+  ledger: {
+    directory: string | null;
+    totalRecords: number;
+    partitions: number;
+    partitionsRead: number;
+    linesUnreadable: number;
+    firstBarUtc: string | null;
+    lastBarUtc: string | null;
+    policy: ProducerQuote | null;
+    expectedRecordsPerMonth: number | null;
+    expectedRecordsPerMonthBasis: ProducerQuote | null;
+  };
+  counts: {
+    cellsTotal: number;
+    activeLong: number;
+    activeShort: number;
+    flat: number;
+    insufficientHistory: number;
+    sourceUnavailable: number;
+    deferred: number;
+    lifecycleTerminatedBankrupt: number;
+    cellsEvaluated: number;
+    signalsThisRun: number;
+    fillsThisRun: number;
+    exitsThisRun: number;
+  };
+  cells: OscillatorCell[];
+  activeSignals: OscillatorActiveSignal[];
+  pendingEntries: OscillatorPendingEntry[];
+  history: OscillatorRecord[];
+  historyCap: number;
+  historyTruncated: boolean;
+  historyRecordsAvailable: number;
+  /** Records actually merged from the snapshot and the ledger partitions. */
+  historyRecordsObserved: number;
+  /** The producer own counter, which can lag what the partitions hold. */
+  historyRecordsReported: number | null;
+  /**
+   * N4 residual. The order history is actually in, and the two facts the view
+   * needs in order to describe it honestly: how many DISTINCT instants the whole
+   * observed ledger carries - one means the ordering is not chronological at all
+   * - and how many records of each kind were observed against how many are
+   * shown, so a record the cap dropped is visible rather than implied.
+   */
+  historyOrder: string;
+  historyDistinctEmittedAt: number;
+  historyKindsObserved: Record<string, number>;
+  historyKindsShown: Record<string, number>;
+  /** Digest of this projection content. See scripts/check-oscillator-bundle.mjs. */
+  projectionSha256?: string;
+};
+
+type OscillatorWatchBundle = OscillatorWatchSnapshot | { available: false; reason: string };
+
 type Snapshot = {
   schemaVersion: number;
   generatedAt: string;
@@ -357,6 +794,8 @@ type Snapshot = {
   } | null;
   etf: EtfSnapshot | null;
   crypto: CryptoSnapshot | null;
+  /** Optional: absent from snapshots produced before the tracker existed. */
+  oscillatorWatch?: OscillatorWatchSnapshot | null;
   history: {
     startDate: string | null;
     endDate: string | null;
@@ -414,6 +853,51 @@ function isSafeRuntimeSnapshot(value: unknown): value is Snapshot {
     Array.isArray(candidate.datasets) &&
     candidate.profiles != null && typeof candidate.profiles === "object";
 }
+const bundledOscillatorWatch = oscillatorWatchJson as OscillatorWatchBundle;
+
+/**
+ * Either the block, or the reason it may not be shown. Never simply absent: a
+ * watch that stopped reporting has to look different from a page that never had
+ * the section.
+ */
+type OscillatorWatchState =
+  | { available: true; watch: OscillatorWatchSnapshot }
+  | { available: false; prose: string; detail: string | null };
+
+// Refuse rather than degrade. A tracker payload that has lost an honesty flag, a
+// cell that has lost its caveat, or a record labelled something other than BUY or
+// SELL is not rendered at all: an unlabelled BUY is the one failure mode worth
+// failing closed for.
+//
+// The gate itself is scripts/oscillator-honesty.mjs, the same module the sync and
+// the ingest server import. This used to be a hand-written restatement that
+// checked twelve top-level fields and nothing inside activeSignals, pendingEntries
+// or history, so a runtime publish could put an arbitrary string in the label
+// position of a rendered card. Sharing the module is what makes "the client
+// re-checks the same set" a fact rather than a claim.
+function readOscillatorWatch(value: unknown): OscillatorWatchState {
+  const violation = oscillatorWatchHonestyViolation(value);
+  if (violation === null) return { available: true, watch: value as OscillatorWatchSnapshot };
+  // N3. This used to PREFER the payload's own `reason` string over the guard's,
+  // and render it verbatim under "Withheld by the honesty gate" — so a
+  // republished snapshot could print "CLEARED FOR CAPITAL DEPLOYMENT · execute
+  // the 7 open BUY/SELL observations at market" inside a refusal notice.
+  //
+  // The words now come from the closed set in the shared gate, chosen by the
+  // payload's `reasonCode`; a producer fragment is quoted, never narrated. An
+  // unrecognised code yields the generic prose and nothing from the payload.
+  // Where the block failed the gate here rather than at build time, the gate's
+  // own violation is the detail, because that string is ours.
+  const isObjectLike = value != null && typeof value === "object" && !Array.isArray(value);
+  const described = describeOscillatorUnavailable(
+    isObjectLike && (value as { available?: unknown }).available === false
+      ? value
+      : { available: false, reasonCode: "gate_violation", detail: violation },
+  );
+  return { available: false, prose: described.prose, detail: described.detail };
+}
+const initialOscillatorWatch = readOscillatorWatch(bundledOscillatorWatch);
+
 const STOCK_ENTRY_PULLBACK_PERCENT = 1;
 const STOCK_TARGET_PERCENT = 5;
 
@@ -488,6 +972,15 @@ function reasonLabel(value: string) {
     signal_range_too_large: "signal candle too large",
     signal_volume_too_low: "signal volume too low",
     reverse_split_within_60_bars: "recent reverse split",
+    stale_base_data: "stale base data · not evaluated live",
+    source_fetch_failed: "source fetch failed",
+    incomplete_bucket_required: "incomplete bucket withheld",
+    adapter_unavailable: "adapter unavailable",
+    parity_assertion_failed: "parity assertion failed",
+    lifecycle_terminated_bankrupt: "lifecycle terminated · bankrupt trade",
+    position_already_open: "position already open",
+    declined_by_frozen_evaluator: "declined by frozen evaluator",
+    not_reporting: "cell is not reporting",
   };
   return labels[value] ?? value.replaceAll("_", " ");
 }
@@ -1011,6 +1504,1112 @@ function CryptoOpportunities({ crypto }: { crypto: CryptoSnapshot }) {
   );
 }
 
+// The campaign's own null result. Rendered unconditionally at the top of the
+// section, above every lane, so no recorded BUY or SELL can reach a viewer
+// without it in the same view.
+const OSCILLATOR_NULL_RESULT = [
+  {
+    label: "Dependence-preserving permutation null",
+    value: "p = 0.455",
+    detail: "16 double-positive cells against a null mean of 15.2",
+  },
+  {
+    label: "Frozen rank-1 candidate",
+    value: "percentile 0.463",
+    detail: "of its own 396-point grid, evaluated out of sample",
+  },
+  {
+    label: "Benjamini-Hochberg q < 0.10",
+    value: "0 of 15 survive",
+    detail: "no cell clears the family-wise correction",
+  },
+];
+
+const OSCILLATOR_STATUS_LABELS: Record<string, string> = {
+  active_long: "BUY recorded",
+  active_short: "SELL recorded",
+  flat: "flat · no open position",
+  insufficient_history: "insufficient history",
+  source_unavailable: "source unavailable",
+  deferred: "deferred by human decision",
+  lifecycle_terminated_bankrupt: "evaluator abandoned the segment",
+};
+
+/**
+ * N2. This used to fall through to `status.replaceAll("_", " ")`, which printed
+ * an unrecognised status verbatim as the card headline — and the enum that would
+ * have stopped one was enforced only in the build-time projection, so a
+ * republished snapshot could put arbitrary prose there. The enum now lives in
+ * the shared gate, so a block carrying an unknown status is refused whole and
+ * this branch is unreachable. It stays non-echoing anyway: a label map is the
+ * last place that should invent text it has never seen.
+ */
+function oscillatorStatusLabel(status: string) {
+  return OSCILLATOR_STATUS_LABELS[status] ?? "unrecognised status";
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INVARIANT A, the rendering half.
+//
+// Two components, and no other way to put producer text on this page.
+//
+// <ProducerQuoted> renders a `{ quoted }` fragment: this interface says whose
+// words these are and that it is not acting on them, and the words themselves
+// sit inside a <q> in a monospace face that reads as a quoted value rather than
+// as a sentence. <CodedPhrase> renders a `{ code }` from a closed vocabulary as
+// OUR prose; where the code is one this interface has never seen the projection
+// has already demoted it to a fragment, and the fragment renders quoted beneath
+// our own sentence saying it was not recognised.
+//
+// Neither component can be made to echo. `describeCoded` is in the shared
+// vocabulary module and always returns OUR `prose`; the producer chooses which
+// entry it selects, never the words.
+// ═════════════════════════════════════════════════════════════════════════════
+
+/** How a quoted producer fragment is attributed, by where it sits. */
+const QUOTED_BY_TRACKER = "quoted from the tracker · not acted on by this interface";
+
+function ProducerQuoted({
+  value,
+  attribution,
+}: {
+  value: ProducerQuote | null | undefined;
+  attribution: string;
+}) {
+  if (value == null) return null;
+  return (
+    <span className="producer-quote" data-producer="quotation">
+      <i>{attribution}</i>
+      <q>{value.quoted}</q>
+      {value.truncated ? <small>quoted fragment truncated by this interface</small> : null}
+    </span>
+  );
+}
+
+/**
+ * A printed identifier: the member, or the quotation. Nothing else.
+ *
+ * Both branches carry `data-producer`, which is what the rendered check keys the
+ * counter-claim on. The member branch is marked even though it is a closed-set
+ * value, because "this came from the producer" is the fact the check is about,
+ * and a rule that only marked the values we could not place would go quiet on
+ * exactly the ones an attacker made placeable.
+ */
+function ProducerIdentifier({
+  value,
+  absent = "—",
+}: {
+  value: ProducerIdentifierValue | null | undefined;
+  absent?: string;
+}) {
+  const described = describeIdentifier(value ?? null);
+  if (described.id != null) {
+    return (
+      <span className="producer-id" data-producer="identifier">
+        {described.id}
+      </span>
+    );
+  }
+  if (described.quoted == null) return <>{absent}</>;
+  return (
+    <span className="producer-quote inline" data-producer="quotation">
+      <i>{QUOTED_BY_TRACKER}</i>
+      <q>{described.quoted}</q>
+      {described.truncated ? <small>quoted fragment truncated by this interface</small> : null}
+    </span>
+  );
+}
+
+function CodedPhrase({
+  value,
+  vocabulary,
+  absent,
+}: {
+  value: ProducerCoded | null | undefined;
+  vocabulary: string;
+  absent: string;
+}) {
+  const described = describeCoded(value ?? null, vocabulary, absent);
+  // `prose` is always ours, so the recognised branch carries no marker: there is
+  // no producer text in it to attribute.
+  if (described.quoted == null) return <>{described.prose}</>;
+  return (
+    <span className="producer-quote inline" data-producer="quotation">
+      <i>{described.prose}</i>
+      <q>{described.quoted}</q>
+      {described.truncated ? <small>quoted fragment truncated by this interface</small> : null}
+    </span>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// INVARIANT B. No card bearing producer content lacks a counter-claim.
+//
+// N1 measured this per card TYPE, and per type it held — but the measurement
+// only inspected a card IF IT WAS LABELLED, and the outage and declined ledger
+// kinds carry no BUY or SELL. They were unmeasured, and they were also the two
+// branches of OscillatorRecordCard with no authority text: the entry branch says
+// "no order was placed" and the exit branch says "not a realised trade", while
+// the outage, declined and pending branches said nothing at all. So N6 put six
+// unqualified cards on the page through a branch nobody had looked at.
+//
+// Label-dependence was the defect. Every card now goes through this one shell,
+// which appends its counter-claim UNCONDITIONALLY — not per branch, not per
+// label, not per status. A card kind is a key of this table; a component cannot
+// render an <article> of its own, and a kind with no entry here cannot be named,
+// so a new card kind fails at the type level and again in the rendered test.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const OSCILLATOR_CARD_AUTHORITY = {
+  roster:
+    "tracking only · no order authority · this cell is a candidate, not established alpha",
+  "roster-open-position":
+    "tracking only · no order authority · unrealised, gross of the frozen 18 bps round-trip friction",
+  "live-signal":
+    "tracking only · no order authority · gross of the frozen 18 bps round-trip friction",
+  "ledger-entry":
+    "tracking only · no order authority · a recorded observation of the frozen rule; no order was placed",
+  "ledger-exit":
+    "tracking only · no order authority · an observation, not a realised trade",
+  "ledger-declined":
+    "tracking only · no order authority · the frozen evaluator declined this pulse; nothing was entered",
+  "ledger-pending":
+    "tracking only · no order authority · no entry bar has opened; nothing here is an instruction",
+  "ledger-outage":
+    "tracking only · no order authority · this record is the tracker reporting that it went quiet",
+} as const;
+
+type OscillatorCardKind = keyof typeof OSCILLATOR_CARD_AUTHORITY;
+
+/**
+ * The only <article> this section renders.
+ *
+ * `data-card-kind` is not decoration: it is how the rendered test counts cards
+ * per kind without inferring the kind from a class token, so an outage card and
+ * a declined card are in the denominator whether or not they carry a label.
+ */
+function OscillatorCard({
+  kind,
+  className,
+  children,
+}: {
+  kind: OscillatorCardKind;
+  className: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <article className={className} data-card-kind={kind} data-bears-authority="card">
+      {children}
+      <div className="oscillator-card-authority">
+        <span>Authority</span>
+        <strong>{OSCILLATOR_CARD_AUTHORITY[kind]}</strong>
+      </div>
+    </article>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INVARIANT B, the half a card-shaped rule could never reach.
+//
+// The rendered check asked "is this an <article>?". An adversary answered it
+// with a fourteen-line <div> called WatchDeskNote that rendered cell.asset,
+// cell.oscillator, cell.exitFamily and the frozen leg parameters with no
+// counter-claim anywhere on it: 71 pass, 0 fail. And from the other direction,
+// registry.registryId, runId and the runtime versions sit OUTSIDE every card, so
+// no rule about cards could have covered them however it was written.
+//
+// So the counter-claim is keyed on producer CONTENT. Every node that renders a
+// producer value carries `data-producer`; every such node must have an ancestor
+// carrying `data-bears-authority`; and the rendered test asserts exactly that
+// over the whole section. OscillatorCard is one bearer. A region is the other,
+// and it appends its counter-claim the same unconditional way.
+// ══════════════════════════════════════════════════════════════════════════════
+
+const OSCILLATOR_REGION_AUTHORITY = {
+  "run-identity":
+    "tracking only · no order authority · the run and registry identifiers name a research artifact, not an approval",
+  "observation-log":
+    "tracking only · no order authority · the tracker's own statement of purpose, quoted; no order was placed on any of it",
+  "frozen-protocol":
+    "tracking only · no order authority · what was frozen and which runtime ran it; neither is a permission to trade",
+  "frozen-limitations":
+    "tracking only · no order authority · the tracker's own limitations, quoted and not argued with",
+  "selection-rule":
+    "tracking only · no order authority · how these cells were picked out of the campaign, in the tracker's words",
+  "ledger-basis":
+    "tracking only · no order authority · the tracker's stated basis for its own record rate",
+  guardrail:
+    "tracking only · no order authority · no capital authority · nothing on this page is an instruction",
+  withheld:
+    "tracking only · no order authority · the block was withheld; the value below is the tracker's, quoted and not acted on",
+} as const;
+
+type OscillatorRegionKind = keyof typeof OSCILLATOR_REGION_AUTHORITY;
+
+/**
+ * A bearer of the counter-claim that is not a card.
+ *
+ * Same contract as OscillatorCard: the note is appended unconditionally, there
+ * is no branch that omits it, and a region kind with no entry in the table
+ * cannot be named.
+ */
+function OscillatorRegion({
+  region,
+  className,
+  children,
+}: {
+  region: OscillatorRegionKind;
+  className: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`${className} oscillator-region`} data-bears-authority={region}>
+      {children}
+      <div className="oscillator-card-authority">
+        <span>Authority</span>
+        <strong>{OSCILLATOR_REGION_AUTHORITY[region]}</strong>
+      </div>
+    </div>
+  );
+}
+
+function signedPercentage(value: number | null | undefined, digits = 2) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return `${value >= 0 ? "+" : ""}${(value * 100).toFixed(digits)}%`;
+}
+
+/**
+ * Frozen window parameters, one marked node per producer value.
+ *
+ * This used to de-underscore the parameter names, and that was fixed. What was
+ * not fixed was worse: it then built
+ *
+ *   leg.parameters.map((entry) => `${entry.name} ${entry.value}`).join(" · ")
+ *
+ * over an UNCAPPED array. The pattern behind `token` was defended as "no
+ * whitespace, so it cannot become a sentence" while the view supplied the
+ * whitespace itself, one literal space between two producer-controlled values,
+ * as many times as the producer liked. There is no string built here any more:
+ * the name and the value are separate nodes, each marked as a producer value and
+ * each individually a closed-set member or a quotation.
+ */
+function FrozenLegParameters({ leg }: { leg: OscillatorFrozenLeg | null | undefined }) {
+  if (leg == null) return <i>not recorded</i>;
+  if (leg.parameters.length === 0) return <i>no parameters recorded</i>;
+  return (
+    <i className="oscillator-frozen-parameters">
+      {leg.parameters.map((entry, index) => (
+        <span className="oscillator-frozen-parameter" key={index}>
+          <ProducerIdentifier value={entry.name} />
+          {typeof entry.value === "number" ? (
+            <b>{entry.value}</b>
+          ) : (
+            <ProducerIdentifier value={entry.value} />
+          )}
+        </span>
+      ))}
+    </i>
+  );
+}
+
+/**
+ * The presentation label for a record, in one register across both lanes.
+ *
+ * ui_label is required only on signal records, so a fill used to read "long
+ * recorded" beside a signal reading "BUY recorded" for the same event. The
+ * direction is mapped rather than printed raw. Returns null rather than guessing
+ * when the record carries neither, so nothing is invented.
+ */
+function oscillatorSignalLabel(record: OscillatorRecord) {
+  if (record.uiLabel === "BUY" || record.uiLabel === "SELL") return record.uiLabel;
+  if (record.direction === "long") return "BUY";
+  if (record.direction === "short") return "SELL";
+  return null;
+}
+
+/** Which lane a ledger record belongs in. A declined pulse is never a fill. */
+function oscillatorRecordKind(record: OscillatorRecord) {
+  if (record.recordType === "outage") return "outage";
+  if (record.recordType === "fill") return "filled";
+  if (record.recordType === "exit") return "exit";
+  const state = record.priceReference?.intendedEntry.state ?? null;
+  if (state === "filled") return "filled";
+  if (state === "not_taken") return "declined";
+  return "pending";
+}
+
+/** The card kind a ledger record renders as. One record, one registered kind. */
+const OSCILLATOR_RECORD_CARD_KIND: Record<string, OscillatorCardKind> = {
+  outage: "ledger-outage",
+  declined: "ledger-declined",
+  pending: "ledger-pending",
+  exit: "ledger-exit",
+  filled: "ledger-entry",
+};
+
+/**
+ * What the roster card says about this cell, as OUR sentence plus at most one
+ * quoted producer fragment.
+ *
+ * This used to concatenate `termination.detail` into a sentence of its own
+ * making — "{producer prose} 3487 later bars and 61 entry pulses are
+ * unevaluated." — which is precisely a producer string in claim position, on the
+ * card that also shows an open position and a P&L. The two are now separate
+ * fields, so the producer prose can only render quoted.
+ */
+function oscillatorCellDetail(cell: OscillatorCell): {
+  prose: string | null;
+  quoted: ProducerQuote | null;
+} {
+  if (cell.status === "deferred") {
+    return { prose: null, quoted: cell.deferred.reason ?? cell.availability.detail };
+  }
+  if (cell.status === "lifecycle_terminated_bankrupt") {
+    const termination = cell.lifecycle?.termination;
+    if (termination == null) return { prose: null, quoted: cell.availability.detail };
+    return {
+      prose:
+        `The frozen evaluator terminated on a bankrupt trade. ` +
+        `${termination.unevaluatedBars ?? 0} later bars and ` +
+        `${termination.unevaluatedEntryPulses ?? 0} entry pulses are unevaluated.`,
+      quoted: termination.detail,
+    };
+  }
+  if (cell.status === "insufficient_history") {
+    return {
+      prose:
+        `${cell.barsAvailable ?? 0} bars available against ` +
+        `${cell.warmup.effectiveBarsRequired ?? "an unknown number of"} required by the frozen ` +
+        "adapter. No signal is produced until warmup is satisfied.",
+      quoted: null,
+    };
+  }
+  return { prose: null, quoted: cell.availability.detail };
+}
+
+function OscillatorCellCard({ cell }: { cell: OscillatorCell }) {
+  const recording = cell.status === "active_long" || cell.status === "active_short";
+  // Deferred, unavailable, short of warmup and lifecycle-terminated are not "flat":
+  // they are states in which the frozen rule produced no evaluation at all.
+  const degraded = !recording && cell.status !== "flat";
+  const bullish = cell.divergenceArmed?.bullish;
+  const bearish = cell.divergenceArmed?.bearish;
+  const armed = [
+    bullish?.armed ? `bullish · ${bullish.ageBars ?? "?"} bars old` : null,
+    bearish?.armed ? `bearish · ${bearish.ageBars ?? "?"} bars old` : null,
+  ].filter((entry): entry is string => entry != null);
+  const detail = oscillatorCellDetail(cell);
+  return (
+    <OscillatorCard
+      kind={recording && cell.position ? "roster-open-position" : "roster"}
+      className={`etf-state-card oscillator-cell ${recording ? "transition" : ""}`}
+    >
+      <div>
+        <strong>
+          <ProducerIdentifier value={cell.asset} /> · <ProducerIdentifier value={cell.timeframe} />
+        </strong>
+        <span>
+          <ProducerIdentifier value={cell.oscillator} /> ·{" "}
+          <ProducerIdentifier value={cell.exitFamily} /> exit
+        </span>
+      </div>
+      <p className={`oscillator-cell-status ${recording ? "recording" : degraded ? "degraded" : ""}`}>
+        {oscillatorStatusLabel(cell.status)}
+      </p>
+      <div className="oscillator-frozen">
+        <span>
+          Fast<b><ProducerIdentifier value={cell.frozen?.fast?.label} /></b>
+          <FrozenLegParameters leg={cell.frozen?.fast} />
+        </span>
+        <span>
+          Slow<b><ProducerIdentifier value={cell.frozen?.slow?.label} /></b>
+          <FrozenLegParameters leg={cell.frozen?.slow} />
+        </span>
+        <span>
+          Divergence gate<b><ProducerIdentifier value={cell.frozen?.divergence.computedOn} /></b>
+          <i>max event age {cell.frozen?.divergence.maxEventAgeBars ?? "—"} bars · pivots {cell.frozen?.divergence.pivotLeft ?? "—"}/{cell.frozen?.divergence.pivotRight ?? "—"}</i>
+        </span>
+      </div>
+      {recording && cell.position ? (
+        <div className="oscillator-cell-state recording">
+          <span>Direction<b>{cell.position.direction ?? "—"}</b></span>
+          <span>Entry<b>{cryptoPrice(cell.position.entryPrice)}</b></span>
+          <span>Held<b>{cell.position.barsHeld ?? 0} bars</b></span>
+          <span>Unrealised<b>{signedPercentage(cell.position.unrealisedGrossReturn)}</b></span>
+        </div>
+      ) : (
+        <div className="oscillator-cell-state">
+          <span>
+            Divergence
+            <b>{armed.length > 0 ? armed.join(" · ") : cell.divergenceArmed ? "none armed" : "not evaluated"}</b>
+          </span>
+          <span>
+            State bar
+            <b>{cell.stateBar?.openUtc ? formatTimestamp(cell.stateBar.openUtc) : "no evaluated bar"}</b>
+          </span>
+        </div>
+      )}
+      {(detail.prose != null || detail.quoted != null) && (
+        <p className="oscillator-cell-detail">
+          {detail.prose}
+          <ProducerQuoted value={detail.quoted} attribution={QUOTED_BY_TRACKER} />
+        </p>
+      )}
+      <footer>
+        <span>Holdout {cell.evidence.holdout?.trades ?? 0} trades · {signedPercentage(cell.evidence.holdout?.netReturn)}</span>
+        <span>Confirmation {cell.evidence.retrospectiveConfirmation?.trades ?? 0} · {signedPercentage(cell.evidence.retrospectiveConfirmation?.netReturn)}</span>
+        <span>retrospective, before the evidence window closed</span>
+      </footer>
+    </OscillatorCard>
+  );
+}
+
+function OscillatorSignalCard({
+  asset,
+  oscillator,
+  timeframe,
+  exitFamily,
+  uiLabel,
+  direction,
+  signalBarOpenUtc,
+  entryBarOpenUtc,
+  entryPrice,
+  barsHeld,
+  unrealisedGrossReturn,
+  pending,
+}: {
+  asset: ProducerIdentifierValue | null;
+  oscillator: ProducerIdentifierValue | null;
+  timeframe: ProducerIdentifierValue | null;
+  exitFamily: ProducerIdentifierValue | null;
+  uiLabel: string | null;
+  direction: string | null;
+  signalBarOpenUtc: string | null;
+  entryBarOpenUtc: string | null;
+  entryPrice: number | null;
+  barsHeld: number | null;
+  unrealisedGrossReturn: number | null;
+  pending: boolean;
+}) {
+  return (
+    <OscillatorCard
+      kind="live-signal"
+      className={`crypto-opportunity ${pending ? "blocked" : "active"}`}
+    >
+      <div className="crypto-opportunity-head">
+        <div>
+          <strong>
+            <ProducerIdentifier value={asset} /> · <ProducerIdentifier value={timeframe} />
+          </strong>
+          {/* This printed the watch id, which is an identity built by joining
+              four producer identifiers with dots and was constrained by nothing.
+              The watch id is a join key now and is not printed; the card states
+              the two identifiers the id carried that the heading did not. */}
+          <span>
+            <ProducerIdentifier value={oscillator} /> ·{" "}
+            <ProducerIdentifier value={exitFamily} /> exit · signal bar{" "}
+            {signalBarOpenUtc ? formatTimestamp(signalBarOpenUtc) : "—"}
+          </span>
+        </div>
+        <b>{uiLabel ?? direction ?? "observation"}{pending ? " · not yet entered" : " · observation"}</b>
+      </div>
+      <div className="crypto-metrics">
+        <div>
+          <span>Entry bar</span>
+          <strong>{entryBarOpenUtc ? formatTimestamp(entryBarOpenUtc) : "bar has not opened"}</strong>
+        </div>
+        <div><span>Entry price</span><strong>{cryptoPrice(entryPrice)}</strong></div>
+        <div>
+          <span>{pending ? "Bars held" : "Unrealised gross"}</span>
+          <strong>{pending ? `${barsHeld ?? 0}` : signedPercentage(unrealisedGrossReturn)}</strong>
+        </div>
+      </div>
+    </OscillatorCard>
+  );
+}
+
+function OscillatorRecordCard({ record }: { record: OscillatorRecord }) {
+  const kind = oscillatorRecordKind(record);
+  const declined = kind === "declined";
+  const intended = record.priceReference?.intendedEntry;
+  const when = record.signalBar?.openUtc ?? record.fromUtc ?? record.exitBarUtc ?? record.emittedAtUtc;
+  const pill =
+    kind === "outage"
+      ? "not reporting"
+      : kind === "declined"
+        ? "not taken"
+        : kind === "pending"
+          ? "awaiting entry bar"
+          : record.recordType === "exit"
+            ? "exit recorded"
+            : `${oscillatorSignalLabel(record) ?? "entry"} recorded`;
+  return (
+    <OscillatorCard
+      kind={OSCILLATOR_RECORD_CARD_KIND[kind]}
+      className={`history-card oscillator-record ${kind === "filled" ? "aligned" : "quality-blocked"}`}
+    >
+      <div className="history-card-head">
+        <div>
+          <strong>
+            <ProducerIdentifier value={record.asset} /> ·{" "}
+            <ProducerIdentifier value={record.timeframe} />
+          </strong>
+          <span>
+            <ProducerIdentifier value={record.oscillator} /> · {formatTimestamp(when)}
+          </span>
+        </div>
+        <b>{pill}</b>
+      </div>
+      <div className="history-card-body">
+        <div className="history-indicators">
+          <span>Bar close <strong>{cryptoPrice(record.signalBar?.close ?? record.exitPrice ?? record.entryPrice ?? null)}</strong></span>
+          <span>Spread <strong>{points(record.oscillatorState?.spread, 4)}</strong></span>
+          <span>
+            Divergence age
+            <strong>{record.divergenceEvent?.ageBars == null ? "—" : `${record.divergenceEvent.ageBars} bars`}</strong>
+          </span>
+        </div>
+        {kind === "outage" ? (
+          // N6 landed in this branch. The headline was
+          // `reasonLabel(record.reason ?? "not_reporting")`, whose label map fell
+          // through to `value.replaceAll("_", " ")`, and beneath it
+          // `{record.detail ?? "…"}` printed a producer string raw, uncapped and
+          // unquoted. Both are wrapped values now, and neither component below
+          // can render one as a sentence of this interface own.
+          <div className="history-blocked">
+            <strong>The cell is not reporting</strong>
+            <span>
+              <CodedPhrase
+                value={record.reason}
+                vocabulary="outageReason"
+                absent="The cell produced no evaluation on this run."
+              />
+            </span>
+            <ProducerQuoted value={record.detail} attribution={QUOTED_BY_TRACKER} />
+          </div>
+        ) : declined ? (
+          <div className="history-blocked">
+            <strong>Declined by the frozen evaluator · not a fill</strong>
+            <span>
+              The rule pulsed and the frozen lifecycle evaluator did not take it. No entry exists for this record.
+            </span>
+          </div>
+        ) : kind === "pending" ? (
+          <div className="history-blocked">
+            <strong>Entry bar has not opened</strong>
+            <span>
+              The frozen rule enters at{" "}
+              <CodedPhrase
+                value={intended?.rule}
+                vocabulary="entryRule"
+                absent="the frozen entry bar"
+              />
+              . Earliest possible entry{" "}
+              {intended?.earliestPossibleEntryBarOpenUtc
+                ? formatTimestamp(intended.earliestPossibleEntryBarOpenUtc)
+                : "is not yet determined"}
+              .
+            </span>
+          </div>
+        ) : record.recordType === "exit" ? (
+          <div className="reference-outcome">
+            <div>
+              <span>
+                Exit ·{" "}
+                <CodedPhrase
+                  value={record.exitReason}
+                  vocabulary="exitReason"
+                  absent="no exit reason recorded"
+                />
+              </span>
+              <strong>{signedPercentage(record.netReturnAfterFrozenFriction)}</strong>
+            </div>
+            <small>net of the frozen 18 bps round-trip friction · {record.barsHeld ?? 0} bars held · observation, not a realised trade</small>
+          </div>
+        ) : (
+          <div className="reference-outcome">
+            <div>
+              <span>
+                Intended entry
+                {intended?.rule ? (
+                  <>
+                    {" · "}
+                    <CodedPhrase
+                      value={intended.rule}
+                      vocabulary="entryRule"
+                      absent="the frozen entry bar"
+                    />
+                  </>
+                ) : null}
+              </span>
+              <strong>
+                {intended?.entryBarOpenUtc
+                  ? formatTimestamp(intended.entryBarOpenUtc)
+                  : record.entryBarOpenUtc
+                    ? formatTimestamp(record.entryBarOpenUtc)
+                    : "—"}
+              </strong>
+            </div>
+            <small>recorded observation of the frozen rule · no order was placed</small>
+          </div>
+        )}
+        {declined && intended?.notTakenReason && (
+          <div className="reason-list">
+            <span>
+              <CodedPhrase
+                value={intended.notTakenReason}
+                vocabulary="notTakenReason"
+                absent="no reason recorded"
+              />
+            </span>
+          </div>
+        )}
+      </div>
+    </OscillatorCard>
+  );
+}
+
+/**
+ * What a *watch* surface owes the human when it has nothing to show.
+ *
+ * The section and its nav anchor used to vanish together, and the projection's
+ * stated reason rendered nowhere, so "the tracker stopped reporting" was
+ * indistinguishable from "this page never had that section". For a surface whose
+ * entire purpose is forward tracking, the silence is itself the finding.
+ *
+ * N3. `prose` is ours, selected by the payload's reason code; `detail` is at most
+ * one producer fragment, already flattened and capped by the shared gate, and is
+ * rendered as a QUOTED VALUE beneath our sentence rather than as a sentence of
+ * its own. The component takes no free-form string from the payload, so there is
+ * no arrangement of a republished snapshot that writes prose into this notice.
+ */
+function OscillatorWatchUnavailable({ prose, detail }: { prose: string; detail: string | null }) {
+  return (
+    <section className="crypto-section oscillator-section oscillator-unavailable" id="oscillator-watch">
+      <div className="crypto-hero">
+        <div>
+          <p className="eyebrow">Forward tracking · frozen oscillator registry</p>
+          <h2>Oscillator alpha watch</h2>
+          <p>
+            The watch is not reporting. No BUY or SELL observation is available for this
+            run, and nothing below is a stale roster shown as current — the whole block was
+            withheld rather than partly surfaced, and this interface states why in its own
+            words.
+          </p>
+        </div>
+        <div className="crypto-scan-meta">
+          <span><i /> not reporting</span>
+          <strong>oscillator-alpha-watch</strong>
+          <small>the surface is present and empty, not absent</small>
+        </div>
+      </div>
+
+      <OscillatorRegion
+        region="withheld"
+        className="history-blocked oscillator-unavailable-reason"
+      >
+        <strong>Withheld by the honesty gate</strong>
+        <span>{prose}</span>
+        {detail && (
+          <span className="oscillator-unavailable-detail" data-producer="quotation">
+            <i>value reported by the tracker, quoted and not acted on</i>
+            <code>{detail}</code>
+          </span>
+        )}
+      </OscillatorRegion>
+
+      <div className="crypto-guardrail">
+        <div><span>Registry</span><strong>not loaded</strong></div>
+        <div><span>Authority</span><strong>research only · no capital authority</strong></div>
+        <p>
+          tracking_only = true · deployment_allowed = false · capital_authority = false ·
+          order_authority = false. A tracker block is surfaced whole or not at all: where any
+          honesty flag, per-cell caveat or record label fails the gate, the block is withheld
+          and this notice takes its place. A watch that has gone quiet is reported as quiet.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * How this ledger is ordered, in words the data supports.
+ *
+ * N4 residual. The heading claimed a newest-first order over "40 of 321 records
+ * shown", and both halves were wrong at once: every record in a backfill
+ * carries the RUN timestamp, so all 321 shared one `emitted_at_utc`, the sort was
+ * a no-op, and the 40 were the first 40 by merge insertion order — which
+ * evicted the only outage. The sort is deterministic now, and an outage outranks
+ * every other kind on a tie, but "newest first" is still a claim about the DATA
+ * rather than about the comparator. So it is asserted only where the data
+ * carries more than one instant, and where it does not, the view says what the
+ * ordering actually is.
+ *
+ * `dropped` names the kinds the cap kept out, per kind, so a record that did not
+ * make the page is visible as an absence rather than inferable from two totals.
+ */
+function describeLedgerOrder(watch: OscillatorWatchSnapshot) {
+  const chronological = watch.historyDistinctEmittedAt > 1;
+  const tieBreak =
+    "Where records share an instant, an outage is ordered ahead of every other kind " +
+    "and the rest by record id, so nothing is kept or dropped by the order the ledger " +
+    "partitions happened to be read in.";
+  const dropped = Object.entries(watch.historyKindsObserved)
+    .map(([kind, observed]) => {
+      const shown = watch.historyKindsShown[kind] ?? 0;
+      return observed > shown ? `${observed - shown} of ${observed} ${kind}` : null;
+    })
+    .filter((entry): entry is string => entry != null);
+  if (chronological) {
+    return {
+      eyebrow: "newest first",
+      sentence:
+        `Ordered newest first across ${watch.historyDistinctEmittedAt} distinct emitted-at ` +
+        `stamps. ${tieBreak}`,
+      dropped,
+    };
+  }
+  return {
+    eyebrow: "not a chronological order",
+    sentence:
+      `All ${watch.historyRecordsObserved} observed records carry one emitted-at stamp — the ` +
+      "tracker stamps a backfill with the time of the run — so this is not a newest-first " +
+      `ordering and is not shown as one. ${tieBreak}`,
+    dropped,
+  };
+}
+
+function OscillatorWatch({ watch }: { watch: OscillatorWatchSnapshot }) {
+  const [recordFilter, setRecordFilter] = useState<
+    "all" | "filled" | "pending" | "declined" | "outage"
+  >("all");
+  const declined = watch.history.filter((record) => oscillatorRecordKind(record) === "declined");
+  const filled = watch.history.filter((record) => oscillatorRecordKind(record) === "filled");
+  const pending = watch.history.filter((record) => oscillatorRecordKind(record) === "pending");
+  const outages = watch.history.filter((record) => oscillatorRecordKind(record) === "outage");
+  const exits = watch.history.filter((record) => record.recordType === "exit");
+  const filteredRecords = watch.history.filter((record) =>
+    recordFilter === "all" ? true : oscillatorRecordKind(record) === recordFilter,
+  );
+  const notEvaluated = watch.cells.filter(
+    (cell) => !["active_long", "active_short", "flat"].includes(cell.status),
+  ).length;
+  const authority =
+    watch.deploymentAllowed || watch.capitalAuthority || watch.orderAuthority
+      ? "enabled"
+      : "research only · no capital authority";
+  const ledgerOrder = describeLedgerOrder(watch);
+
+  return (
+    <section className="crypto-section oscillator-section" id="oscillator-watch">
+      <OscillatorRegion region="run-identity" className="crypto-hero">
+        <div>
+          <p className="eyebrow">Forward tracking · frozen oscillator registry</p>
+          <h2>Oscillator alpha watch</h2>
+          <p>
+            {watch.registry.cellsActive} frozen oscillator cells are tracked forward from{" "}
+            {watch.evidenceWindowEndsUtc ? formatTimestamp(watch.evidenceWindowEndsUtc) : "the close of the evidence window"}.
+            A recorded BUY or SELL is an observation of what the frozen rule did — it is not a
+            recommendation, and this set is not established as distinguishable from search noise.
+          </p>
+        </div>
+        <div className="crypto-scan-meta">
+          <span><i /> {watch.counts.cellsEvaluated} of {watch.registry.cellsActive} active cells evaluated</span>
+          <strong>
+            <ProducerIdentifier value={watch.registry.registryId} absent="oscillator-alpha-watch" />
+          </strong>
+          <small>
+            {watch.generatedAt ? formatTimestamp(watch.generatedAt) : "no run recorded"} · run{" "}
+            <ProducerIdentifier value={watch.runId} />
+          </small>
+        </div>
+      </OscillatorRegion>
+
+      <div className="crypto-stat-strip" aria-label="Oscillator watch summary">
+        <div>
+          <span>Recorded now</span>
+          <strong>{watch.counts.activeLong}L / {watch.counts.activeShort}S</strong>
+          <small>open BUY / SELL observations</small>
+        </div>
+        <div>
+          <span>Pulses declined</span>
+          <strong>{declined.length}</strong>
+          <small>the frozen evaluator did not take them</small>
+        </div>
+        <div>
+          <span>Cells reporting</span>
+          <strong>{watch.counts.cellsEvaluated} / {watch.counts.cellsTotal}</strong>
+          <small>{watch.counts.sourceUnavailable} source unavailable · {watch.counts.deferred} deferred</small>
+        </div>
+        <div>
+          <span>Ledger records</span>
+          <strong>{watch.historyRecordsAvailable}</strong>
+          <small>{watch.history.length} shown · append-only, never rewritten</small>
+        </div>
+        <div>
+          <span>Evidence ends</span>
+          <strong>{watch.evidenceWindowEndsUtc ? formatDate(watch.evidenceWindowEndsUtc.slice(0, 10)) : "—"}</strong>
+          <small>records after this date are genuinely unseen</small>
+        </div>
+      </div>
+
+      <div className="etf-evidence-bar" aria-label="Null result for this registry">
+        {OSCILLATOR_NULL_RESULT.map((entry) => (
+          <div key={entry.label}>
+            <span>{entry.label}</span>
+            <strong>{entry.value}</strong>
+            <small>{entry.detail}</small>
+          </div>
+        ))}
+      </div>
+
+      <div className="crypto-lanes">
+        <section className="crypto-lane">
+          <div className="crypto-lane-heading">
+            <div><p className="eyebrow">Lane 01 · observation log</p><h3>Recorded BUY / SELL</h3></div>
+            <span className="lane-pill observe">tracking only</span>
+          </div>
+          {watch.activeSignals.length > 0 || watch.pendingEntries.length > 0 ? (
+            <div className="crypto-opportunity-list">
+              {watch.activeSignals.map((signal) => (
+                <OscillatorSignalCard
+                  key={signal.signalId ?? signal.watchId}
+                  asset={signal.asset}
+                  oscillator={signal.oscillator}
+                  timeframe={signal.timeframe}
+                  exitFamily={signal.exitFamily}
+                  uiLabel={signal.uiLabel}
+                  direction={signal.direction}
+                  signalBarOpenUtc={signal.signalBarOpenUtc}
+                  entryBarOpenUtc={signal.entryBarOpenUtc}
+                  entryPrice={signal.entryPrice}
+                  barsHeld={signal.barsHeld}
+                  unrealisedGrossReturn={signal.unrealisedGrossReturn}
+                  pending={false}
+                />
+              ))}
+              {watch.pendingEntries.map((entry) => (
+                <OscillatorSignalCard
+                  key={entry.signalId ?? entry.watchId}
+                  asset={entry.asset}
+                  oscillator={entry.oscillator}
+                  timeframe={entry.timeframe}
+                  exitFamily={entry.exitFamily}
+                  uiLabel={entry.uiLabel}
+                  direction={entry.direction}
+                  signalBarOpenUtc={entry.signalBarOpenUtc}
+                  entryBarOpenUtc={entry.entryBarOpenUtc}
+                  entryPrice={null}
+                  barsHeld={0}
+                  unrealisedGrossReturn={null}
+                  pending
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="crypto-empty">
+              <span>0</span>
+              <div>
+                <strong>No cell is recording a BUY or SELL</strong>
+                <p>
+                  {notEvaluated} of {watch.counts.cellsTotal} cells produced no evaluation on this
+                  run — {watch.counts.sourceUnavailable} source unavailable,{" "}
+                  {watch.counts.deferred} deferred, {watch.counts.insufficientHistory} short of
+                  warmup, {watch.counts.lifecycleTerminatedBankrupt} lifecycle-terminated. An empty
+                  lane here is not the same as a quiet market; the roster below states each
+                  cell&apos;s reason.
+                </p>
+              </div>
+            </div>
+          )}
+          <OscillatorRegion region="observation-log" className="godmode-warning">
+            <strong>Tracking only</strong>
+            <p>
+              <ProducerQuoted value={watch.purpose} attribution={QUOTED_BY_TRACKER} />
+            </p>
+          </OscillatorRegion>
+        </section>
+
+        <section className="crypto-lane">
+          <div className="crypto-lane-heading">
+            <div><p className="eyebrow">Lane 02 · what was frozen</p><h3>Protocol, friction and runtime</h3></div>
+            <span className="lane-pill observe">no capital authority</span>
+          </div>
+          <div className="crypto-metrics">
+            <div>
+              <span>ATR bracket</span>
+              <strong>
+                {watch.protocol
+                  ? `stop ${watch.protocol.exits.atr.stopAtr ?? "—"} · target ${watch.protocol.exits.atr.targetAtr ?? "—"} · hold ${watch.protocol.exits.atr.maximumHoldingBars ?? "—"}`
+                  : "not recorded"}
+              </strong>
+            </div>
+            <div>
+              <span>Round-trip friction</span>
+              <strong>{watch.protocol ? `${watch.protocol.friction.totalBpsRoundTrip ?? "—"} bps` : "not recorded"}</strong>
+            </div>
+            <div>
+              <span>Applied to prices</span>
+              <strong>{watch.protocol?.friction.appliedToRecordedPrices ? "yes" : "no · recorded prices are gross"}</strong>
+            </div>
+          </div>
+          <OscillatorRegion region="frozen-protocol" className="crypto-metrics">
+            <div>
+              <span>Runtime</span>
+              <strong>
+                python <ProducerIdentifier value={watch.runtime.python} /> · pandas{" "}
+                <ProducerIdentifier value={watch.runtime.pandas} />
+              </strong>
+            </div>
+            <div>
+              <span>Matches frozen protocol</span>
+              {/* A template literal, so two producer version strings were
+                  interpolated into a sentence of this interface's own. Each is
+                  its own marked node now. */}
+              <strong>
+                {watch.runtime.matchesFrozenProtocol ? (
+                  "yes"
+                ) : (
+                  <>
+                    no · frozen at python{" "}
+                    <ProducerIdentifier value={watch.runtime.frozenProtocolRuntime?.python} /> /
+                    pandas{" "}
+                    <ProducerIdentifier value={watch.runtime.frozenProtocolRuntime?.pandas} />
+                  </>
+                )}
+              </strong>
+            </div>
+            <div>
+              <span>Parity assertions</span>
+              <strong>{watch.parity.assertionsPassed} passed · {watch.parity.assertionsFailed} failed · {watch.parity.assertionsChecked} checked</strong>
+            </div>
+          </OscillatorRegion>
+          <OscillatorRegion region="frozen-limitations" className="godmode-warning">
+            <strong>Known limitations</strong>
+            <ul>
+              {watch.knownLimitations.map((limitation) => (
+                <li key={limitation.quoted}>
+                  <ProducerQuoted value={limitation} attribution={QUOTED_BY_TRACKER} />
+                </li>
+              ))}
+            </ul>
+          </OscillatorRegion>
+        </section>
+      </div>
+
+      <section className="opportunity-history">
+        <div className="history-heading">
+          <div>
+            <p className="eyebrow">Registry roster · every cell, deferred included</p>
+            <h3>The {watch.counts.cellsTotal} frozen cells</h3>
+            <p>
+              {watch.counts.sourceUnavailable} source unavailable · {watch.counts.deferred} deferred ·{" "}
+              {watch.counts.insufficientHistory} insufficient history ·{" "}
+              {watch.counts.lifecycleTerminatedBankrupt} lifecycle terminated · {watch.counts.flat} flat.
+            </p>
+          </div>
+        </div>
+        <OscillatorRegion region="selection-rule" className="add-on-definition">
+          <strong>Selection rule</strong>
+          <span>
+            {watch.registry.selectionRule == null ? (
+              "not recorded"
+            ) : (
+              <ProducerQuoted
+                value={watch.registry.selectionRule}
+                attribution={QUOTED_BY_TRACKER}
+              />
+            )}
+          </span>
+        </OscillatorRegion>
+        <div className="etf-state-grid">
+          {watch.cells.map((cell) => (
+            <OscillatorCellCard cell={cell} key={cell.watchId} />
+          ))}
+        </div>
+      </section>
+
+      <section className="opportunity-history">
+        <div className="history-heading">
+          <div>
+            <p className="eyebrow">Append-only ledger · {ledgerOrder.eyebrow}</p>
+            <h3>Recent records</h3>
+            <p>
+              {watch.history.length} of {watch.historyRecordsAvailable} records shown
+              {watch.historyTruncated ? `, capped at ${watch.historyCap}` : ""}. {filled.length} entries ·{" "}
+              {exits.length} exits · {declined.length} declined · {pending.length} awaiting an entry bar ·{" "}
+              {outages.length} not reporting.
+            </p>
+            <p className="oscillator-ledger-order">{ledgerOrder.sentence}</p>
+            {ledgerOrder.dropped.length > 0 && (
+              <p className="oscillator-ledger-order dropped">
+                Kept out by the {watch.historyCap}-record cap: {ledgerOrder.dropped.join(" · ")}.
+              </p>
+            )}
+          </div>
+          <div className="history-filters" role="group" aria-label="Ledger record filter">
+            <button className={recordFilter === "all" ? "active" : ""} onClick={() => setRecordFilter("all")}>All <b>{watch.history.length}</b></button>
+            <button className={recordFilter === "filled" ? "active" : ""} onClick={() => setRecordFilter("filled")}>Entered <b>{filled.length}</b></button>
+            <button className={recordFilter === "pending" ? "active" : ""} onClick={() => setRecordFilter("pending")}>Awaiting entry <b>{pending.length}</b></button>
+            <button className={recordFilter === "declined" ? "active" : ""} onClick={() => setRecordFilter("declined")}>Declined by the evaluator <b>{declined.length}</b></button>
+            <button className={recordFilter === "outage" ? "active" : ""} onClick={() => setRecordFilter("outage")}>Not reporting <b>{outages.length}</b></button>
+          </div>
+        </div>
+        <div className="add-on-definition">
+          <strong>Not taken</strong>
+          <span>
+            A pulse the frozen lifecycle evaluator declined. It is kept in the ledger and shown in
+            its own lane; it is never counted, coloured or rendered as a fill.
+          </span>
+        </div>
+        <OscillatorRegion region="ledger-basis" className="add-on-definition">
+          <strong>Base rate</strong>
+          <span>
+            {watch.ledger.expectedRecordsPerMonthBasis == null ? (
+              "not recorded"
+            ) : (
+              <ProducerQuoted
+                value={watch.ledger.expectedRecordsPerMonthBasis}
+                attribution={QUOTED_BY_TRACKER}
+              />
+            )}
+          </span>
+        </OscillatorRegion>
+        {filteredRecords.length > 0 ? (
+          <div className="history-grid">
+            {filteredRecords.map((record) => (
+              <OscillatorRecordCard key={record.recordId} record={record} />
+            ))}
+          </div>
+        ) : (
+          <div className="history-empty">
+            <strong>No records in this lane</strong>
+            <span>The ledger holds {watch.historyRecordsAvailable} records in total.</span>
+          </div>
+        )}
+      </section>
+
+      <OscillatorRegion region="guardrail" className="crypto-guardrail">
+        <div>
+          <span>Registry</span>
+          <strong>
+            <ProducerIdentifier value={watch.registry.registryId} /> ·{" "}
+            {watch.registry.cellsActive} active · {watch.registry.cellsDeferred} deferred
+          </strong>
+        </div>
+        <div><span>Authority</span><strong>{authority}</strong></div>
+        <p>
+          tracking_only = true · deployment_allowed = false · capital_authority = false ·
+          order_authority = false. Records after the evidence window are genuinely unseen data. The
+          append-only ledger is the system of record and this view is a projection of it; where a
+          cell is deferred, unavailable, short of warmup or lifecycle-terminated it is labelled as
+          such and never as flat.
+        </p>
+      </OscillatorRegion>
+    </section>
+  );
+}
+
 function XgbShowcase({ showcase }: { showcase: XgbShowcaseSnapshot }) {
   const models = [...showcase.models, showcase.futureWatch];
   const defaultModel = showcase.models.find((model) => model.id === "chatty-pruned") ?? showcase.futureWatch;
@@ -1324,6 +2923,9 @@ function DataAcquisitionConsole() {
 
 export default function Home() {
   const [snapshot, setSnapshot] = useState<Snapshot>(bundledSnapshot);
+  const [oscillatorWatch, setOscillatorWatch] = useState<OscillatorWatchState>(
+    initialOscillatorWatch,
+  );
   const [selectedDate, setSelectedDate] = useState(bundledTradeDatasets[0]?.date ?? "");
   const [assetSymbol, setAssetSymbol] = useState("");
   const dateWasSelected = useRef(false);
@@ -1344,6 +2946,14 @@ export default function Home() {
         const next: unknown = await response.json();
         if (!active || !isSafeRuntimeSnapshot(next)) return;
         setSnapshot(next);
+        // A feed carrying no tracker at all leaves the build-time projection
+        // standing, which is why the block is bundled. A feed that does carry one
+        // replaces it either way: adopting an honest block, and surfacing a
+        // failed one as a stated unavailable state rather than leaving a stale
+        // roster on screen under a fresh timestamp.
+        if (next.oscillatorWatch != null) {
+          setOscillatorWatch(readOscillatorWatch(next.oscillatorWatch));
+        }
         if (!dateWasSelected.current) {
           const latest = next.datasets.find((dataset) => dataset.assets.length > 0)?.date ?? "";
           setSelectedDate(latest);
@@ -1435,7 +3045,7 @@ export default function Home() {
         </div>
 
         <div className="authority-strip">
-          <nav aria-label="Market sections"><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a></nav>
+          <nav aria-label="Market sections"><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a><a href="#oscillator-watch">Oscillator watch</a></nav>
           <div className="market-state"><i /> completed candles only</div>
           <span>Indicator states are causal · setups are research references · no order routing</span>
         </div>
@@ -1579,6 +3189,9 @@ export default function Home() {
         </section>
         {snapshot.etf && <EtfOpportunities etf={snapshot.etf} />}
         {snapshot.crypto && <CryptoOpportunities crypto={snapshot.crypto} />}
+        {oscillatorWatch.available
+          ? <OscillatorWatch watch={oscillatorWatch.watch} />
+          : <OscillatorWatchUnavailable prose={oscillatorWatch.prose} detail={oscillatorWatch.detail} />}
       </main>
 
       <footer>

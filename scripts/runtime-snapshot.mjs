@@ -2,6 +2,11 @@ import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { mkdir, open, readFile, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  oscillatorUnavailableViolation,
+  oscillatorWatchHonestyViolation,
+} from "./oscillator-honesty.mjs";
+
 export const PUBLIC_SNAPSHOT_PATH = "/data/arbitra-snapshot.json";
 export const INGEST_SNAPSHOT_PATH = "/internal/stock-selector-snapshot";
 export const CRYPTO_INGEST_SNAPSHOT_PATH = "/internal/crypto-selector-snapshot";
@@ -74,7 +79,39 @@ function validateBaseSnapshot(snapshot) {
       throw new Error("market evidence must remain research-only");
     }
   }
+  validateOscillatorWatch(snapshot.oscillatorWatch);
   return snapshot;
+}
+
+/**
+ * The oscillator alpha watch tracker is the one surface that puts a BUY or SELL
+ * in front of a human, so a republished feed is held to the same gate the
+ * build-time projection applies — not merely the two flags the other market
+ * surfaces are checked for. A block claiming any authority is refused before it
+ * reaches disk rather than left to the client to decline to render.
+ */
+export function validateOscillatorWatch(watch) {
+  if (watch == null) return watch;
+  if (!isObject(watch)) {
+    throw new Error("oscillator watch must be a JSON object or null");
+  }
+  if (watch.available === false) {
+    // N3. This branch used to re-check the four flags and return, so `reason`
+    // was unconstrained — and the client preferred the payload's `reason` over
+    // its own guard's, which put arbitrary prose under the heading "Withheld by
+    // the honesty gate". The unavailable form is now validated as a form: a
+    // reasonCode from the closed set, and at most one capped detail fragment.
+    const violation = oscillatorUnavailableViolation(watch);
+    if (violation != null) {
+      throw new Error(`oscillator watch must remain tracking-only: ${violation}`);
+    }
+    return watch;
+  }
+  const violation = oscillatorWatchHonestyViolation(watch);
+  if (violation != null) {
+    throw new Error(`oscillator watch must remain tracking-only: ${violation}`);
+  }
+  return watch;
 }
 
 export function validateAcceptedSnapshot(snapshot) {
@@ -322,7 +359,14 @@ export function createRuntimeSnapshotHandler({
               409,
             );
           }
-          incoming = validateAcceptedSnapshot({ ...parsed, crypto: current.crypto ?? null });
+          // The stock route owns neither the crypto surface nor the tracker: both
+          // are written by other producers, so both are carried across a publish
+          // rather than dropped by a worker that has never heard of them.
+          incoming = validateAcceptedSnapshot({
+            ...parsed,
+            crypto: current.crypto ?? null,
+            oscillatorWatch: current.oscillatorWatch ?? null,
+          });
           identity = { dataThrough: parsed.stockSelector.dataThrough };
         }
         const normalized = `${JSON.stringify(incoming, null, 2)}\n`;
