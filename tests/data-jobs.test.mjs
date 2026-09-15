@@ -131,6 +131,7 @@ test("worker claims, checkpoints, and completes a downloadable job", async (cont
   const claimed = (await claim.json()).job;
   assert.equal(claimed.id, created.id);
   assert.equal(claimed.status, "running");
+  assert.equal(claimed.fencingGeneration, 1);
 
   const progress = {
     symbolsTotal: 10,
@@ -145,7 +146,12 @@ test("worker claims, checkpoints, and completes a downloadable job", async (cont
   const heartbeat = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/${created.id}/heartbeat`, {
     method: "POST",
     headers: WORKER_HEADERS,
-    body: { progress, resume: { completedSymbols: ["NVDA"], currentTicker: "AAPL", page: 1 } },
+    body: {
+      workerId: claimed.workerId,
+      fencingGeneration: claimed.fencingGeneration,
+      progress,
+      resume: { completedSymbols: ["NVDA"], currentTicker: "AAPL", page: 1 },
+    },
   }));
   assert.equal(heartbeat.status, 200);
   assert.equal((await heartbeat.json()).job.progress.rowsWritten, 410000);
@@ -155,6 +161,8 @@ test("worker claims, checkpoints, and completes a downloadable job", async (cont
     method: "POST",
     headers: WORKER_HEADERS,
     body: {
+      workerId: claimed.workerId,
+      fencingGeneration: claimed.fencingGeneration,
       progress: { ...progress, symbolsCompleted: 10, currentTicker: "" },
       artifacts: [{
         id: "manifest.json",
@@ -182,11 +190,12 @@ test("running jobs can be cancelled without being reported complete", async (con
   const state = await harness();
   context.after(() => rm(state.directory, { recursive: true, force: true }));
   const created = await createJob(state);
-  await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/claim`, {
+  const claim = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/claim`, {
     method: "POST",
     headers: WORKER_HEADERS,
     body: { workerId: "worker-one" },
   }));
+  const claimed = (await claim.json()).job;
 
   const cancel = await state.handler(request(`${DATA_JOBS_PATH}/${created.id}/cancel`, {
     method: "POST",
@@ -203,6 +212,8 @@ test("running jobs can be cancelled without being reported complete", async (con
     method: "POST",
     headers: WORKER_HEADERS,
     body: {
+      workerId: claimed.workerId,
+      fencingGeneration: claimed.fencingGeneration,
       progress: { symbolsTotal: 10, symbolsCompleted: 10 },
       artifacts: [{
         id: "manifest.json",
@@ -220,7 +231,11 @@ test("running jobs can be cancelled without being reported complete", async (con
   const cancelled = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/${created.id}/cancelled`, {
     method: "POST",
     headers: WORKER_HEADERS,
-    body: { progress: { symbolsTotal: 10, symbolsCompleted: 1 } },
+    body: {
+      workerId: claimed.workerId,
+      fencingGeneration: claimed.fencingGeneration,
+      progress: { symbolsTotal: 10, symbolsCompleted: 1 },
+    },
   }));
   assert.equal((await cancelled.json()).job.status, "cancelled");
 });
@@ -229,16 +244,19 @@ test("worker checkpoints can carry a bounded full-universe resume ledger", async
   const state = await harness();
   context.after(() => rm(state.directory, { recursive: true, force: true }));
   const created = await createJob(state);
-  await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/claim`, {
+  const claim = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/claim`, {
     method: "POST",
     headers: WORKER_HEADERS,
     body: { workerId: "worker-one" },
   }));
+  const claimed = (await claim.json()).job;
 
   const heartbeat = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/${created.id}/heartbeat`, {
     method: "POST",
     headers: WORKER_HEADERS,
     body: {
+      workerId: claimed.workerId,
+      fencingGeneration: claimed.fencingGeneration,
       progress: { symbolsTotal: 503, symbolsCompleted: 400 },
       resume: { checkpointEvidence: "x".repeat(300 * 1024) },
     },
@@ -252,15 +270,21 @@ test("expired running leases are reclaimed with checkpoint state intact", async 
   const state = await harness();
   context.after(() => rm(state.directory, { recursive: true, force: true }));
   const created = await createJob(state);
-  await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/claim`, {
+  const firstClaim = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/claim`, {
     method: "POST",
     headers: WORKER_HEADERS,
     body: { workerId: "worker-one" },
   }));
+  const firstWorker = (await firstClaim.json()).job;
   await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/${created.id}/heartbeat`, {
     method: "POST",
     headers: WORKER_HEADERS,
-    body: { progress: { symbolsTotal: 10, symbolsCompleted: 2 }, resume: { completedSymbols: ["NVDA", "AAPL"] } },
+    body: {
+      workerId: firstWorker.workerId,
+      fencingGeneration: firstWorker.fencingGeneration,
+      progress: { symbolsTotal: 10, symbolsCompleted: 2 },
+      resume: { completedSymbols: ["NVDA", "AAPL"] },
+    },
   }));
   state.setNow("2026-08-14T12:02:00Z");
 
@@ -272,7 +296,20 @@ test("expired running leases are reclaimed with checkpoint state intact", async 
   const job = (await reclaimed.json()).job;
   assert.equal(job.id, created.id);
   assert.equal(job.workerId, "worker-two");
+  assert.equal(job.fencingGeneration, 2);
   assert.deepEqual(job.resume.completedSymbols, ["NVDA", "AAPL"]);
+
+  const stale = await state.handler(request(`${INTERNAL_DATA_JOBS_PATH}/${created.id}/heartbeat`, {
+    method: "POST",
+    headers: WORKER_HEADERS,
+    body: {
+      workerId: firstWorker.workerId,
+      fencingGeneration: firstWorker.fencingGeneration,
+      progress: { symbolsTotal: 10, symbolsCompleted: 3 },
+      resume: {},
+    },
+  }));
+  assert.equal(stale.status, 409);
 });
 
 test("a process-crash lock is recovered without abandoning the ledger", async (context) => {

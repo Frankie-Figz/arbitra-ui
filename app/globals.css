@@ -53,6 +53,8 @@ button { cursor: pointer; }
 .authority-strip nav { align-items: center; display: flex; gap: 5px; }
 .authority-strip nav a { border: 1px solid #405047; border-radius: 999px; color: #eef5ed; font-family: var(--font-geist-mono), monospace; font-size: 8px; letter-spacing: .05em; padding: 4px 8px; text-decoration: none; text-transform: uppercase; }
 .authority-strip nav a:hover, .authority-strip nav a:focus-visible { background: var(--lime); border-color: var(--lime); color: var(--ink); outline: none; }
+.authority-strip nav a { font-size: 14px; letter-spacing: 0; padding: 7px 12px; text-transform: none; }
+.authority-strip nav a[aria-current="page"] { background: var(--lime); border-color: var(--lime); color: var(--ink); }
 
 main { margin: 0 auto; max-width: 1500px; padding: 18px 30px 64px; }
 .eyebrow { color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; margin: 0; text-transform: uppercase; }

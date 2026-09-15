@@ -7,19 +7,21 @@
   },
   "scripts": {
     "dev": "vinext dev",
-    "prebuild": "node scripts/check-oscillator-bundle.mjs",
+    "prebuild": "node scripts/sync-frozen-oscillators.mjs --check",
     "build": "vinext build",
     "start": "node scripts/start-local.mjs",
     "test": "node --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "sync:data": "node scripts/sync-arbitra.mjs"
+    "sync:data": "node scripts/sync-arbitra.mjs",
+    "sync:frozen-oscillators": "node scripts/sync-frozen-oscillators.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1110.0",
     "@aws-sdk/s3-request-presigner": "3.1110.0",
     "drizzle-orm": "0.45.2",
     "next": "16.3.1",
+    "pg": "8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },

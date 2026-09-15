@@ -582,7 +582,10 @@ function staleBuildReason() {
   return false;
 }
 
-const STALE_BUILD = staleBuildReason();
+// September 13: the user replaced this legacy screen with the frozen divergence
+// scanner. Keep producer/ingest/source-contract tests, but explicitly retire its
+// root-render tests instead of misreporting the absent projection as a stale build.
+const STALE_BUILD = "Legacy watch UI retired: Stock Picker + Crypto Scanner replace the old multi-section home";
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -1633,20 +1636,10 @@ test("an outage that exists only in its own partition still reaches the ledger",
 
 // ── D6. A watch that stops reporting says so ─────────────────────────────────
 
-test("an unavailable tracker renders a stated reason instead of vanishing", async () => {
-  const page = await readFile(resolve(uiRoot, "app", "page.tsx"), "utf8");
-  // The section and its anchor are unconditional; only their contents change.
-  assert.match(page, /<a href="#oscillator-watch">Oscillator watch<\/a>/);
-  assert.doesNotMatch(page, /\{oscillatorWatch && <a href="#oscillator-watch">/);
-  // N3: the panel receives OUR prose and a quoted fragment, never the payload's
-  // own `reason` string.
-  assert.match(
-    page,
-    /OscillatorWatchUnavailable prose=\{oscillatorWatch\.prose\} detail=\{oscillatorWatch\.detail\}/,
-  );
-  assert.match(page, /oscillator-unavailable-reason/);
-
-  // And the refusal the projection stated is the refusal the panel describes.
+test("the retained legacy producer describes an unavailable tracker", async () => {
+  // The projection/ingest protocol remains available even though its old UI is
+  // no longer mounted. The replacement screen's absence/freshness is tested in
+  // rendered-html.test.mjs and frozen-oscillator-ui.test.mjs.
   const missing = await collectOscillatorWatch(await mkdtemp(resolve(tmpdir(), "osc-empty-")));
   assert.equal(missing.available, false);
   assert.match(missing.reason, /has not written a snapshot/);

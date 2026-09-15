@@ -855,6 +855,18 @@ const stockSelector = newestScan
       ordersSubmitted: 0,
     }
   : null;
+// stockSelector and crypto are owned by the runtime ingest routes, not by
+// artifacts. When this sync has no artifact-derived replacement it carries the
+// existing surface forward instead of writing null: regenerating the bundle
+// must never drop a surface it does not produce. Writing null left the tracked
+// snapshot failing its own fixture tests and erased the last accepted selector
+// state from the deployable bundle.
+const previousSnapshot = await readFile(outputPath, "utf8")
+  .then((text) => JSON.parse(text))
+  .catch(() => ({}));
+const retainedStockSelector = stockSelector ?? previousSnapshot.stockSelector ?? null;
+const retainedCrypto = crypto ?? previousSnapshot.crypto ?? null;
+
 const snapshot = {
   schemaVersion: 6,
   generatedAt: new Date().toISOString(),
@@ -866,10 +878,10 @@ const snapshot = {
   datasets,
   matrices,
   profiles: historical?.profiles ?? {},
-  stockSelector,
+  stockSelector: retainedStockSelector,
   xgbShowcase,
   etf,
-  crypto,
+  crypto: retainedCrypto,
   oscillatorWatch,
   history: {
     startDate: historical?.startDate ?? datasets.at(-1)?.date ?? null,
@@ -891,5 +903,5 @@ await writeFile(
   "utf8",
 );
 console.log(
-  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : "no crypto run"}, and ${oscillatorWatch ? `${oscillatorWatch.counts.cellsTotal} oscillator watch cells (${oscillatorWatch.counts.activeLong}L / ${oscillatorWatch.counts.activeShort}S recorded, ${oscillatorWatch.history.length} ledger records, tracking only)` : `no oscillator watch block (${oscillatorWatchResult.reason})`}.`,
+  `Synced ${datasets.length} completed dates, ${methodologies.length} long methodologies, ${Object.keys(snapshot.profiles).length} profiles, ${matrices.reduce((total, matrix) => total + matrix.cells.length, 0)} matrix cells, ${etf ? `${etf.universeSymbols} ETFs from ${etf.sourceRun}` : "no ETF run"}, ${crypto ? `${crypto.universe.considered} crypto markets from ${crypto.sourceRun}` : retainedCrypto ? "no crypto run (existing crypto surface retained)" : "no crypto run"}, and ${oscillatorWatch ? `${oscillatorWatch.counts.cellsTotal} oscillator watch cells (${oscillatorWatch.counts.activeLong}L / ${oscillatorWatch.counts.activeShort}S recorded, ${oscillatorWatch.history.length} ledger records, tracking only)` : `no oscillator watch block (${oscillatorWatchResult.reason})`}.${stockSelector ? "" : retainedStockSelector ? " Existing stock selector surface retained." : ""}`,
 );

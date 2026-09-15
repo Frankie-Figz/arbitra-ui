@@ -3,6 +3,20 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const root = new URL("../", import.meta.url);
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#x27;",
+})[character]);
+const indicatorCount = (asset) => 1 + Number(asset.atr10Pass) + Number(asset.bb40Pass) + Number(asset.ema20Pass);
+
+function selectOptions(html, label) {
+  const select = new RegExp(`<select\\b[^>]*aria-label="${label}"[^>]*>([\\s\\S]*?)<\\/select>`).exec(html);
+  assert.ok(select, `Missing ${label} selector`);
+  return [...select[1].matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option>/g)].map((match) => ({
+    value: /\bvalue="([^"]*)"/.exec(match[1])?.[1],
+    selected: /\bselected(?:=""|\s|$)/.test(match[1]),
+    text: match[2].replace(/<!--[\s\S]*?-->/g, "").trim(),
+  }));
+}
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -15,7 +29,12 @@ async function render() {
   );
 }
 
-test("server-renders indicator-led market workspaces without internal operations UI", async () => {
+test("server-renders the Stock Picker with one Crypto Scanner destination", async () => {
+  const snapshot = JSON.parse(await readFile(new URL("public/data/arbitra-snapshot.json", root), "utf8"));
+  const tradeDatasets = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
+  assert.ok(tradeDatasets.length > 0, "The bundled fixture must contain a stock signal date");
+  const selectedDataset = tradeDatasets[0];
+  const selectedAsset = selectedDataset.assets[0];
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -25,30 +44,40 @@ test("server-renders indicator-led market workspaces without internal operations
   assert.match(html, /Daily stock opportunities/);
   assert.match(html, /Indicator-lit setups/);
   assert.match(html, /Reference trade setup/);
-  assert.match(html, /3 of 4 indicators lit/);
   assert.match(html, /Company profile/);
   assert.match(html, /Yahoo Finance/);
   assert.match(html, /SMC \+ PPO/);
-  assert.match(html, /MSGS/);
   assert.match(html, /aria-label="Signal date"/);
   assert.match(html, /aria-label="Eligible asset"/);
   assert.match(html, /open company detail/);
-  assert.match(html, /ETF opportunities/);
-  assert.match(html, /Suggested setup after Godmode \+ MFI agree/);
-  assert.match(html, /Past Godmode ETF opportunities/);
-  assert.match(html, /MFI add-on/);
-  assert.match(html, /Prospective tradability screening is not an ETF eligibility gate/);
-  assert.match(html, /Crypto opportunities/);
-  assert.match(html, /RSI divergence \+ EMA contraction/);
-  assert.match(html, /Godmode confirmed transitions/);
-  assert.match(html, /Suggested setup after both signals agree/);
-  assert.match(html, /Past RSI \/ EMA opportunities/);
-  assert.match(html, /Add-on met/);
-  assert.match(html, /Without add-on/);
-  assert.match(html, /No active short right now|active signal/);
+  const dateOptions = selectOptions(html, "Signal date");
+  assert.deepEqual(dateOptions.map((option) => option.value), tradeDatasets.map((dataset) => dataset.date));
+  assert.deepEqual(dateOptions.filter((option) => option.selected).map((option) => option.value), [selectedDataset.date]);
+  for (const [index, dataset] of tradeDatasets.entries()) {
+    assert.ok(dateOptions[index].text.endsWith(`— ${dataset.assets.length} setup${dataset.assets.length === 1 ? "" : "s"}`));
+  }
+  const assetOptions = selectOptions(html, "Eligible asset");
+  assert.deepEqual(assetOptions.map((option) => option.value), selectedDataset.assets.map((asset) => escapeHtml(asset.symbol)));
+  assert.deepEqual(assetOptions.filter((option) => option.selected).map((option) => option.value), [escapeHtml(selectedAsset.symbol)]);
+  const cardLabels = [...html.matchAll(/aria-label="([^"]* of 4 indicators lit, open company detail)"/g)].map((match) => match[1]);
+  assert.deepEqual(cardLabels, selectedDataset.assets.map((asset) => escapeHtml(`${asset.symbol}, ${indicatorCount(asset)} of 4 indicators lit, open company detail`)));
+  assert.ok(html.includes(`<span>Current setups</span><strong>${selectedDataset.assets.length}</strong>`));
+  assert.ok(html.includes(`<span>Full confirmation</span><strong>${selectedDataset.assets.filter((asset) => indicatorCount(asset) === 4).length}</strong>`));
+  assert.ok(html.includes(`<span>Parent only</span><strong>${selectedDataset.assets.filter((asset) => indicatorCount(asset) === 1).length}</strong>`));
+  const profile = snapshot.profiles[selectedAsset.symbol];
+  if (profile?.available) assert.ok(html.includes(escapeHtml(profile.longName)));
+  const navigation = /<nav aria-label="Market sections">([\s\S]*?)<\/nav>/.exec(html)?.[1];
+  assert.ok(navigation);
+  assert.equal((navigation.match(/<a\b/g) ?? []).length, 2);
+  assert.match(navigation, /href="\/" aria-current="page">Stock Picker<\/a>/);
+  assert.match(navigation, /href="\/oscillators">Crypto Scanner<\/a>/);
+  assert.doesNotMatch(html, /id="(?:etf-opportunities|crypto-opportunities|oscillator-watch)"/);
+  assert.doesNotMatch(html, /ETF opportunities|Crypto opportunities|Oscillator alpha watch|Godmode confirmed transitions/);
   assert.match(html, /research only · no capital authority/);
-  assert.match(html, /<option value="2026-07-28">/);
-  assert.doesNotMatch(html, /<option value="2026-08-09">/);
+  assert.match(html, /Indicator states are causal/);
+  assert.match(html, /completed candles only/);
+  assert.match(html, /No order authority/);
+  assert.match(html, /An unlit add-on never removes the parent opportunity/);
   assert.doesNotMatch(html, /Biblical basket registry|Research Observatory/);
   assert.doesNotMatch(html, /Historical data acquisition|Elijah&#x27;s Ravens|Data jobs|Call the champions|XGB champions/);
   assert.doesNotMatch(html, /Pullback \/ target matrix|Forecast probability/);
@@ -65,37 +94,34 @@ test("ships exact-date stock signals with complementary indicator states", async
   assert.equal(snapshot.stockSelector.deploymentAllowed, false);
   assert.equal(snapshot.stockSelector.ordersSubmitted, 0);
   assert.ok(snapshot.stockSelector.universe >= 5000);
-  const august11 = snapshot.datasets.find((dataset) => dataset.date === "2026-08-11");
-  assert.ok(august11);
-  assert.deepEqual(
-    august11.assets.map((asset) => asset.symbol),
-    ["MPC", "VLO", "ARMK"],
-  );
-  assert.ok(august11.assets[0].atr10Pass && august11.assets[0].bb40Pass && august11.assets[0].ema20Pass);
-  assert.ok(august11.assets[1].atr10Pass && august11.assets[1].bb40Pass && august11.assets[1].ema20Pass);
-  assert.equal(august11.assets[2].atr10Pass, false);
-  assert.equal(august11.assets[2].bb40Pass, false);
-  assert.equal(august11.assets[2].ema20Pass, true);
-
-  const august10 = snapshot.datasets.find((dataset) => dataset.date === "2026-08-10");
-  assert.ok(august10);
-  assert.deepEqual(
-    august10.assets.map((asset) => asset.symbol).sort(),
-    ["CLMT", "LFST", "OGN", "OMDA"],
-  );
-  assert.ok(august10.assets.every((asset) => asset.signalDate === august10.date));
-  assert.equal(august10.assets.filter((asset) => asset.atr10Pass).length, 0);
-
-  assert.equal(snapshot.datasets.length, 44);
+  const historyStart = Date.parse(`${snapshot.history.startDate}T00:00:00Z`);
+  const historyEnd = Date.parse(`${snapshot.history.endDate}T00:00:00Z`);
+  assert.ok(Number.isFinite(historyStart) && Number.isFinite(historyEnd) && historyEnd >= historyStart);
+  // The bundled daily-history contract includes empty calendar dates as well as
+  // signal dates. Derive its exact extent from the declared window, not a vintage.
+  const expectedDates = Array.from({ length: (historyEnd - historyStart) / 86_400_000 + 1 }, (_, index) =>
+    new Date(historyEnd - index * 86_400_000).toISOString().slice(0, 10));
+  assert.deepEqual(snapshot.datasets.map((dataset) => dataset.date), expectedDates);
+  for (const dataset of snapshot.datasets) {
+    assert.ok(Array.isArray(dataset.assets));
+    assert.equal(new Set(dataset.assets.map((asset) => asset.symbol)).size, dataset.assets.length);
+    for (const asset of dataset.assets) {
+      assert.equal(asset.signalDate, dataset.date, `${asset.symbol} must belong to the exact signal date`);
+      for (const indicator of ["atr10Pass", "bb40Pass", "ema20Pass"]) assert.equal(typeof asset[indicator], "boolean");
+      assert.ok(asset.methodologies.includes("smc-ppo"), "Unlit complementary indicators must not remove the parent setup");
+    }
+  }
   const validTradeDates = snapshot.datasets.filter((dataset) => dataset.assets.length > 0).slice(0, 30);
-  assert.ok(validTradeDates.length <= 30);
+  assert.equal(validTradeDates.length, Math.min(30, snapshot.datasets.filter((dataset) => dataset.assets.length > 0).length));
+  assert.ok(validTradeDates.length > 0);
   assert.ok(validTradeDates.every((dataset) => dataset.assets.length > 0));
-  assert.equal(snapshot.datasets.at(-1).date, "2026-07-01");
-  assert.equal(snapshot.history.startDate, "2026-07-01");
   assert.equal(snapshot.history.entryWindowCompletedCandles, 5);
   assert.equal(snapshot.history.targetWindowCompletedCandlesAfterFill, 20);
-  assert.equal(snapshot.profiles.CLMT.source, "Yahoo Finance");
-  assert.ok(snapshot.profiles.CLMT.description.length > 100);
+  assert.equal(snapshot.history.unfilledTargetMarkWindowCompletedCandles, 25);
+  const availableProfiles = Object.values(snapshot.profiles).filter((profile) => profile.available);
+  assert.ok(availableProfiles.length > 0);
+  assert.ok(availableProfiles.every((profile) => profile.source === "Yahoo Finance"));
+  assert.ok(availableProfiles.some((profile) => typeof profile.description === "string" && profile.description.length > 100));
 
   assert.ok(snapshot.etf);
   assert.equal(snapshot.etf.deploymentAllowed, false);

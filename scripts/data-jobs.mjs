@@ -14,11 +14,11 @@ const TICKER_PATTERN = /^[A-Z][A-Z0-9.]{0,7}$/;
 const TERMINAL_STATUSES = new Set(["completed", "failed", "cancelled"]);
 const ACTIVE_STATUSES = new Set(["running", "cancel_requested"]);
 const MAXIMUM_BODY_BYTES = 256 * 1024;
-const MAXIMUM_INTERNAL_BODY_BYTES = 2 * 1024 * 1024;
+export const MAXIMUM_INTERNAL_BODY_BYTES = 2 * 1024 * 1024;
 const DEFAULT_LEASE_SECONDS = 180;
 const STALE_LOCK_MILLISECONDS = 30_000;
 
-function jsonResponse(payload, status = 200, headers = {}) {
+export function jsonResponse(payload, status = 200, headers = {}) {
   return new Response(`${JSON.stringify(payload)}\n`, {
     status,
     headers: { ...JSON_HEADERS, ...headers },
@@ -35,7 +35,7 @@ function constantTimeEqual(left, right) {
   return leftBytes.length === rightBytes.length && timingSafeEqual(leftBytes, rightBytes);
 }
 
-function bearerAuthorized(request, token) {
+export function bearerAuthorized(request, token) {
   if (!token) return false;
   const authorization = request.headers.get("authorization") ?? "";
   return authorization.startsWith("Bearer ") &&
@@ -99,7 +99,7 @@ function normalizeUniverse(value, confirmation) {
   throw new Error("universe type is unsupported");
 }
 
-function normalizeJobRequest(value, now) {
+export function normalizeJobRequest(value, now) {
   if (!isObject(value)) throw new Error("job request must be a JSON object");
   const rangeStart = parseIsoDate(value.rangeStart, "rangeStart");
   const rangeEnd = parseIsoDate(value.rangeEnd, "rangeEnd");
@@ -130,7 +130,7 @@ function normalizeJobRequest(value, now) {
   };
 }
 
-async function readJsonBody(request, maximumBytes = MAXIMUM_BODY_BYTES) {
+export async function readJsonBody(request, maximumBytes = MAXIMUM_BODY_BYTES) {
   const declared = Number(request.headers.get("content-length") ?? 0);
   if (declared > maximumBytes) throw new Error("request body exceeds the limit");
   if (!request.body) return {};
@@ -226,10 +226,11 @@ async function listJobs(root) {
   return jobs.sort((left, right) => right.createdAt.localeCompare(left.createdAt));
 }
 
-function publicJob(job) {
+export function publicJob(job) {
   const visible = { ...job };
   delete visible.workerId;
   delete visible.leaseUntil;
+  delete visible.fencingGeneration;
   delete visible.resume;
   return visible;
 }
@@ -238,7 +239,7 @@ function leaseTimestamp(now, leaseSeconds) {
   return new Date(now.getTime() + leaseSeconds * 1000).toISOString();
 }
 
-function normalizeProgress(value, current) {
+export function normalizeProgress(value, current) {
   if (!isObject(value)) return current;
   const next = { ...current };
   for (const field of ["symbolsTotal", "symbolsCompleted", "symbolsFailed", "pagesCompleted", "providerCalls", "rowsWritten", "bytesUploaded"]) {
@@ -257,7 +258,7 @@ function normalizeProgress(value, current) {
   return next;
 }
 
-function normalizeArtifacts(value, job) {
+export function normalizeArtifacts(value, job) {
   if (!Array.isArray(value) || value.length < 1 || value.length > 510) {
     throw new Error("completed job must declare between 1 and 510 artifacts");
   }
@@ -291,7 +292,7 @@ function normalizeArtifacts(value, job) {
   });
 }
 
-function routeParts(pathname, prefix) {
+export function routeParts(pathname, prefix) {
   if (pathname === prefix) return [];
   if (!pathname.startsWith(`${prefix}/`)) return null;
   return pathname.slice(prefix.length + 1).split("/").map(decodeURIComponent);
@@ -393,6 +394,7 @@ export function createDataJobsHandler({
         if (!candidate) return null;
         candidate.status = "running";
         candidate.workerId = workerId;
+        candidate.fencingGeneration = Number(candidate.fencingGeneration ?? 0) + 1;
         candidate.startedAt ??= timestamp.toISOString();
         candidate.updatedAt = timestamp.toISOString();
         candidate.leaseUntil = leaseTimestamp(timestamp, leaseSeconds);
@@ -413,10 +415,18 @@ export function createDataJobsHandler({
     if (parts.length !== 2 || request.method !== "POST") return jsonResponse({ status: "method_not_allowed" }, 405);
     const action = parts[1];
     const body = await readJsonBody(request, MAXIMUM_INTERNAL_BODY_BYTES);
+    const fencedMutation = async (latest) => {
+      const generation = body.fencingGeneration;
+      const workerId = String(body.workerId ?? "");
+      const timestamp = now();
+      return workerId !== "" && workerId === latest.workerId &&
+        Number.isSafeInteger(generation) && generation === latest.fencingGeneration &&
+        latest.leaseUntil && latest.leaseUntil >= timestamp.toISOString();
+    };
     if (action === "heartbeat") {
       const updated = await withLedgerLock(jobsRoot, async () => {
         const latest = await readJob(jobsRoot, job.id);
-        if (!ACTIVE_STATUSES.has(latest.status)) return null;
+        if (!ACTIVE_STATUSES.has(latest.status) || !(await fencedMutation(latest))) return null;
         const timestamp = now();
         latest.progress = normalizeProgress(body.progress, latest.progress);
         if (isObject(body.resume)) latest.resume = body.resume;
@@ -430,7 +440,7 @@ export function createDataJobsHandler({
     if (action === "complete") {
       const updated = await withLedgerLock(jobsRoot, async () => {
         const latest = await readJob(jobsRoot, job.id);
-        if (latest.status !== "running") return null;
+        if (latest.status !== "running" || !(await fencedMutation(latest))) return null;
         const timestamp = now().toISOString();
         latest.progress = normalizeProgress(body.progress, latest.progress);
         latest.artifacts = normalizeArtifacts(body.artifacts, latest);
@@ -448,6 +458,7 @@ export function createDataJobsHandler({
     if (action === "fail" || action === "cancelled") {
       const updated = await withLedgerLock(jobsRoot, async () => {
         const latest = await readJob(jobsRoot, job.id);
+        if (!(await fencedMutation(latest))) return null;
         if (TERMINAL_STATUSES.has(latest.status)) return latest;
         const timestamp = now().toISOString();
         latest.progress = normalizeProgress(body.progress, latest.progress);
@@ -459,7 +470,7 @@ export function createDataJobsHandler({
         await writeJob(jobsRoot, latest);
         return latest;
       });
-      return jsonResponse({ job: updated });
+      return updated ? jsonResponse({ job: updated }) : jsonResponse({ status: "stale_fence" }, 409);
     }
     return jsonResponse({ status: "not_found" }, 404);
   }

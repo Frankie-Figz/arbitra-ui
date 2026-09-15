@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import snapshotJson from "../public/data/arbitra-snapshot.json";
-import oscillatorWatchJson from "./data/oscillator-alpha-watch.json";
 import {
   describeOscillatorUnavailable,
   oscillatorWatchHonestyViolation,
@@ -853,7 +852,6 @@ function isSafeRuntimeSnapshot(value: unknown): value is Snapshot {
     Array.isArray(candidate.datasets) &&
     candidate.profiles != null && typeof candidate.profiles === "object";
 }
-const bundledOscillatorWatch = oscillatorWatchJson as OscillatorWatchBundle;
 
 /**
  * Either the block, or the reason it may not be shown. Never simply absent: a
@@ -896,7 +894,6 @@ function readOscillatorWatch(value: unknown): OscillatorWatchState {
   );
   return { available: false, prose: described.prose, detail: described.detail };
 }
-const initialOscillatorWatch = readOscillatorWatch(bundledOscillatorWatch);
 
 const STOCK_ENTRY_PULLBACK_PERCENT = 1;
 const STOCK_TARGET_PERCENT = 5;
@@ -2923,9 +2920,6 @@ function DataAcquisitionConsole() {
 
 export default function Home() {
   const [snapshot, setSnapshot] = useState<Snapshot>(bundledSnapshot);
-  const [oscillatorWatch, setOscillatorWatch] = useState<OscillatorWatchState>(
-    initialOscillatorWatch,
-  );
   const [selectedDate, setSelectedDate] = useState(bundledTradeDatasets[0]?.date ?? "");
   const [assetSymbol, setAssetSymbol] = useState("");
   const dateWasSelected = useRef(false);
@@ -2946,14 +2940,6 @@ export default function Home() {
         const next: unknown = await response.json();
         if (!active || !isSafeRuntimeSnapshot(next)) return;
         setSnapshot(next);
-        // A feed carrying no tracker at all leaves the build-time projection
-        // standing, which is why the block is bundled. A feed that does carry one
-        // replaces it either way: adopting an honest block, and surfacing a
-        // failed one as a stated unavailable state rather than leaving a stale
-        // roster on screen under a fresh timestamp.
-        if (next.oscillatorWatch != null) {
-          setOscillatorWatch(readOscillatorWatch(next.oscillatorWatch));
-        }
         if (!dateWasSelected.current) {
           const latest = next.datasets.find((dataset) => dataset.assets.length > 0)?.date ?? "";
           setSelectedDate(latest);
@@ -3045,7 +3031,7 @@ export default function Home() {
         </div>
 
         <div className="authority-strip">
-          <nav aria-label="Market sections"><a href="#daily-longs">Stock daily</a><a href="#etf-opportunities">ETF daily</a><a href="#crypto-opportunities">Crypto hourly</a><a href="#oscillator-watch">Oscillator watch</a></nav>
+          <nav aria-label="Market sections"><a href="/" aria-current="page">Stock Picker</a><a href="/oscillators">Crypto Scanner</a></nav>
           <div className="market-state"><i /> completed candles only</div>
           <span>Indicator states are causal · setups are research references · no order routing</span>
         </div>
@@ -3187,11 +3173,6 @@ export default function Home() {
             <p>ATR, Bollinger width, and EMA extension are displayed as complementary lights. They strengthen the label but are not permitted to create a stock signal independently. Entries and exits are research references, not routed orders.</p>
           </div>
         </section>
-        {snapshot.etf && <EtfOpportunities etf={snapshot.etf} />}
-        {snapshot.crypto && <CryptoOpportunities crypto={snapshot.crypto} />}
-        {oscillatorWatch.available
-          ? <OscillatorWatch watch={oscillatorWatch.watch} />
-          : <OscillatorWatchUnavailable prose={oscillatorWatch.prose} detail={oscillatorWatch.detail} />}
       </main>
 
       <footer>
