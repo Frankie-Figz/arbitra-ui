@@ -53,6 +53,8 @@ button { cursor: pointer; }
 .authority-strip nav { align-items: center; display: flex; gap: 5px; }
 .authority-strip nav a { border: 1px solid #405047; border-radius: 999px; color: #eef5ed; font-family: var(--font-geist-mono), monospace; font-size: 8px; letter-spacing: .05em; padding: 4px 8px; text-decoration: none; text-transform: uppercase; }
 .authority-strip nav a:hover, .authority-strip nav a:focus-visible { background: var(--lime); border-color: var(--lime); color: var(--ink); outline: none; }
+.authority-strip nav a { font-size: 14px; letter-spacing: 0; padding: 7px 12px; text-transform: none; }
+.authority-strip nav a[aria-current="page"] { background: var(--lime); border-color: var(--lime); color: var(--ink); }
 
 main { margin: 0 auto; max-width: 1500px; padding: 18px 30px 64px; }
 .eyebrow { color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 10px; letter-spacing: .14em; margin: 0; text-transform: uppercase; }
@@ -281,6 +283,112 @@ main { margin: 0 auto; max-width: 1500px; padding: 18px 30px 64px; }
 .etf-section .crypto-scan-meta i { background: #69d4ae; box-shadow: 0 0 0 4px rgba(105, 212, 174, .12); }
 .stock-section { background: #17302a; }
 .stock-section .crypto-scan-meta i { background: #f0bd62; box-shadow: 0 0 0 4px rgba(240, 189, 98, .13); }
+.oscillator-section { background: #1d2733; }
+.oscillator-section .crypto-scan-meta i { background: #d89036; box-shadow: 0 0 0 4px rgba(216, 144, 54, .13); }
+.oscillator-section .etf-evidence-bar { background: #26313f; border-color: #3d4c5e; }
+.oscillator-section .etf-evidence-bar > div { border-right-color: #3d4c5e; }
+.oscillator-section .opportunity-history { background: #232d3a; border-color: #3d4c5e; }
+.oscillator-section .add-on-definition { border-bottom-color: #3d4c5e; border-top-color: #3d4c5e; }
+.oscillator-section .add-on-definition strong { color: #f0bd62; }
+.oscillator-section .crypto-guardrail { border-top-color: #3d4c5e; }
+.oscillator-section .history-filters { background: #18202a; }
+.oscillator-section .history-filters button.active { background: #f0bd62; }
+.oscillator-cell { color: var(--ink); display: grid; gap: 8px; }
+.oscillator-cell.transition { border-color: #6ca789; box-shadow: inset 3px 0 #1a8254; }
+.oscillator-cell p.oscillator-cell-status { color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 8px; letter-spacing: .05em; margin: 0; text-transform: uppercase; }
+.oscillator-cell p.oscillator-cell-status.recording { color: var(--green); }
+.oscillator-cell p.oscillator-cell-status.degraded { color: var(--red); }
+.oscillator-cell .oscillator-frozen, .oscillator-cell .oscillator-cell-state { display: grid; gap: 6px; }
+.oscillator-cell .oscillator-frozen { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.oscillator-cell .oscillator-cell-state { grid-template-columns: 1fr 1fr; }
+.oscillator-cell .oscillator-cell-state.recording { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.oscillator-cell .oscillator-frozen span, .oscillator-cell .oscillator-cell-state span { background: #eeece4; border-radius: 7px; color: var(--muted); display: grid; font-size: 6px; gap: 3px; letter-spacing: .06em; padding: 7px 8px; text-transform: uppercase; }
+.oscillator-cell.transition .oscillator-cell-state.recording span { background: #e3eee6; }
+.oscillator-cell .oscillator-frozen b, .oscillator-cell .oscillator-cell-state b { color: var(--ink); font-family: var(--font-geist-mono), monospace; font-size: 9px; font-weight: 550; letter-spacing: 0; text-transform: none; }
+.oscillator-cell .oscillator-frozen i { color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 6px; font-style: normal; letter-spacing: 0; text-transform: none; }
+.oscillator-cell p.oscillator-cell-detail { color: var(--muted); font-family: inherit; font-size: 7px; line-height: 1.55; margin: 0; text-transform: none; }
+.oscillator-cell footer { flex-wrap: wrap; gap: 4px 10px; justify-content: flex-start; }
+/* N1. The roster card's own authority note. Wraps rather than truncates so the
+   counter-claim survives 375px, where the card is at its narrowest. */
+/* INVARIANT B. Every oscillator card ends with this, whatever kind it is. */
+.oscillator-card-authority { align-items: baseline; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 3px 8px; justify-content: flex-start; padding: 7px 10px; }
+.oscillator-card-authority span { background: none; color: var(--muted); flex: none; font-size: 6px; letter-spacing: .06em; padding: 0; text-transform: uppercase; }
+.oscillator-card-authority strong { color: var(--muted); font-family: var(--font-geist-mono), monospace; font-size: 7px; font-weight: 550; letter-spacing: 0; line-height: 1.5; text-transform: none; }
+.oscillator-cell .oscillator-card-authority { margin-top: 7px; padding: 7px 0 0; }
+
+/* INVARIANT A. A producer fragment is rendered as a quoted VALUE with a stated
+   source, never as a sentence in this interface's own voice. The attribution is
+   part of the element, so a fragment cannot be rendered without it. */
+/* Scoped to .oscillator-section and matched on the element: every container a
+   quotation sits in (.history-blocked span, .add-on-definition span,
+   .reason-list span, .godmode-warning p) styles a bare span, and several are
+   declared later in this file. A quotation that collapses onto one line with its
+   own attribution is a quotation that has stopped looking like one. */
+.oscillator-section span.producer-quote { display: grid; gap: 3px; margin-top: 4px; text-align: left; }
+.oscillator-section span.producer-quote > i { color: var(--muted); font-size: 6px; font-style: normal; letter-spacing: .06em; line-height: 1.4; text-transform: uppercase; }
+.oscillator-section span.producer-quote > q { color: var(--ink); font-family: var(--font-geist-mono), monospace; font-size: 7px; letter-spacing: 0; line-height: 1.55; overflow-wrap: anywhere; text-transform: none; }
+.oscillator-section span.producer-quote > q::before, .oscillator-section span.producer-quote > q::after { color: var(--muted); }
+.oscillator-section span.producer-quote > small { color: var(--muted); font-size: 6px; letter-spacing: .04em; text-transform: none; }
+.oscillator-section span.producer-quote.inline { display: inline-grid; margin-top: 0; vertical-align: top; }
+.oscillator-section .history-blocked span.producer-quote, .oscillator-section .reference-outcome span.producer-quote { margin-top: 6px; }
+.oscillator-section .godmode-warning span.producer-quote > q { font-size: 8px; }
+.oscillator-section .reason-list span.producer-quote { gap: 2px; }
+/* On the section's own dark chrome the card palette is unreadable. */
+.oscillator-section .add-on-definition span.producer-quote > q { color: #d9d3c4; font-size: 8px; }
+.oscillator-section .add-on-definition span.producer-quote > i { color: #7f8d9c; }
+.oscillator-section .add-on-definition span.producer-quote > q::before,
+.oscillator-section .add-on-definition span.producer-quote > q::after { color: #7f8d9c; }
+
+/* INVARIANT B. A counter-claim bearer that is not a card. Every node carrying
+   data-producer must sit inside one of these or inside an <article>; the
+   rendered test asserts it over the whole section. */
+.oscillator-region > .oscillator-card-authority { flex-basis: 100%; grid-column: 1 / -1; }
+.oscillator-section .crypto-hero { flex-wrap: wrap; }
+.oscillator-section .crypto-hero > .oscillator-card-authority,
+.oscillator-section .add-on-definition > .oscillator-card-authority,
+.oscillator-section .crypto-guardrail > .oscillator-card-authority,
+.oscillator-section .oscillator-unavailable-reason > .oscillator-card-authority { border-top-color: #3d4c5e; padding-left: 0; padding-right: 0; }
+.oscillator-section .crypto-hero > .oscillator-card-authority span,
+.oscillator-section .add-on-definition > .oscillator-card-authority span,
+.oscillator-section .crypto-guardrail > .oscillator-card-authority span,
+.oscillator-section .oscillator-unavailable-reason > .oscillator-card-authority span { color: #7f8d9c; }
+.oscillator-section .crypto-hero > .oscillator-card-authority strong,
+.oscillator-section .add-on-definition > .oscillator-card-authority strong,
+.oscillator-section .crypto-guardrail > .oscillator-card-authority strong,
+.oscillator-section .oscillator-unavailable-reason > .oscillator-card-authority strong { color: #9fb0c2; }
+.oscillator-section .crypto-metrics > .oscillator-card-authority { padding-left: 12px; padding-right: 12px; }
+
+/* INVARIANT A. A printed identifier is a member of a closed set, marked as a
+   producer value. It inherits its surroundings on purpose: the marking is for
+   the check, not a badge for the reader, who is already told by the region's
+   counter-claim that everything in it came from the tracker. */
+.oscillator-section .producer-id { overflow-wrap: anywhere; }
+/* The frozen legs. Each parameter is a name node and a value node with no text
+   node between them: the space is layout, not a string this view built. */
+.oscillator-cell .oscillator-frozen i.oscillator-frozen-parameters { display: flex; flex-wrap: wrap; gap: 2px 7px; }
+.oscillator-cell .oscillator-frozen .oscillator-frozen-parameter { align-items: baseline; display: flex; gap: 3px; }
+.oscillator-cell .oscillator-frozen .oscillator-frozen-parameter + .oscillator-frozen-parameter::before { color: var(--muted); content: " b7"; }
+.oscillator-cell .oscillator-frozen .oscillator-frozen-parameter b { font-size: 6px; }
+.oscillator-cell .oscillator-frozen .oscillator-frozen-parameter span.producer-quote { margin-top: 0; }
+
+/* N4 residual. What the ledger ordering actually is, printed from the data. */
+.oscillator-ledger-order { color: var(--muted); font-size: 7px; line-height: 1.5; margin: 5px 0 0; }
+.oscillator-ledger-order.dropped { color: var(--red); }
+.oscillator-record .reason-list { border-top: 0; padding-top: 0; }
+.oscillator-record .reason-list span { background: #f1ddd8; display: block; max-width: 100%; }
+.oscillator-unavailable .crypto-scan-meta i { background: var(--red); box-shadow: 0 0 0 4px rgba(197, 74, 62, .16); }
+.oscillator-unavailable-reason { background: #26313f; border: 1px solid #3d4c5e; border-radius: 11px; display: grid; gap: 6px; margin-top: 18px; padding: 14px 15px; }
+.oscillator-unavailable-reason strong { font-size: 10px; }
+.oscillator-unavailable-reason span { color: #9caaa0; font-family: var(--font-geist-mono), monospace; font-size: 8px; line-height: 1.6; word-break: break-word; }
+/* N3. The one producer-supplied fragment a refusal notice may show. Set as a
+   quoted value under an explicit attribution, never as the notice's own prose. */
+.oscillator-unavailable-reason .oscillator-unavailable-detail { border-top: 1px solid #3d4c5e; display: grid; gap: 4px; margin-top: 2px; padding-top: 8px; }
+.oscillator-unavailable-reason .oscillator-unavailable-detail i { color: #7c8a80; font-size: 7px; font-style: normal; letter-spacing: .06em; text-transform: uppercase; }
+.oscillator-unavailable-reason .oscillator-unavailable-detail code { color: #c3b7a0; display: block; font-family: var(--font-geist-mono), monospace; font-size: 8px; line-height: 1.55; word-break: break-word; }
+.oscillator-unavailable-reason .oscillator-unavailable-detail code::before, .oscillator-unavailable-reason .oscillator-unavailable-detail code::after { color: #7c8a80; content: "\""; }
+.godmode-warning ul { display: grid; gap: 5px; list-style: none; margin: 6px 0 0; padding: 0; }
+.godmode-warning li { color: var(--muted); font-size: 8px; line-height: 1.5; padding-left: 10px; position: relative; }
+.godmode-warning li::before { color: var(--amber); content: "·"; left: 2px; position: absolute; }
 .stock-lanes { align-items: start; display: grid; gap: 12px; grid-template-columns: minmax(0, 1.25fr) minmax(360px, .75fr); margin-top: 14px; }
 .stock-lane-note { color: var(--muted); font-size: 9px; line-height: 1.55; margin: 8px 0 0; }
 .stock-opportunity-grid { display: grid; gap: 9px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 16px; }
@@ -506,7 +614,7 @@ footer { border-top: 1px solid var(--line); color: var(--muted); display: flex; 
   .workspace { grid-template-columns: 1fr; }.evidence-panel { order: 1; }.asset-panel { max-height: none; order: 2; overflow: hidden; position: static; }
   .plan-card { gap: 8px; grid-template-columns: 1fr auto 1fr; padding: 14px 16px; }.plan-card strong { font-size: 20px; }
   .gate-grid { grid-template-columns: 1fr 1fr; }.gate { border-bottom: 1px solid var(--line); }.gate:nth-child(even) { border-right: 0; }
-  .crypto-section { border-radius: 18px; margin-top: 42px; padding: 20px; }.crypto-stat-strip { background: #3b4a41; gap: 1px; grid-template-columns: 1fr 1fr; }.crypto-stat-strip > div, .crypto-stat-strip > div:not(:first-child) { background: var(--ink); border: 0; padding: 14px; }.etf-section .crypto-stat-strip > div, .etf-section .crypto-stat-strip > div:not(:first-child) { background: #142522; }.stock-section .crypto-stat-strip > div, .stock-section .crypto-stat-strip > div:not(:first-child) { background: #17302a; }.crypto-guardrail { grid-template-columns: 1fr; }.crypto-hero { align-items: start; flex-direction: column; }.crypto-scan-meta { align-items: start; text-align: left; }.history-heading { align-items: start; flex-direction: column; }.history-filters { width: 100%; }.history-filters button { flex: 1; }
+  .crypto-section { border-radius: 18px; margin-top: 42px; padding: 20px; }.crypto-stat-strip { background: #3b4a41; gap: 1px; grid-template-columns: 1fr 1fr; }.crypto-stat-strip > div, .crypto-stat-strip > div:not(:first-child) { background: var(--ink); border: 0; padding: 14px; }.etf-section .crypto-stat-strip > div, .etf-section .crypto-stat-strip > div:not(:first-child) { background: #142522; }.stock-section .crypto-stat-strip > div, .stock-section .crypto-stat-strip > div:not(:first-child) { background: #17302a; }.oscillator-section .crypto-stat-strip > div, .oscillator-section .crypto-stat-strip > div:not(:first-child) { background: #1d2733; }.crypto-guardrail { grid-template-columns: 1fr; }.crypto-hero { align-items: start; flex-direction: column; }.crypto-scan-meta { align-items: start; text-align: left; }.history-heading { align-items: start; flex-direction: column; }.history-filters { width: 100%; }.history-filters button { flex: 1; }
   .stock-opportunity-grid { grid-template-columns: 1fr; }
   .xgb-showcase { border-radius: 20px; padding: 22px; }.xgb-hero { align-items: start; grid-template-columns: 1fr; }.xgb-seal { display: none; }.xgb-ledger { background: #d3c7b0; gap: 1px; grid-template-columns: 1fr 1fr; }.xgb-ledger > div, .xgb-ledger > div:first-child { background: #e9e2d2; border: 0; padding: 12px; }.xgb-model-grid { grid-template-columns: 1fr; }.xgb-detail-body { grid-template-columns: 1fr; }.xgb-exclusions { grid-template-columns: 1fr; }.xgb-guardrail { align-items: flex-start; flex-direction: column; }
   .data-console { border-radius: 19px; padding: 20px; }.data-console-lock { grid-template-columns: 1fr; }.data-job-builder { grid-template-columns: 1fr 1fr; }.data-confirm, .data-queue-button { grid-column: 1 / -1; }.data-job-metrics { grid-template-columns: 1fr 1fr; }.data-job-metrics span { border-bottom: 1px solid var(--line); }.data-job footer { align-items: flex-start; flex-direction: column; }.data-job footer > div { justify-content: flex-start; }
@@ -516,7 +624,7 @@ footer { border-top: 1px solid var(--line); color: var(--muted); display: flex; 
 @media (max-width: 460px) {
   .brand-mark { height: 32px; width: 32px; }.brand { gap: 8px; }.brand strong { font-size: 11px; }.brand small { display: none; }.brand-tagline { font-size: 10px; margin-left: 8px; max-width: 83px; padding-left: 8px; }.date-picker select { font-size: 8px; max-width: 145px; }.header-asset { grid-template-columns: auto minmax(0, 1fr); }.header-asset-context { display: none; }
   .asset-identity { padding: 15px 16px; }.symbol-row h2, .asset-identity > h2 { font-size: 29px; }.plan-card { padding: 13px 14px; }.plan-card strong { font-size: 18px; }
-  .crypto-section { margin-left: -2px; margin-right: -2px; padding: 15px; }.crypto-lane { padding: 15px; }.stock-company-lane { padding: 0; }.crypto-lane-heading { align-items: start; flex-direction: column; }.strategy-formula, .godmode-rule { align-items: flex-start; flex-direction: column; }.strategy-formula i, .godmode-rule i { display: none; }.godmode-grid, .etf-state-grid { grid-template-columns: 1fr; }.crypto-stat-strip strong { font-size: 22px; }.crypto-metrics, .stock-card-prices { grid-template-columns: 1fr; }.crypto-metrics > div, .stock-card-prices > div { border-bottom: 1px solid var(--line); border-right: 0; }.crypto-metrics > div:last-child, .stock-card-prices > div:last-child { border-bottom: 0; }.subsection-heading { align-items: start; flex-direction: column; gap: 4px; }.order-grid { grid-template-columns: 1fr 1fr; }.order-grid > div:nth-child(3n) { border-right: 1px solid var(--line); }.order-grid > div:nth-child(even) { border-right: 0; }.history-grid { grid-template-columns: 1fr; }.history-filters { display: grid; grid-template-columns: 1fr; }.add-on-definition { align-items: start; grid-template-columns: 1fr; }.live-plan-prices { grid-template-columns: 1fr; }.live-plan-prices > i { display: none; }.live-plan footer { align-items: flex-start; flex-direction: column; }.opportunity-history, .suggested-setup { padding: 13px; }
+  .crypto-section { margin-left: -2px; margin-right: -2px; padding: 15px; }.crypto-lane { padding: 15px; }.stock-company-lane { padding: 0; }.crypto-lane-heading { align-items: start; flex-direction: column; }.strategy-formula, .godmode-rule { align-items: flex-start; flex-direction: column; }.strategy-formula i, .godmode-rule i { display: none; }.godmode-grid, .etf-state-grid { grid-template-columns: 1fr; }.oscillator-cell .oscillator-frozen, .oscillator-cell .oscillator-cell-state, .oscillator-cell .oscillator-cell-state.recording { grid-template-columns: 1fr 1fr; }.oscillator-cell .oscillator-frozen span:last-child { grid-column: 1 / -1; }.crypto-stat-strip strong { font-size: 22px; }.crypto-metrics, .stock-card-prices { grid-template-columns: 1fr; }.crypto-metrics > div, .stock-card-prices > div { border-bottom: 1px solid var(--line); border-right: 0; }.crypto-metrics > div:last-child, .stock-card-prices > div:last-child { border-bottom: 0; }.subsection-heading { align-items: start; flex-direction: column; gap: 4px; }.order-grid { grid-template-columns: 1fr 1fr; }.order-grid > div:nth-child(3n) { border-right: 1px solid var(--line); }.order-grid > div:nth-child(even) { border-right: 0; }.history-grid { grid-template-columns: 1fr; }.history-filters { display: grid; grid-template-columns: 1fr; }.add-on-definition { align-items: start; grid-template-columns: 1fr; }.live-plan-prices { grid-template-columns: 1fr; }.live-plan-prices > i { display: none; }.live-plan footer { align-items: flex-start; flex-direction: column; }.opportunity-history, .suggested-setup { padding: 13px; }
   .xgb-showcase { margin-left: -2px; margin-right: -2px; padding: 17px; }.xgb-hero h1 { font-size: 42px; }.xgb-model-card { gap: 9px; grid-template-columns: auto 1fr auto; }.xgb-card-name strong { font-size: 21px; }.xgb-card-score { min-width: 67px; }.xgb-detail-head { align-items: flex-start; flex-direction: column; padding: 19px; }.xgb-detail-head h2 { font-size: 38px; }.xgb-metric-grid { grid-template-columns: 1fr 1fr; }.xgb-metric-grid > div:nth-child(2) { border-right: 0; }.xgb-metric-grid > div:nth-child(-n+2) { border-bottom: 1px solid #424940; }.xgb-detail-body { padding: 18px 19px; }.xgb-caution { align-items: start; grid-template-columns: 1fr; padding: 13px 19px; }.xgb-caution small { text-align: left; }
   .data-console { margin-left: -2px; margin-right: -2px; padding: 16px; }.data-console-hero h2 { font-size: 37px; }.data-job-builder { grid-template-columns: 1fr; }.data-confirm, .data-queue-button { grid-column: auto; }.data-job-head { align-items: flex-start; flex-direction: column; }.data-console-guardrail { align-items: start; grid-template-columns: 1fr; }.data-console-guardrail p { grid-column: auto; }
 }

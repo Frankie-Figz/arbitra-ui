@@ -1,0 +1,2 @@
+# Preserve the authenticated catalog bytes across Windows and Linux checkouts.
+/public/data/frozen-oscillator-catalog.json -text

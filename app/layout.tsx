@@ -24,18 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
-    title: "Arbitra Research Platform",
+    title: "Arbitra | Stock Picker & Crypto Scanner",
     description:
-      "Evidence-led market signals and resumable historical market-data acquisition for Arbitra research.",
+      "Daily stock setups and divergence oscillator signals with frozen raw and XGBoost-enhanced research strategies.",
     openGraph: {
-      title: "Arbitra Research Platform",
-      description: "Research signals, immutable market-data evidence, and downloadable historical acquisitions.",
+      title: "Arbitra Market Signals",
+      description: "Stock Picker and Crypto Scanner. Research signals, not routed orders.",
       images: [{ url: "/og-data-acquisition-v1.png", width: 1672, height: 941 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Arbitra Research Platform",
-      description: "Research signals, immutable market-data evidence, and downloadable historical acquisitions.",
+      title: "Arbitra Market Signals",
+      description: "Stock Picker and Crypto Scanner. Research signals, not routed orders.",
       images: ["/og-data-acquisition-v1.png"],
     },
   };

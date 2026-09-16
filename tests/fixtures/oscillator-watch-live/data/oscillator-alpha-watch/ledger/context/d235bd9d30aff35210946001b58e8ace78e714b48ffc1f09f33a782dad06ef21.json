@@ -1,0 +1,2198 @@
+{
+  "schema_version": 1,
+  "document_id": "oscillator-alpha-watch-context-v1",
+  "created_at_utc": "2026-08-01T00:05:00+00:00",
+  "registry": {
+    "registry_id": "oscillator-alpha-watch-v1",
+    "registry_schema_version": 1,
+    "relative_path": "config/oscillator-alpha-watch-registry-v1.json",
+    "sha256": "de4ba6d1613abbbe6a1675f2bab8a63c21a7c8e941c944c22f605b0d127d07ec",
+    "document_sha256": "010cf3b16169f8b25c55d947e4913b639b5b30da0d4ec9ed70100c3a6ec59bc3",
+    "selection_rule": "Cells positive on BOTH the optimizer holdout and the retrospective confirmation segment, with at least 10 trades on each. 16 of 437 eligible multi-asset cells qualified, plus the separately-run BTCUSDT RSI 30m cell.",
+    "cells_total": 17,
+    "cells_active": 15,
+    "cells_deferred": 2
+  },
+  "purpose": "Forward signal tracking only. Each entry is a frozen fast/slow oscillator rule gated by a recent regular divergence on the SLOW oscillator. Emitting BUY/SELL records an observation; it is not a recommendation and carries no order authority.",
+  "known_limitations": [
+    "The double-positive rate across the campaign (16/437 = 3.7%) exceeds the independence expectation (2.4%) only modestly; this set is NOT established as distinguishable from search noise.",
+    "Of 75 cells that passed holdout, only 21.3% stayed positive on confirmation, against a 14.2% marginal rate.",
+    "Cells are not independent: adjacent timeframes share signals, and ta_stochastic and ta_williams_r rows appear numerically identical in several cases.",
+    "No shifted-label or permutation null has been run against these survivors.",
+    "The retrospective confirmation window ends 2026-08-01, so tracking after that date is genuinely unseen data. That is the purpose of this registry."
+  ],
+  "tracking_only": true,
+  "deployment_allowed": false,
+  "capital_authority": false,
+  "order_authority": false,
+  "not_established_as_distinguishable_from_search_noise": true,
+  "evidence_window_ends_utc": "2026-08-01T00:00:00+00:00",
+  "runtime": {
+    "python": "3.14.7",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "ta": "0.11.0",
+    "frozen_protocol_runtime": {
+      "python": "3.12.13",
+      "numpy": "2.3.5",
+      "pandas": "2.3.3",
+      "ta": "0.11.0"
+    },
+    "matches_frozen_protocol": false,
+    "drift": [
+      "python: observed 3.14.7 != frozen protocol 3.12.13",
+      "numpy: observed 2.5.2 != frozen protocol 2.3.5",
+      "pandas: observed 3.0.5 != frozen protocol 2.3.3"
+    ]
+  },
+  "chronology": {
+    "holdout_evaluation": "primary only; quality label only",
+    "holdout_output_veto_or_reselection": false,
+    "optimizer_holdout_stop_utc_exclusive": "2025-11-29T00:00:00+00:00",
+    "per_frame_holdout_fraction": "(development_end_rows - selection_end_rows) / development_end_rows; split positions must exactly equal the timestamp boundaries",
+    "primary_frozen_before_holdout": true,
+    "purge_parent_bars": 4,
+    "retrospective_confirmation": "[2025-11-29T00:00:00+00:00, 2026-08-01T00:00:00+00:00)",
+    "retrospective_confirmation_used_for_selection": false,
+    "selection": "[2023-03-25T00:00:00+00:00, 2025-03-29T00:00:00+00:00)",
+    "selection_folds": 5
+  },
+  "friction": {
+    "fee_bps_round_trip": 12.0,
+    "slippage_bps_round_trip": 6.0,
+    "total_bps_round_trip": 18.0,
+    "applied_to_recorded_prices": false
+  },
+  "exits": {
+    "atr": {
+      "atr_period": 14,
+      "maximum_holding_bars": 4,
+      "stop_atr": 1.0,
+      "target_atr": 0.8
+    },
+    "opposite_signal": "next fully qualified opposite divergence pulse"
+  },
+  "parity": {
+    "frozen_files": [
+      {
+        "relative_path": "arbitra_indicator_optimizer_v0_4_0/arbitra_indicator_optimizer_v040/src/arbitra_indicator_optimizer/integrations/rsi_fast_slow_divergence.py",
+        "sha256": "5d0f7f1b9fb7ca629973f1f32601578ff3350f9bf9f5179a21a5e1e631f02cc7"
+      },
+      {
+        "relative_path": "arbitra_indicator_optimizer_v0_4_0/arbitra_indicator_optimizer_v040/src/arbitra_indicator_optimizer/integrations/ta_momentum_fast_slow_divergence.py",
+        "sha256": "24222b852dbd39d9bc0d429540ccabfc2b94229172fec85d4ff9800dd1731d4f"
+      },
+      {
+        "relative_path": "arbitra_indicator_optimizer_v0_4_0/arbitra_indicator_optimizer_v040/src/arbitra_indicator_optimizer/integrations/ta_oscillator_divergence.py",
+        "sha256": "4cd6a615d93b60d2448eb427cca29c3f72a9f29dc2b30dbe18d68040884d9442"
+      },
+      {
+        "relative_path": "arbitra_indicator_optimizer_v0_4_0/arbitra_indicator_optimizer_v040/src/arbitra_indicator_optimizer/integrations/ta_library.py",
+        "sha256": "ede42f247cf6b2d646c4f54bfdf9248b5f8b81d175ab149538ac8f16c5adc9e7"
+      },
+      {
+        "relative_path": "arbitra_indicator_optimizer_v0_4_0/arbitra_indicator_optimizer_v040/src/arbitra_indicator_optimizer/integrations/signal_lifecycle.py",
+        "sha256": "455ad06e37930e6a97721abf215386f06d12a21ae4b47703bb92f5f34e003f9e"
+      },
+      {
+        "relative_path": "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.py",
+        "sha256": "532f7ece65beba95ead62b7278d923d6beadfe84b4ae22c71dd476e4d36f0627"
+      },
+      {
+        "relative_path": "arbitra_btcusdt_ta_momentum_fast_slow_divergence_mtf.py",
+        "sha256": "54bee9f7ca58df0743a7032c8dd14ea11c2a5c8e99e32e815769b9ca298a8c41"
+      },
+      {
+        "relative_path": "arbitra_btcusdt_ta_momentum_cross_asset_transfer.py",
+        "sha256": "1c8d93ec608572d3ab3f1da3fb77dacb58c962ca636c9b6e929a41af94a80b42"
+      }
+    ],
+    "imported_symbols": [
+      "arbitra_indicator_optimizer.integrations.ta_oscillator_divergence.regular_divergence_events",
+      "arbitra_indicator_optimizer.integrations.rsi_fast_slow_divergence.qualified_entry_pulses",
+      "arbitra_indicator_optimizer.integrations.rsi_fast_slow_divergence.pine_atr",
+      "arbitra_indicator_optimizer.integrations.rsi_fast_slow_divergence.RsiFastSlowSlowDivergenceAdapter",
+      "arbitra_indicator_optimizer.integrations.rsi_fast_slow_divergence.AtrBracketLifecycleEvaluator",
+      "arbitra_indicator_optimizer.integrations.ta_momentum_fast_slow_divergence.TAMomentumFastSlowSlowDivergenceAdapter",
+      "arbitra_indicator_optimizer.integrations.ta_momentum_fast_slow_divergence.MOMENTUM_FAST_SLOW_SPEC_BY_KEY",
+      "arbitra_indicator_optimizer.integrations.signal_lifecycle.SignalLifecycleEvaluator",
+      "arbitra_indicator_optimizer.integrations.ta_library.TA_RECIPE_BY_KEY",
+      "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.STC_SPEC",
+      "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.ExactSTCTAIndicatorAdapter",
+      "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf._make_base_adapter",
+      "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.oscillator_specs",
+      "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.RollResetAdapter._mark_evaluable",
+      "arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.EXPECTED_STC_PROFILE_SHA256",
+      "arbitra_btcusdt_ta_momentum_fast_slow_divergence_mtf._evaluator",
+      "arbitra_btcusdt_ta_momentum_cross_asset_transfer.derive_epoch_timeframe",
+      "arbitra_btcusdt_ta_momentum_cross_asset_transfer._validate_ohlcv",
+      "arbitra_btcusdt_ta_momentum_cross_asset_transfer.TIMEFRAME_MINUTES"
+    ],
+    "reimplemented_logic": [
+      {
+        "what": "A dormant TAIndicatorAdapter.compute_values shim. It is INERT in this tree: commit 161d1af committed the real public method at ta_library.py:707, so the hasattr guard does not fire and nothing is installed. ta_momentum_fast_slow_divergence.py:635 calls the committed method directly. Shims installed this run: none. The committed tree defines both (ta_library.py:707 and __init__.py:50/:151), so neither guard fired and this run used the committed definitions unmodified.",
+        "why": "Before 161d1af the committed ta_library.py exposed only the private _compute_values, AttributeError was raised, and 14 of the 15 active cells could not be evaluated at all. The guard is kept as a regression tripwire: if the public method is ever removed again the delegation self._compute_values(frame, self._resolved(params)) -- which is what the committed body does -- is restored and reported instead of the run crashing.",
+        "risk": "If the shim were ever to fire again and _resolved were not the argument the committed public method passes, every oscillator would be computed with different parameters and every signal would silently drift from the frozen evidence.",
+        "guard": "parity.reimplemented_logic reports the shims actually installed on the run, so a firing shim is never silent. Independently, adapter.warmup_bars(params) is asserted equal to the registry's warmup_bars_required for all 16 cells that state it, and the profile label plus the fully resolved parameter dict are asserted equal to the frozen spec's profile_by_rank entry for every cell, before any signal is emitted."
+      },
+      {
+        "what": "A dormant arbitra_indicator_optimizer.AtrBracketLifecycleEvaluator re-export shim. It is INERT in this tree: commit 161d1af committed the re-export (__init__.py:50 imports the class, :151 lists it in __all__), so the hasattr guard does not fire and no name is bound here. Shims installed this run: none. The committed tree defines both (ta_library.py:707 and __init__.py:50/:151), so neither guard fired and this run used the committed definitions unmodified.",
+        "why": "Before 161d1af the committed package __init__ omitted it and the committed arbitra_btcusdt_ta_momentum_fast_slow_divergence_mtf could not import against its own package. No behaviour was ever defined by the shim; only a name was bound.",
+        "risk": "None to the numbers: the exported object is the frozen class. The risk was that the committed tree was internally inconsistent, which a silent shim would conceal -- so it was reported, and its disappearance from the shim list is itself the evidence that the tree was repaired.",
+        "guard": "The package attribute is asserted, on every load, to BE rsi_fast_slow_divergence.AtrBracketLifecycleEvaluator itself -- whether the shim fired or not -- and the installed shim list is emitted in every context document and snapshot."
+      },
+      {
+        "what": "derive_armed_state re-expresses the arming/consumption state machine of qualified_entry_pulses in order to report which divergence is currently armed on the last completed bar.",
+        "why": "qualified_entry_pulses keeps bullish_armed_at and bearish_armed_at as loop locals and returns only boolean columns, so the live armed flag cannot be read out of the frozen return value. The derivation consumes frozen inputs (the divergence event columns) and frozen outputs (long_entry / short_entry) only; it never recomputes a divergence, a pulse or an oscillator.",
+        "risk": "A drifted derivation would misreport armed state and a reader would mistake a stale arm for a live setup.",
+        "guard": "PARITY_ASSERTION_RULE is checked on every completed bar of every run. On failure the cell is forced to source_unavailable with reason parity_assertion_failed and publishes no signal."
+      },
+      {
+        "what": "The Binance REST JSON kline payload is parsed by a local adapter rather than by scripts/acquire_binance_klines.py::parse_klines.",
+        "why": "parse_klines takes a monthly ZIP archive payload (zipfile.ZipFile(io.BytesIO(payload))); the monthly archive is up to ~30 days stale and cannot serve a 30m watch. The adapter produces the identical column set and dtypes and reuses that module's COLUMNS and BAR_MINUTES.",
+        "risk": "A units mistake (the archive switched open_time to microseconds; REST is still milliseconds) would silently shift every bar.",
+        "guard": "Fetched bars are spliced onto the cached parquet across an overlapping timestamp, every bar passes the frozen _validate_ohlcv, and the aggregated crypto frame fails closed on any partial bucket."
+      },
+      {
+        "what": "The lifecycle evaluator is replayed over ONE unbroken segment from the anchor, where the frozen campaign evaluated BOUNDED windows (arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.py:723-726, start = min(len(frame), max(plan.holdout_start, warmup))). The window is selected by replay_start_policy, emitted per cell, and defaults to 'anchor' -- the whole-history behaviour every record already in the ledger was produced under.",
+        "why": "Live tracking has no holdout boundary to start at, and moving the replay start would change signals, fills and exits that have already been published. replay_start_policy decides where the frozen lifecycle evaluator is started, and it is a scientific choice a human must make, not an optimisation. 'anchor' (the default, and the behaviour every record already in the ledger was produced under) replays one unbroken segment from the first structurally evaluable bar after ANCHOR_START_UTC=2023-03-25, so a position opened before the tracking boundary is carried across it and today's reported state depends on bars from 2023; it also costs O(whole history) on every tick. 'tracking_start' reproduces what the frozen campaign actually did (arbitra_multi_asset_ta_oscillator_fast_slow_divergence_mtf.py:723-726, start = min(len(frame), max(plan.holdout_start, warmup))): the replay begins at max(first evaluable bar, tracking_start), which is cheaper and confines a catastrophic trade to its own window -- but it DISCARDS any position open at that boundary and re-opens on the first pulse after it, so previously published signals, fills and exits can change. Position continuity across the boundary is the thing being traded away. The default is not switched automatically; the policy in force is emitted on every run.",
+        "risk": "A whole-history replay carries a position across the tracking boundary, so today's reported state depends on 2023 bars, and it reaches lifecycle states the bounded campaign never could. The concrete one is bankruptcy: SignalLifecycleEvaluator abandons the segment at a trade that clips to net -1.0 (signal_lifecycle.py:165) and skips the end_of_segment force-close (:174), so the whole tail is unevaluated. It cost XRPUSDT.ta_pvo.4h.opposite_signal 3,487 bars and 61 entry pulses, reported as a healthy flat cell.",
+        "guard": "The returned bankrupt column is read on every replay. A bankrupt trade on a terminating evaluator drives the cell to status lifecycle_terminated_bankrupt, publishes no signal, no position and no pending entry, and carries the bankrupt trade's identity plus the count of unevaluated bars and entry pulses into the snapshot and the ledger."
+      },
+      {
+        "what": "_frozen_decline_rule re-expresses each frozen evaluator's decline policy in order to decide the ONE pulse the frozen evaluator has not ruled on: the one on the newest completed bar, which its loop (range(start, end - 1)) never reaches. AtrBracketLifecycleEvaluator reads was_flat_at_signal at the top of the bar (rsi_fast_slow_divergence.py:584) and gates entry on it (:601), so it ignores every pulse while a position is open; SignalLifecycleEvaluator reverses on the opposite direction (signal_lifecycle.py:156-158) and re-enters after a side-specific long_exit/short_exit (:153-155, :168), so only a same-direction pulse with no explicit exit is declined.",
+        "why": "The state is decidable at the signal bar and the ledger is append-only. record_identity hashes {ledger_id, record_type, signal_id, identity_suffix} and signal_id hashes {registry_id, watch_id, direction, signal_bar_open_utc}; neither includes fill state, so a record written 'pending' on the tick the bar closed dedups away when the corrected one is produced and stays wrong forever. Measured before the fix: 192 of 536 signal records (35.8%) were pulses declined for position_already_open, each the newest bucket on exactly one tick of the 30-minute cadence, and XRPUSDT.ta_pvo.2h published a durable pending at 2026-07-30T20:05Z that three later runs could not correct.",
+        "risk": "A drifted rule would publish 'not_taken' for a pulse the frozen evaluator actually filled -- a false negative in an append-only ledger, which is strictly worse than the stale 'pending' it replaces.",
+        "guard": "Every pulse the frozen evaluator ALREADY decided is a free test of the rule, and all of them are checked on every run: the predicted decline is compared with whether the frozen evaluator opened a trade on that bar, and a single disagreement in the dangerous direction raises and degrades the cell to source_unavailable rather than publishing it. The counts are emitted per cell as lifecycle.fill_state_decidability. Measured over the whole anchored history of the 15 active cells: 2,543 decided pulses, 921 predicted declines, 0 of them filled."
+      }
+    ],
+    "assertions": {
+      "rules": [
+        "For every completed bar: derived bullish armed AND fast > slow implies long_entry is True on that bar, and symmetrically for bearish/short. A failure means the derivation has drifted from the frozen state machine; the cell is forced to source_unavailable with reason parity_assertion_failed rather than publishing a signal.",
+        "The converse also holds on every completed bar: a frozen long_entry implies a derived bullish arm on that bar, and symmetrically for short.",
+        "adapter.warmup_bars(resolved params) == registry warmup_bars_required, or is recorded as adapter_computed_registry_null where the registry carries null.",
+        "The frozen profile label and the fully resolved parameter dict equal the registry's fast/slow blocks for every profile-driven cell.",
+        "The frozen spec's primary_output, indicator_class, inputs and polarity equal the registry cell's.",
+        "The registry's divergence geometry equals the frozen constants pivot_left=5, pivot_right=2, max_divergence_bars=60, computed_on=slow_oscillator.",
+        "long_entry and short_entry are never both true on the same bar."
+      ],
+      "checked": 212245,
+      "passed": 212245,
+      "failed": 0
+    }
+  },
+  "cells": [
+    {
+      "watch_id": "BTCUSDT.ta_rsi.30m.opposite_signal",
+      "cell_fingerprint": "e13ffbdab5ce12d2645f42f0d827bd5d60465830fd2ac140b8452648edc08b7f",
+      "registry_entry": {
+        "watch_id": "BTCUSDT.ta_rsi.30m.opposite_signal",
+        "asset": "BTCUSDT",
+        "oscillator": "ta_rsi",
+        "indicator_class": "RSIIndicator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "rsi",
+        "timeframe": "30m",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "rsi_21",
+          "rank": null,
+          "parameters": {
+            "window": 21
+          }
+        },
+        "slow": {
+          "label": "rsi_70",
+          "rank": null,
+          "parameters": {
+            "window": 70
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 8,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults"
+        },
+        "warmup_bars_required": null,
+        "evidence": {
+          "holdout": {
+            "trades": 30,
+            "net_return": 0.4101282819330736,
+            "profit_factor": 2.283648556287351
+          },
+          "retrospective_confirmation": {
+            "trades": 32,
+            "net_return": 0.9171,
+            "profit_factor": 2.691,
+            "note": "campaign calls this the sealed segment; drop-best +0.6797, drop-top3 +0.4527, 16 long / 16 short, 31 of 32 exits by opposite signal"
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "btcusdt-rsi-fast-slow-slow-divergence-mtf-v1",
+          "cell_artifact_path": "30m/opposite_signal",
+          "candidates_searched_in_cell": 288
+        }
+      },
+      "resolved_parameters": {
+        "fast_rsi_period": 21,
+        "slow_rsi_period": 70,
+        "divergence_lookback_bars": 8,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "rsi_21",
+        "slow_label": "rsi_70",
+        "fast_parameters": {
+          "window": 21
+        },
+        "slow_parameters": {
+          "window": 70
+        },
+        "adapter_class": "RsiFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": null,
+        "adapter_bars_computed": 152,
+        "effective_bars_required": 152,
+        "source": "adapter_computed_registry_null"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/btcusdt/15m/btcusdt-15m.parquet"
+        ],
+        "provider": "Binance spot BTCUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_awesome_oscillator.1h.atr",
+      "cell_fingerprint": "270ba0e60ea88faf5c2f510f9c0f81d13f46ff10fc5c3c49f3e4a03e614740a3",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_awesome_oscillator.1h.atr",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_awesome_oscillator",
+        "indicator_class": "AwesomeOscillatorIndicator",
+        "inputs": [
+          "high",
+          "low"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "awesome_oscillator",
+        "timeframe": "1h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "ao_05_24",
+          "rank": 3,
+          "parameters": {
+            "window1": 5,
+            "window2": 24
+          }
+        },
+        "slow": {
+          "label": "ao_24_140",
+          "rank": 8,
+          "parameters": {
+            "window1": 24,
+            "window2": 140
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 0,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 214,
+        "evidence": {
+          "holdout": {
+            "trades": 14,
+            "net_return": 0.027052091348155782,
+            "profit_factor": 1.6281956010615974
+          },
+          "retrospective_confirmation": {
+            "trades": 16,
+            "net_return": 0.028526719206673157,
+            "profit_factor": 1.893455088781532,
+            "max_drawdown": 0.021761830272586047
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_awesome_oscillator/1h/atr",
+          "profile_hash": "92dd0660fefd31e566e2fd6f24e0d7945d5939208553816299685f08ef9a24dd",
+          "resolved_bundle_sha256": "934e6562a63d8a1da761a969ac59a8a655159e24992703b46e10e4bc50f82ea9",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 3,
+        "slow_profile_rank": 8,
+        "divergence_lookback_bars": 0,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "ao_05_24",
+        "slow_label": "ao_24_140",
+        "fast_parameters": {
+          "window1": 5,
+          "window2": 24
+        },
+        "slow_parameters": {
+          "window1": 24,
+          "window2": 140
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 214,
+        "adapter_bars_computed": 214,
+        "effective_bars_required": 214,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_ppo.1h.opposite_signal",
+      "cell_fingerprint": "8783e7d6c5315ecf5472772c6ba040b5f06d3669515e3cf37c520ae23b068247",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_ppo.1h.opposite_signal",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_ppo",
+        "indicator_class": "PercentagePriceOscillator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "ppo",
+        "timeframe": "1h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "ppo_04_09",
+          "rank": 2,
+          "parameters": {
+            "window_fast": 4,
+            "window_sign": 9,
+            "window_slow": 9
+          }
+        },
+        "slow": {
+          "label": "ppo_24_56",
+          "rank": 7,
+          "parameters": {
+            "window_fast": 24,
+            "window_sign": 9,
+            "window_slow": 56
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 0,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 130,
+        "evidence": {
+          "holdout": {
+            "trades": 16,
+            "net_return": 0.1266576560342847,
+            "profit_factor": 1.5649006356971902
+          },
+          "retrospective_confirmation": {
+            "trades": 16,
+            "net_return": 0.4610155627089554,
+            "profit_factor": 2.1333447257553857,
+            "max_drawdown": 0.23968849287706662
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_ppo/1h/opposite_signal",
+          "profile_hash": "1cf804f3f1cf07ca2b1d40cf9cfd9d4c8bfec83714ff2f97a007d11b8c492371",
+          "resolved_bundle_sha256": "3901a5f855ac6469fddca8d5dfbf43572651935631b4ed020a6d959413c58f81",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 2,
+        "slow_profile_rank": 7,
+        "divergence_lookback_bars": 0,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "ppo_04_09",
+        "slow_label": "ppo_24_56",
+        "fast_parameters": {
+          "window_fast": 4,
+          "window_sign": 9,
+          "window_slow": 9
+        },
+        "slow_parameters": {
+          "window_fast": 24,
+          "window_sign": 9,
+          "window_slow": 56
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 130,
+        "adapter_bars_computed": 130,
+        "effective_bars_required": 130,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_ppo.8h.atr",
+      "cell_fingerprint": "3b0557972de2b580b3d90fae640c3f5830b2a0e1565a50c4d45bc46847870e4c",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_ppo.8h.atr",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_ppo",
+        "indicator_class": "PercentagePriceOscillator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "ppo",
+        "timeframe": "8h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "ppo_02_05",
+          "rank": 0,
+          "parameters": {
+            "window_fast": 2,
+            "window_sign": 9,
+            "window_slow": 5
+          }
+        },
+        "slow": {
+          "label": "ppo_03_07",
+          "rank": 1,
+          "parameters": {
+            "window_fast": 3,
+            "window_sign": 9,
+            "window_slow": 7
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 5,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 114,
+        "evidence": {
+          "holdout": {
+            "trades": 15,
+            "net_return": 0.035310596651033865,
+            "profit_factor": 1.2717156204853575
+          },
+          "retrospective_confirmation": {
+            "trades": 10,
+            "net_return": 0.015137246509352664,
+            "profit_factor": 1.231175701381455,
+            "max_drawdown": 0.060180795040898016
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_ppo/8h/atr",
+          "profile_hash": "1cf804f3f1cf07ca2b1d40cf9cfd9d4c8bfec83714ff2f97a007d11b8c492371",
+          "resolved_bundle_sha256": "3901a5f855ac6469fddca8d5dfbf43572651935631b4ed020a6d959413c58f81",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 0,
+        "slow_profile_rank": 1,
+        "divergence_lookback_bars": 5,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "ppo_02_05",
+        "slow_label": "ppo_03_07",
+        "fast_parameters": {
+          "window_fast": 2,
+          "window_sign": 9,
+          "window_slow": 5
+        },
+        "slow_parameters": {
+          "window_fast": 3,
+          "window_sign": 9,
+          "window_slow": 7
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 114,
+        "adapter_bars_computed": 114,
+        "effective_bars_required": 114,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_stc.12h.atr",
+      "cell_fingerprint": "274b8ad232a1c00a9a30ed5ae965e92c4a216c458a7044369ff1e944a664152a",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_stc.12h.atr",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_stc",
+        "indicator_class": "STCIndicator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "stc",
+        "timeframe": "12h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "stc_05_12_03",
+          "rank": 0,
+          "parameters": {
+            "cycle": 3,
+            "smooth1": 3,
+            "smooth2": 3,
+            "window_fast": 5,
+            "window_slow": 12
+          }
+        },
+        "slow": {
+          "label": "stc_16_34_07",
+          "rank": 3,
+          "parameters": {
+            "cycle": 7,
+            "smooth1": 3,
+            "smooth2": 3,
+            "window_fast": 16,
+            "window_slow": 34
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 4,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 158,
+        "evidence": {
+          "holdout": {
+            "trades": 13,
+            "net_return": 0.14874801674003657,
+            "profit_factor": 2.073640702431154
+          },
+          "retrospective_confirmation": {
+            "trades": 10,
+            "net_return": 0.0321587284381184,
+            "profit_factor": 1.2869534369837332,
+            "max_drawdown": 0.056403478319588585
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_stc/12h/atr",
+          "profile_hash": "d1c380647d2633f1254b13d93396edd18871d2d8e26c96cbd33b452003bc9187",
+          "resolved_bundle_sha256": "45ac12ff442dbd55828b30492abf391c018693b619398293cf13f237317e0961",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 0,
+        "slow_profile_rank": 3,
+        "divergence_lookback_bars": 4,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "stc_05_12_03",
+        "slow_label": "stc_16_34_07",
+        "fast_parameters": {
+          "cycle": 3,
+          "smooth1": 3,
+          "smooth2": 3,
+          "window_fast": 5,
+          "window_slow": 12
+        },
+        "slow_parameters": {
+          "cycle": 7,
+          "smooth1": 3,
+          "smooth2": 3,
+          "window_fast": 16,
+          "window_slow": 34
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter+ExactSTCTAIndicatorAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 158,
+        "adapter_bars_computed": 158,
+        "effective_bars_required": 158,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_stoch_rsi.12h.atr",
+      "cell_fingerprint": "0d3cfe24d006ce14771bdbc83b65d27da1a74c638540176f60b5aa79193a77ad",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_stoch_rsi.12h.atr",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_stoch_rsi",
+        "indicator_class": "StochRSIIndicator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "stochrsi_k",
+        "timeframe": "12h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "stoch_rsi_09",
+          "rank": 2,
+          "parameters": {
+            "smooth1": 3,
+            "smooth2": 3,
+            "window": 9
+          }
+        },
+        "slow": {
+          "label": "stoch_rsi_14",
+          "rank": 3,
+          "parameters": {
+            "smooth1": 3,
+            "smooth2": 3,
+            "window": 14
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 3,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 107,
+        "evidence": {
+          "holdout": {
+            "trades": 12,
+            "net_return": 0.1134104783138532,
+            "profit_factor": 1.912646758972265
+          },
+          "retrospective_confirmation": {
+            "trades": 14,
+            "net_return": 0.14613422113869734,
+            "profit_factor": 2.751783225077469,
+            "max_drawdown": 0.07784152267341904
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_stoch_rsi/12h/atr",
+          "profile_hash": "2079ccabefbd4345cb7eacc11d59efd3ebfe9117d8a557dfff4edb3867e964b2",
+          "resolved_bundle_sha256": "bc92a27a7600c4a7ac7b820817f5d87f389e327c68ad76d81368bd4ce18f4c1d",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 2,
+        "slow_profile_rank": 3,
+        "divergence_lookback_bars": 3,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "stoch_rsi_09",
+        "slow_label": "stoch_rsi_14",
+        "fast_parameters": {
+          "smooth1": 3,
+          "smooth2": 3,
+          "window": 9
+        },
+        "slow_parameters": {
+          "smooth1": 3,
+          "smooth2": 3,
+          "window": 14
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 107,
+        "adapter_bars_computed": 107,
+        "effective_bars_required": 107,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_ultimate_oscillator.12h.atr",
+      "cell_fingerprint": "aed437f35d0042bd0a9c9828d1432bee3d7f466daf6c86dcc0b8c4c6f50a16ec",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_ultimate_oscillator.12h.atr",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_ultimate_oscillator",
+        "indicator_class": "UltimateOscillator",
+        "inputs": [
+          "high",
+          "low",
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "ultimate_oscillator",
+        "timeframe": "12h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "uo_02_03_05",
+          "rank": 0,
+          "parameters": {
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "window1": 2,
+            "window2": 3,
+            "window3": 5
+          }
+        },
+        "slow": {
+          "label": "uo_07_14_28",
+          "rank": 5,
+          "parameters": {
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "window1": 7,
+            "window2": 14,
+            "window3": 28
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 1,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 103,
+        "evidence": {
+          "holdout": {
+            "trades": 11,
+            "net_return": 0.029545502778256516,
+            "profit_factor": 1.221829773399318
+          },
+          "retrospective_confirmation": {
+            "trades": 12,
+            "net_return": 0.07862225945442813,
+            "profit_factor": 1.7996923555893436,
+            "max_drawdown": 0.056300397186558104
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_ultimate_oscillator/12h/atr",
+          "profile_hash": "d5048acd27190d793e85b596e4490445d9b80aea5b4e0a086826868b5fe4256c",
+          "resolved_bundle_sha256": "135edd2f2511b7793ea2ed3ce8fa088ee30df4d3446ff3957cd982c3b1739590",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 0,
+        "slow_profile_rank": 5,
+        "divergence_lookback_bars": 1,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "uo_02_03_05",
+        "slow_label": "uo_07_14_28",
+        "fast_parameters": {
+          "weight1": 4.0,
+          "weight2": 2.0,
+          "weight3": 1.0,
+          "window1": 2,
+          "window2": 3,
+          "window3": 5
+        },
+        "slow_parameters": {
+          "weight1": 4.0,
+          "weight2": 2.0,
+          "weight3": 1.0,
+          "window1": 7,
+          "window2": 14,
+          "window3": 28
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 103,
+        "adapter_bars_computed": 103,
+        "effective_bars_required": 103,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+      "cell_fingerprint": "21c78485adf4bc690a7569706aef25c5d3c2a20d3c114803df1940d60be794f7",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_ultimate_oscillator.2h.opposite_signal",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_ultimate_oscillator",
+        "indicator_class": "UltimateOscillator",
+        "inputs": [
+          "high",
+          "low",
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "ultimate_oscillator",
+        "timeframe": "2h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "uo_07_14_28",
+          "rank": 5,
+          "parameters": {
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "window1": 7,
+            "window2": 14,
+            "window3": 28
+          }
+        },
+        "slow": {
+          "label": "uo_18_35_70",
+          "rank": 8,
+          "parameters": {
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "window1": 18,
+            "window2": 35,
+            "window3": 70
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 1,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 145,
+        "evidence": {
+          "holdout": {
+            "trades": 19,
+            "net_return": 0.8406831648571773,
+            "profit_factor": 2.348592898342408
+          },
+          "retrospective_confirmation": {
+            "trades": 23,
+            "net_return": 0.5550325630648896,
+            "profit_factor": 1.8944453173457099,
+            "max_drawdown": 0.29252976027641353
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_ultimate_oscillator/2h/opposite_signal",
+          "profile_hash": "d5048acd27190d793e85b596e4490445d9b80aea5b4e0a086826868b5fe4256c",
+          "resolved_bundle_sha256": "135edd2f2511b7793ea2ed3ce8fa088ee30df4d3446ff3957cd982c3b1739590",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 5,
+        "slow_profile_rank": 8,
+        "divergence_lookback_bars": 1,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "uo_07_14_28",
+        "slow_label": "uo_18_35_70",
+        "fast_parameters": {
+          "weight1": 4.0,
+          "weight2": 2.0,
+          "weight3": 1.0,
+          "window1": 7,
+          "window2": 14,
+          "window3": 28
+        },
+        "slow_parameters": {
+          "weight1": 4.0,
+          "weight2": 2.0,
+          "weight3": 1.0,
+          "window1": 18,
+          "window2": 35,
+          "window3": 70
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 145,
+        "adapter_bars_computed": 145,
+        "effective_bars_required": 145,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "ETHUSDT.ta_ultimate_oscillator.4h.atr",
+      "cell_fingerprint": "7eb7cf7ce70fdcd3af8b1966da1d5526d85aecd28f9e86106f8306162783f00b",
+      "registry_entry": {
+        "watch_id": "ETHUSDT.ta_ultimate_oscillator.4h.atr",
+        "asset": "ETHUSDT",
+        "oscillator": "ta_ultimate_oscillator",
+        "indicator_class": "UltimateOscillator",
+        "inputs": [
+          "high",
+          "low",
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "ultimate_oscillator",
+        "timeframe": "4h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "uo_03_05_09",
+          "rank": 2,
+          "parameters": {
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "window1": 3,
+            "window2": 5,
+            "window3": 9
+          }
+        },
+        "slow": {
+          "label": "uo_18_35_70",
+          "rank": 8,
+          "parameters": {
+            "weight1": 4.0,
+            "weight2": 2.0,
+            "weight3": 1.0,
+            "window1": 18,
+            "window2": 35,
+            "window3": 70
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 2,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 146,
+        "evidence": {
+          "holdout": {
+            "trades": 32,
+            "net_return": 0.06071923550493197,
+            "profit_factor": 1.2942719663183213
+          },
+          "retrospective_confirmation": {
+            "trades": 21,
+            "net_return": 0.04662962075451049,
+            "profit_factor": 1.3589634807024196,
+            "max_drawdown": 0.04787680805615335
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/ethusdt/ta_ultimate_oscillator/4h/atr",
+          "profile_hash": "d5048acd27190d793e85b596e4490445d9b80aea5b4e0a086826868b5fe4256c",
+          "resolved_bundle_sha256": "135edd2f2511b7793ea2ed3ce8fa088ee30df4d3446ff3957cd982c3b1739590",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "4540e7cf26d8eb0f5b52fbc0ec109b02cd123ebdca5d0885a91ec9edd36ab70c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 2,
+        "slow_profile_rank": 8,
+        "divergence_lookback_bars": 2,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "uo_03_05_09",
+        "slow_label": "uo_18_35_70",
+        "fast_parameters": {
+          "weight1": 4.0,
+          "weight2": 2.0,
+          "weight3": 1.0,
+          "window1": 3,
+          "window2": 5,
+          "window3": 9
+        },
+        "slow_parameters": {
+          "weight1": 4.0,
+          "weight2": 2.0,
+          "weight3": 1.0,
+          "window1": 18,
+          "window2": 35,
+          "window3": 70
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 146,
+        "adapter_bars_computed": 146,
+        "effective_bars_required": 146,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/ethusdt/15m/ethusdt-15m.parquet"
+        ],
+        "provider": "Binance spot ETHUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "ETHUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "OIL.ta_pvo.2h.opposite_signal",
+      "cell_fingerprint": "ba5c24300fa7c31dfdc0e8097d03cfd1277ca513ca3d50a89326ee2f12d1b51e",
+      "registry_entry": {
+        "watch_id": "OIL.ta_pvo.2h.opposite_signal",
+        "asset": "OIL",
+        "oscillator": "ta_pvo",
+        "indicator_class": "PercentageVolumeOscillator",
+        "inputs": [
+          "volume"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "pvo",
+        "timeframe": "2h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "pvo_12_26",
+          "rank": 5,
+          "parameters": {
+            "window_fast": 12,
+            "window_sign": 9,
+            "window_slow": 26
+          }
+        },
+        "slow": {
+          "label": "pvo_18_42",
+          "rank": 6,
+          "parameters": {
+            "window_fast": 18,
+            "window_sign": 9,
+            "window_slow": 42
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 32,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 156,
+        "evidence": {
+          "holdout": {
+            "trades": 27,
+            "net_return": 0.07391576616311601,
+            "profit_factor": 1.3848724535219505
+          },
+          "retrospective_confirmation": {
+            "trades": 18,
+            "net_return": 0.16102598500726528,
+            "profit_factor": 1.6221188992297897,
+            "max_drawdown": 0.13769008378456982
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/oil/ta_pvo/2h/opposite_signal",
+          "profile_hash": "fa0ace3975c0194c8181918f662166fd0850afdb8d5d044a166377e1fea13a1a",
+          "resolved_bundle_sha256": "24c5ef521abbe15c4aaca7fcc901c2c757fa2fe02654326cd5d8059c26458189",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "5aa655aeeff5d802f7cfd47c02bb4da3c68e06031f8c4e79f676fcc62f9ea89c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 5,
+        "slow_profile_rank": 6,
+        "divergence_lookback_bars": 32,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "pvo_12_26",
+        "slow_label": "pvo_18_42",
+        "fast_parameters": {
+          "window_fast": 12,
+          "window_sign": 9,
+          "window_slow": 26
+        },
+        "slow_parameters": {
+          "window_fast": 18,
+          "window_sign": 9,
+          "window_slow": 42
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 156,
+        "adapter_bars_computed": 156,
+        "effective_bars_required": 156,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": null,
+        "base_relative_paths": [],
+        "provider": null,
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": false
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "OIL"
+      },
+      "deferred": {
+        "is_deferred": true,
+        "reason": "Deferred by human decision. The OIL cells require Databento CL continuous futures with the contract-roll handling the frozen protocol mandates (protocol.frozen.json -> futures.roll_policy: \"force flat and reset adapter/divergence/evaluator state\"), implemented by RollResetAdapter and RollResetLifecycleEvaluator. The candle data exists (data/databento-futures/cl/1min/); the roll-reset evaluation path is what is missing. No adapter is instantiated and no signal is produced for these cells. Their warmup_bars_required values (156 and 124) are reproducible from the frozen adapter, so a later OIL build has a checkable target."
+      }
+    },
+    {
+      "watch_id": "OIL.ta_roc.1h.opposite_signal",
+      "cell_fingerprint": "bd6314e9a041591d57ea52f705e319870953dd344e8c413773e815ad99a2fd7f",
+      "registry_entry": {
+        "watch_id": "OIL.ta_roc.1h.opposite_signal",
+        "asset": "OIL",
+        "oscillator": "ta_roc",
+        "indicator_class": "ROCIndicator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "roc",
+        "timeframe": "1h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "roc_07",
+          "rank": 1,
+          "parameters": {
+            "window": 7
+          }
+        },
+        "slow": {
+          "label": "roc_42",
+          "rank": 6,
+          "parameters": {
+            "window": 42
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 8,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 124,
+        "evidence": {
+          "holdout": {
+            "trades": 22,
+            "net_return": 0.015536606139174847,
+            "profit_factor": 1.1287164748111207
+          },
+          "retrospective_confirmation": {
+            "trades": 23,
+            "net_return": 0.022262279628866066,
+            "profit_factor": 1.1509718916017895,
+            "max_drawdown": 0.20859704246367006
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/oil/ta_roc/1h/opposite_signal",
+          "profile_hash": "f52fb178ebd71cd42e844ed06327d1a64fed11c0c8de433ba8113d0bf28a1263",
+          "resolved_bundle_sha256": "0bc952f7585d9c722b05d6f013da725d645ead7208073639c5cf2de27c3333b6",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "5aa655aeeff5d802f7cfd47c02bb4da3c68e06031f8c4e79f676fcc62f9ea89c"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 1,
+        "slow_profile_rank": 6,
+        "divergence_lookback_bars": 8,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "roc_07",
+        "slow_label": "roc_42",
+        "fast_parameters": {
+          "window": 7
+        },
+        "slow_parameters": {
+          "window": 42
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 124,
+        "adapter_bars_computed": 124,
+        "effective_bars_required": 124,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": null,
+        "base_relative_paths": [],
+        "provider": null,
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": false
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "OIL"
+      },
+      "deferred": {
+        "is_deferred": true,
+        "reason": "Deferred by human decision. The OIL cells require Databento CL continuous futures with the contract-roll handling the frozen protocol mandates (protocol.frozen.json -> futures.roll_policy: \"force flat and reset adapter/divergence/evaluator state\"), implemented by RollResetAdapter and RollResetLifecycleEvaluator. The candle data exists (data/databento-futures/cl/1min/); the roll-reset evaluation path is what is missing. No adapter is instantiated and no signal is produced for these cells. Their warmup_bars_required values (156 and 124) are reproducible from the frozen adapter, so a later OIL build has a checkable target."
+      }
+    },
+    {
+      "watch_id": "SPY.ta_pvo.30m.opposite_signal",
+      "cell_fingerprint": "7c42fd0011795e5605170f55eaea3f1457e2710ad416b5be6070bd1ba7444867",
+      "registry_entry": {
+        "watch_id": "SPY.ta_pvo.30m.opposite_signal",
+        "asset": "SPY",
+        "oscillator": "ta_pvo",
+        "indicator_class": "PercentageVolumeOscillator",
+        "inputs": [
+          "volume"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "pvo",
+        "timeframe": "30m",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "pvo_09_21",
+          "rank": 4,
+          "parameters": {
+            "window_fast": 9,
+            "window_sign": 9,
+            "window_slow": 21
+          }
+        },
+        "slow": {
+          "label": "pvo_24_56",
+          "rank": 7,
+          "parameters": {
+            "window_fast": 24,
+            "window_sign": 9,
+            "window_slow": 56
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 0,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 130,
+        "evidence": {
+          "holdout": {
+            "trades": 37,
+            "net_return": 0.017161927527876042,
+            "profit_factor": 1.0954239077552597
+          },
+          "retrospective_confirmation": {
+            "trades": 48,
+            "net_return": 0.03161217545549522,
+            "profit_factor": 1.1507398991112647,
+            "max_drawdown": 0.11272398883318935
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/spy/ta_pvo/30m/opposite_signal",
+          "profile_hash": "fa0ace3975c0194c8181918f662166fd0850afdb8d5d044a166377e1fea13a1a",
+          "resolved_bundle_sha256": "24c5ef521abbe15c4aaca7fcc901c2c757fa2fe02654326cd5d8059c26458189",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "8a26f841f78cc877eb5ba7cfa9eacfe86a420debe55f754a8f9a56773a894bc5"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 4,
+        "slow_profile_rank": 7,
+        "divergence_lookback_bars": 0,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "pvo_09_21",
+        "slow_label": "pvo_24_56",
+        "fast_parameters": {
+          "window_fast": 9,
+          "window_sign": 9,
+          "window_slow": 21
+        },
+        "slow_parameters": {
+          "window_fast": 24,
+          "window_sign": 9,
+          "window_slow": 56
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 130,
+        "adapter_bars_computed": 130,
+        "effective_bars_required": 130,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 5,
+        "base_relative_paths": [
+          "data/alpaca-bars-macro-5m-v1/spy/5min/spy-5min.parquet",
+          "data/alpaca-bars-macro-5m-confirmation-v1/spy/5min/spy-5min.parquet"
+        ],
+        "provider": "Alpaca US equity SPY 5Min, IEX feed, raw adjustment, venue-partial volume (data/alpaca-bars-macro-5m-* + data.alpaca.markets)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": false
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "SPY",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-07-31T20:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "SPY.ta_pvo.4h.opposite_signal",
+      "cell_fingerprint": "04973b5d81b86a0b72539d30e41b98767d482ecc3b00558146226ad3670c318c",
+      "registry_entry": {
+        "watch_id": "SPY.ta_pvo.4h.opposite_signal",
+        "asset": "SPY",
+        "oscillator": "ta_pvo",
+        "indicator_class": "PercentageVolumeOscillator",
+        "inputs": [
+          "volume"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "pvo",
+        "timeframe": "4h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "pvo_02_05",
+          "rank": 0,
+          "parameters": {
+            "window_fast": 2,
+            "window_sign": 9,
+            "window_slow": 5
+          }
+        },
+        "slow": {
+          "label": "pvo_18_42",
+          "rank": 6,
+          "parameters": {
+            "window_fast": 18,
+            "window_sign": 9,
+            "window_slow": 42
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 0,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 124,
+        "evidence": {
+          "holdout": {
+            "trades": 10,
+            "net_return": 0.12827467766793976,
+            "profit_factor": 5.014559181219584
+          },
+          "retrospective_confirmation": {
+            "trades": 12,
+            "net_return": 0.1083555022984728,
+            "profit_factor": 4.3534119099870745,
+            "max_drawdown": 0.026875444321069253
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/spy/ta_pvo/4h/opposite_signal",
+          "profile_hash": "fa0ace3975c0194c8181918f662166fd0850afdb8d5d044a166377e1fea13a1a",
+          "resolved_bundle_sha256": "24c5ef521abbe15c4aaca7fcc901c2c757fa2fe02654326cd5d8059c26458189",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "8a26f841f78cc877eb5ba7cfa9eacfe86a420debe55f754a8f9a56773a894bc5"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 0,
+        "slow_profile_rank": 6,
+        "divergence_lookback_bars": 0,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "pvo_02_05",
+        "slow_label": "pvo_18_42",
+        "fast_parameters": {
+          "window_fast": 2,
+          "window_sign": 9,
+          "window_slow": 5
+        },
+        "slow_parameters": {
+          "window_fast": 18,
+          "window_sign": 9,
+          "window_slow": 42
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 124,
+        "adapter_bars_computed": 124,
+        "effective_bars_required": 124,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 5,
+        "base_relative_paths": [
+          "data/alpaca-bars-macro-5m-v1/spy/5min/spy-5min.parquet",
+          "data/alpaca-bars-macro-5m-confirmation-v1/spy/5min/spy-5min.parquet"
+        ],
+        "provider": "Alpaca US equity SPY 5Min, IEX feed, raw adjustment, venue-partial volume (data/alpaca-bars-macro-5m-* + data.alpaca.markets)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": false
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "SPY",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-07-31T20:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "XRPUSDT.ta_ppo.2h.atr",
+      "cell_fingerprint": "a679589358d4ee7c4f03ba581e2014b42490062cb01631221a141be1611f4e68",
+      "registry_entry": {
+        "watch_id": "XRPUSDT.ta_ppo.2h.atr",
+        "asset": "XRPUSDT",
+        "oscillator": "ta_ppo",
+        "indicator_class": "PercentagePriceOscillator",
+        "inputs": [
+          "close"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "ppo",
+        "timeframe": "2h",
+        "exit_family": "atr",
+        "fast": {
+          "label": "ppo_06_14",
+          "rank": 3,
+          "parameters": {
+            "window_fast": 6,
+            "window_sign": 9,
+            "window_slow": 14
+          }
+        },
+        "slow": {
+          "label": "ppo_24_56",
+          "rank": 7,
+          "parameters": {
+            "window_fast": 24,
+            "window_sign": 9,
+            "window_slow": 56
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 4,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 134,
+        "evidence": {
+          "holdout": {
+            "trades": 20,
+            "net_return": 0.04692339047192773,
+            "profit_factor": 1.4900066721562373
+          },
+          "retrospective_confirmation": {
+            "trades": 18,
+            "net_return": 0.01263924713277409,
+            "profit_factor": 1.236157475382202,
+            "max_drawdown": 0.02971883123327046
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/xrpusdt/ta_ppo/2h/atr",
+          "profile_hash": "1cf804f3f1cf07ca2b1d40cf9cfd9d4c8bfec83714ff2f97a007d11b8c492371",
+          "resolved_bundle_sha256": "3901a5f855ac6469fddca8d5dfbf43572651935631b4ed020a6d959413c58f81",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "2026eabea34f7dce511cf62999009a31eee906fdb79f025e580c3f2ad079ff15"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 3,
+        "slow_profile_rank": 7,
+        "divergence_lookback_bars": 4,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "ppo_06_14",
+        "slow_label": "ppo_24_56",
+        "fast_parameters": {
+          "window_fast": 6,
+          "window_sign": 9,
+          "window_slow": 14
+        },
+        "slow_parameters": {
+          "window_fast": 24,
+          "window_sign": 9,
+          "window_slow": 56
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "AtrBracketLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 134,
+        "adapter_bars_computed": 134,
+        "effective_bars_required": 134,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/xrpusdt/15m/xrpusdt-15m.parquet"
+        ],
+        "provider": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "XRPUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "XRPUSDT.ta_pvo.2h.opposite_signal",
+      "cell_fingerprint": "1e2160ff7b802e16e593722942812cddef9ecf588bd8a79f3572db05da78b087",
+      "registry_entry": {
+        "watch_id": "XRPUSDT.ta_pvo.2h.opposite_signal",
+        "asset": "XRPUSDT",
+        "oscillator": "ta_pvo",
+        "indicator_class": "PercentageVolumeOscillator",
+        "inputs": [
+          "volume"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "pvo",
+        "timeframe": "2h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "pvo_02_05",
+          "rank": 0,
+          "parameters": {
+            "window_fast": 2,
+            "window_sign": 9,
+            "window_slow": 5
+          }
+        },
+        "slow": {
+          "label": "pvo_03_07",
+          "rank": 1,
+          "parameters": {
+            "window_fast": 3,
+            "window_sign": 9,
+            "window_slow": 7
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 8,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 132,
+        "evidence": {
+          "holdout": {
+            "trades": 90,
+            "net_return": 3.191113513859099,
+            "profit_factor": 2.37434779964437
+          },
+          "retrospective_confirmation": {
+            "trades": 86,
+            "net_return": 0.032567988491432276,
+            "profit_factor": 1.0908019350972278,
+            "max_drawdown": 0.2813397988245947
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/xrpusdt/ta_pvo/2h/opposite_signal",
+          "profile_hash": "fa0ace3975c0194c8181918f662166fd0850afdb8d5d044a166377e1fea13a1a",
+          "resolved_bundle_sha256": "24c5ef521abbe15c4aaca7fcc901c2c757fa2fe02654326cd5d8059c26458189",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "2026eabea34f7dce511cf62999009a31eee906fdb79f025e580c3f2ad079ff15"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 0,
+        "slow_profile_rank": 1,
+        "divergence_lookback_bars": 8,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "pvo_02_05",
+        "slow_label": "pvo_03_07",
+        "fast_parameters": {
+          "window_fast": 2,
+          "window_sign": 9,
+          "window_slow": 5
+        },
+        "slow_parameters": {
+          "window_fast": 3,
+          "window_sign": 9,
+          "window_slow": 7
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 132,
+        "adapter_bars_computed": 132,
+        "effective_bars_required": 132,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/xrpusdt/15m/xrpusdt-15m.parquet"
+        ],
+        "provider": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "XRPUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "XRPUSDT.ta_pvo.3h.opposite_signal",
+      "cell_fingerprint": "85930627e1824b067ae33d8d2a030274ccbab07927a7ff1e2bfa37bfcb2a2a4b",
+      "registry_entry": {
+        "watch_id": "XRPUSDT.ta_pvo.3h.opposite_signal",
+        "asset": "XRPUSDT",
+        "oscillator": "ta_pvo",
+        "indicator_class": "PercentageVolumeOscillator",
+        "inputs": [
+          "volume"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "pvo",
+        "timeframe": "3h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "pvo_04_09",
+          "rank": 2,
+          "parameters": {
+            "window_fast": 4,
+            "window_sign": 9,
+            "window_slow": 9
+          }
+        },
+        "slow": {
+          "label": "pvo_06_14",
+          "rank": 3,
+          "parameters": {
+            "window_fast": 6,
+            "window_sign": 9,
+            "window_slow": 14
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 0,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 124,
+        "evidence": {
+          "holdout": {
+            "trades": 23,
+            "net_return": 0.18704828085812286,
+            "profit_factor": 1.532320403977615
+          },
+          "retrospective_confirmation": {
+            "trades": 29,
+            "net_return": 0.1646848233934901,
+            "profit_factor": 1.4334981694511617,
+            "max_drawdown": 0.3236362767099229
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/xrpusdt/ta_pvo/3h/opposite_signal",
+          "profile_hash": "fa0ace3975c0194c8181918f662166fd0850afdb8d5d044a166377e1fea13a1a",
+          "resolved_bundle_sha256": "24c5ef521abbe15c4aaca7fcc901c2c757fa2fe02654326cd5d8059c26458189",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "2026eabea34f7dce511cf62999009a31eee906fdb79f025e580c3f2ad079ff15"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 2,
+        "slow_profile_rank": 3,
+        "divergence_lookback_bars": 0,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "pvo_04_09",
+        "slow_label": "pvo_06_14",
+        "fast_parameters": {
+          "window_fast": 4,
+          "window_sign": 9,
+          "window_slow": 9
+        },
+        "slow_parameters": {
+          "window_fast": 6,
+          "window_sign": 9,
+          "window_slow": 14
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 124,
+        "adapter_bars_computed": 124,
+        "effective_bars_required": 124,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/xrpusdt/15m/xrpusdt-15m.parquet"
+        ],
+        "provider": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "XRPUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    },
+    {
+      "watch_id": "XRPUSDT.ta_pvo.4h.opposite_signal",
+      "cell_fingerprint": "5ba347a36a12790218451cce279465e6e465a163aef9758caf2d446ba0df3282",
+      "registry_entry": {
+        "watch_id": "XRPUSDT.ta_pvo.4h.opposite_signal",
+        "asset": "XRPUSDT",
+        "oscillator": "ta_pvo",
+        "indicator_class": "PercentageVolumeOscillator",
+        "inputs": [
+          "volume"
+        ],
+        "polarity": "higher_is_bullish",
+        "primary_output": "pvo",
+        "timeframe": "4h",
+        "exit_family": "opposite_signal",
+        "fast": {
+          "label": "pvo_24_56",
+          "rank": 7,
+          "parameters": {
+            "window_fast": 24,
+            "window_sign": 9,
+            "window_slow": 56
+          }
+        },
+        "slow": {
+          "label": "pvo_32_70",
+          "rank": 8,
+          "parameters": {
+            "window_fast": 32,
+            "window_sign": 9,
+            "window_slow": 70
+          }
+        },
+        "divergence": {
+          "lookback_bars_max_event_age": 8,
+          "pivot_left": 5,
+          "pivot_right": 2,
+          "max_divergence_bars": 60,
+          "computed_on": "slow_oscillator",
+          "note": "pivot and max-age values were NOT swept; frozen class defaults (3 of 7 parameters searched)"
+        },
+        "warmup_bars_required": 152,
+        "evidence": {
+          "holdout": {
+            "trades": 14,
+            "net_return": 0.021337971652880094,
+            "profit_factor": 1.2177550464492553
+          },
+          "retrospective_confirmation": {
+            "trades": 13,
+            "net_return": 0.12210518609544696,
+            "profit_factor": 1.4619669427651854,
+            "max_drawdown": 0.29953539928486295
+          },
+          "quality_status": "QUALIFIED"
+        },
+        "provenance": {
+          "campaign_id": "multi-asset-ta-oscillator-fast-slow-divergence-mtf-v1",
+          "cell_artifact_path": "cells/xrpusdt/ta_pvo/4h/opposite_signal",
+          "profile_hash": "fa0ace3975c0194c8181918f662166fd0850afdb8d5d044a166377e1fea13a1a",
+          "resolved_bundle_sha256": "24c5ef521abbe15c4aaca7fcc901c2c757fa2fe02654326cd5d8059c26458189",
+          "protocol_sha256": "50dae2555c76e99682a27127039ef36868c504fd664910103d462706a14fef3f",
+          "source_sha256": "2026eabea34f7dce511cf62999009a31eee906fdb79f025e580c3f2ad079ff15"
+        }
+      },
+      "resolved_parameters": {
+        "fast_profile_rank": 7,
+        "slow_profile_rank": 8,
+        "divergence_lookback_bars": 8,
+        "pivot_left": 5,
+        "pivot_right": 2,
+        "max_divergence_bars": 60,
+        "atr_period": 14,
+        "fast_label": "pvo_24_56",
+        "slow_label": "pvo_32_70",
+        "fast_parameters": {
+          "window_fast": 24,
+          "window_sign": 9,
+          "window_slow": 56
+        },
+        "slow_parameters": {
+          "window_fast": 32,
+          "window_sign": 9,
+          "window_slow": 70
+        },
+        "adapter_class": "TAMomentumFastSlowSlowDivergenceAdapter",
+        "evaluator_class": "SignalLifecycleEvaluator"
+      },
+      "warmup": {
+        "registry_bars_required": 152,
+        "adapter_bars_computed": 152,
+        "effective_bars_required": 152,
+        "source": "registry"
+      },
+      "data_source": {
+        "base_interval_minutes": 15,
+        "base_relative_paths": [
+          "data/pooling-15m/xrpusdt/15m/xrpusdt-15m.parquet"
+        ],
+        "provider": "Binance spot XRPUSDT 15m (data/pooling-15m + data-api.binance.vision)",
+        "aggregation": {
+          "function": "derive_epoch_timeframe",
+          "intervals": "half-open [left label, left label + timeframe)",
+          "clock": "UTC epoch wall clock",
+          "missing_policy": "nonempty buckets only; no fill",
+          "complete_required": true
+        },
+        "anchor_start_utc": "2023-03-25T00:00:00+00:00",
+        "aggregation_policy_asset": "XRPUSDT",
+        "base_sha256": null,
+        "last_base_bar_close_utc": "2026-08-01T00:00:00+00:00"
+      },
+      "deferred": {
+        "is_deferred": false,
+        "reason": null
+      }
+    }
+  ],
+  "context_sha256": "d235bd9d30aff35210946001b58e8ace78e714b48ffc1f09f33a782dad06ef21"
+}

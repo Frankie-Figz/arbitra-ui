@@ -53,7 +53,7 @@ function eligibleRange(now = new Date()) {
   };
 }
 
-test("production launcher serves the UI and private job lifecycle over HTTP", async (context) => {
+test("production launcher serves Stock Picker, scanner and private job lifecycle over HTTP", async (context) => {
   const directory = await mkdtemp(path.join(os.tmpdir(), "arbitra-platform-http-"));
   const port = await unusedPort();
   const child = spawn(
@@ -63,6 +63,12 @@ test("production launcher serves the UI and private job lifecycle over HTTP", as
       cwd: root,
       env: {
         ...process.env,
+        // Keep this bounded smoke independent of real database/inference services.
+        ARBITRA_DATABASE_URL: "",
+        ARBITRA_INGEST_DATABASE_URL: "",
+        DATABASE_URL: "",
+        ARBITRA_OSCILLATOR_SERVICE_URL: "",
+        ARBITRA_OSCILLATOR_SERVICE_TOKEN: "",
         ARBITRA_DATA_JOBS_ROOT: directory,
         ARBITRA_PLATFORM_JOB_TOKEN: "test-http-admin",
         ARBITRA_DATA_WORKER_TOKEN: "test-http-worker",
@@ -81,6 +87,19 @@ test("production launcher serves the UI and private job lifecycle over HTTP", as
   const html = await page.text();
   assert.match(html, /Market Signals/);
   assert.doesNotMatch(html, /Historical data acquisition/);
+
+  const scannerPage = await fetch(`${baseUrl}/oscillators`);
+  assert.equal(scannerPage.status, 200);
+  assert.match(await scannerPage.text(), /Crypto Scanner/);
+  const liveResponse = await fetch(`${baseUrl}/api/frozen-oscillators/live?asset=ETH&venue=kraken`);
+  assert.equal(liveResponse.status, 503);
+  const live = await liveResponse.json();
+  assert.equal(live.status, "unavailable");
+  assert.equal(live.venue, "kraken");
+  assert.equal(live.asset, "ETH");
+  assert.equal(live.ordersSubmitted, 0);
+  assert.deepEqual(live.results, []);
+  assert.match(live.reason, /service is not configured/);
 
   const createdResponse = await fetch(`${baseUrl}/api/data-jobs`, {
     method: "POST",

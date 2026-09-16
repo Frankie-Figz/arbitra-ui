@@ -15,6 +15,7 @@ import {
   createOasisPool,
 } from "./oasis-postgres.mjs";
 import { createRuntimeSnapshotHandler } from "./runtime-snapshot.mjs";
+import { createFrozenOscillatorHandler } from "./frozen-oscillator-proxy.mjs";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const clientRoot = path.join(projectRoot, "dist", "client");
@@ -210,10 +211,16 @@ if (oasisPool) {
   });
 }
 
+const frozenOscillatorResponse = createFrozenOscillatorHandler({
+  serviceUrl: process.env.ARBITRA_OSCILLATOR_SERVICE_URL ?? "",
+  token: process.env.ARBITRA_OSCILLATOR_SERVICE_TOKEN ?? "",
+});
+
 const server = createServer(async (request, response) => {
   try {
     const webRequest = toWebRequest(request, hostname, port);
-    const result = (await oasisCatalogResponse(webRequest)) ??
+    const result = (await frozenOscillatorResponse(webRequest)) ??
+      (await oasisCatalogResponse(webRequest)) ??
       (await dataJobsResponse(webRequest)) ??
       (await runtimeSnapshotResponse(webRequest)) ??
       (await staticResponse(webRequest)) ??
