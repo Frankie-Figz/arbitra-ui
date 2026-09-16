@@ -19,11 +19,17 @@ new Function("module", "exports", ts.transpileModule(timeZoneSource, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText)(timeZoneModule, timeZoneModule.exports);
 const timeZones = timeZoneModule.exports;
+const signalMarketModule = { exports: {} };
+new Function("module", "exports", ts.transpileModule(await readFile(new URL("../app/oscillators/signal-market.ts", import.meta.url), "utf8"), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+}).outputText)(signalMarketModule, signalMarketModule.exports);
 
 // A pure component harness: keep hook state and event handlers, suppress effects
 // (no provider calls or timers), and render the actual TSX through React's SSR.
-function screen({ asset = "ETH", live = null, venue = "binance", selectedId = "", timeZoneState } = {}) {
+function screen({ asset = "ETH", live = null, venue = "binance", selectedId = "", timeZoneState, useInitialSelection = false } = {}) {
   const state = new Map([[0, catalog], [2, asset], [3, selectedId], [4, live], [10, venue]]);
+  // Existing signal fixtures use ETH/Binance; default-selection tests use the component's initial state.
+  if (useInitialSelection) { state.delete(2); state.delete(10); }
   if (timeZoneState) state.set(13, timeZoneState);
   let cursor = 0;
   const react = { ...React, useEffect() {}, useCallback: (callback) => callback,
@@ -39,6 +45,8 @@ function screen({ asset = "ETH", live = null, venue = "binance", selectedId = ""
     if (name === "react/jsx-runtime") return jsx;
     if (name === "./oscillators.module.css") return { default: new Proxy({}, { get: (_, key) => key }) };
     if (name === "./timezones") return timeZones;
+    if (name === "./signal-market") return signalMarketModule.exports;
+    if (name === "./CryptoSignalTicker") return { default: () => null }; // Dedicated ticker tests exercise its own hooks.
     throw new Error(`Unexpected component dependency: ${name}`);
   };
   new Function("require", "module", "exports", compiled)(require, module, module.exports);
@@ -64,6 +72,24 @@ function liveResponse(asset, entry, overrides = {}) {
     ...overrides,
   };
 }
+
+test("scanner defaults to BTCUSDT on Binance and preserves manual asset and venue selections", () => {
+  const view = screen({ useInitialSelection: true });
+  const assetPicker = find(view.tree(), (node) => node.type === "select" && node.props.value === "BTC");
+  const venuePicker = find(view.tree(), (node) => node.type === "select" && node.props.value === "binance");
+  assert.ok(assetPicker, "BTC must be the initial asset");
+  assert.ok(venuePicker, "Binance must supply the default USDT pair");
+  assert.match(view.html(), /Binance.*BTC\/USDT spot/);
+  assert.match(view.html(), /<option value="BTC" selected="">BTCUSDT<\/option>/);
+  assert.equal((view.html().match(/aria-pressed="false"/g) ?? []).length, 10);
+
+  assetPicker.props.onChange({ target: { value: "ETH" } });
+  assert.match(view.html(), /Binance.*ETH\/USDT spot/);
+  venuePicker.props.onChange({ target: { value: "kraken" } });
+  assert.match(view.html(), /Kraken.*ETH\/USD spot/);
+  assert.match(view.html(), /<option value="ETH" selected="">ETHUSD<\/option>/);
+  assert.match(view.html(), /ETH \/ ranked setups/);
+});
 
 test("scanner has two destinations, ten ranked setups, and no default detail panel", () => {
   const html = screen().html();
@@ -107,7 +133,7 @@ test("fresh BUY and rejected XGBoost entries are distinct from historical rankin
 test("stale, wrong-bundle, and order-authorized responses cannot display a current BUY", () => {
   const entry = catalog.assets.find((item) => item.symbol === "ETH").entries[0];
   for (const overrides of [
-    { asOf: new Date(Date.now() - 4 * 60_000).toISOString() },
+    { asOf: new Date(Date.now() - 18 * 60_000).toISOString() },
     { dataThrough: new Date(Date.now() - 18 * 60_000).toISOString() },
     { status: "unavailable" }, { bundleId: "wrong" }, { ordersSubmitted: 1 },
   ]) {

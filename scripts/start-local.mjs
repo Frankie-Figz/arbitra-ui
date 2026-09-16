@@ -16,6 +16,7 @@ import {
 } from "./oasis-postgres.mjs";
 import { createRuntimeSnapshotHandler } from "./runtime-snapshot.mjs";
 import { createFrozenOscillatorHandler } from "./frozen-oscillator-proxy.mjs";
+import { createFrozenOscillatorMarket } from "./frozen-oscillator-market.mjs";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const clientRoot = path.join(projectRoot, "dist", "client");
@@ -215,11 +216,13 @@ const frozenOscillatorResponse = createFrozenOscillatorHandler({
   serviceUrl: process.env.ARBITRA_OSCILLATOR_SERVICE_URL ?? "",
   token: process.env.ARBITRA_OSCILLATOR_SERVICE_TOKEN ?? "",
 });
+const frozenOscillatorMarket = createFrozenOscillatorMarket({ liveHandler: frozenOscillatorResponse });
 
 const server = createServer(async (request, response) => {
   try {
     const webRequest = toWebRequest(request, hostname, port);
-    const result = (await frozenOscillatorResponse(webRequest)) ??
+    const result = (await frozenOscillatorMarket.handle(webRequest)) ??
+      (await frozenOscillatorResponse(webRequest)) ??
       (await oasisCatalogResponse(webRequest)) ??
       (await dataJobsResponse(webRequest)) ??
       (await runtimeSnapshotResponse(webRequest)) ??
@@ -234,10 +237,12 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, hostname, () => {
+  if (process.env.ARBITRA_OSCILLATOR_SERVICE_URL) frozenOscillatorMarket.start();
   console.log(`Arbitra Daily Longs: http://${hostname}:${port}`);
 });
 
 async function shutdown() {
+  frozenOscillatorMarket.stop();
   server.close();
   if (oasisIngestPool && oasisIngestPool !== oasisPool) await oasisIngestPool.end();
   if (oasisPool) await oasisPool.end();

@@ -1,0 +1,58 @@
+.ticker { margin: 0 0 1.5rem; border: 1px solid #31463d; border-radius: 14px; overflow: hidden; color: #ecf5ef; background: #0d1815; box-shadow: 0 8px 24px #14251b12; }
+.topline { display: flex; justify-content: space-between; align-items: center; gap: 1.2rem; padding: 1.2rem 1.4rem .9rem; }
+.eyebrow { display: flex; align-items: center; gap: .5rem; margin: 0 0 .45rem; color: #adc4b7; letter-spacing: .13em; font: .7rem var(--font-geist-mono), monospace; }
+.dot, .offlineDot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #64e9aa; box-shadow: 0 0 9px #64e9aa66; }
+.offlineDot { background: #eab45f; box-shadow: none; }
+.topline h2 { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; font-size: 1.4rem; letter-spacing: -.025em; margin: 0; }
+.topline h2 span { border: 1px solid #3a5046; border-radius: 4px; padding: .25rem .4rem; font: .7rem var(--font-geist-mono), monospace; color: #bfcec5; letter-spacing: 0; }
+.controls { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: .8rem; color: #adc4b7; font-size: .8rem; }
+.controls button { border: 1px solid #52675b; border-radius: 5px; color: #ecf5ef; background: transparent; padding: .5rem .65rem; font: inherit; cursor: pointer; }
+.breadth { display: flex; flex-wrap: wrap; gap: .65rem 1.5rem; border-block: 1px solid #2a3c32; padding: .7rem 1.4rem; background: #14221b; color: #bfcec5; font: .75rem var(--font-geist-mono), monospace; }
+.breadth strong { font-size: 1rem; }
+.longText { color: #74ebae; }
+.shortText { color: #ff9699; }
+.viewport { overflow-x: auto; padding: 1.1rem 0; background-image: radial-gradient(#75978415 .8px, transparent .8px); background-size: 5px 5px; scrollbar-width: thin; scrollbar-color: #506c5d #0d1815; }
+.track { display: flex; width: max-content; animation: travel var(--ticker-duration, 60s) linear infinite; }
+.group { display: flex; gap: .9rem; padding-right: .9rem; }
+.card { display: flex; flex-direction: column; flex: 0 0 310px; width: 310px; min-height: 235px; padding: 1rem; border: 1px solid #355045; border-top: 3px solid currentColor; border-radius: 8px; text-align: left; background: #12251b; color: #74ebae; font: .8rem var(--font-geist-mono), monospace; cursor: pointer; }
+.short { color: #ff9699; background: #271c1e; border-color: #57353b; border-top-color: #ff9699; }
+.long { border-top-color: #74ebae; }
+.active { animation: glow 2.5s ease-in-out 3; }
+.historical { border-top-style: dashed; }
+.cardTop, .indicator, .cardBottom { display: flex; align-items: center; justify-content: space-between; gap: .7rem; }
+.cardTop strong { font-size: 1.5rem; letter-spacing: -.04em; }
+.cardTop small { color: #bfcec5; font-size: .75rem; font-weight: 400; }
+.direction { font-weight: 700; font-size: .8rem; }
+.indicator { margin-top: .8rem; color: #e4ece7; font-size: .9rem; }
+.indicator b { font-size: .75rem; padding: .2rem .4rem; background: #ffffff0a; border: 1px solid #ffffff22; border-radius: 4px; }
+.price { display: block; margin: .8rem 0; color: #fff; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.price small { display: block; font-size: .63rem; margin-top: .3rem; color: #b3c4bb; }
+.cardTime { font-size: .68rem; color: #c4d1c9; line-height: 1.6; }
+.cardTime time { display: block; }
+.cardBottom { border-top: 1px solid #ffffff1c; margin-top: .75rem; padding-top: .7rem; font-size: .64rem; }
+.priceTime { color: #b3c4bb; font-size: .58rem; margin-top: .6rem; }
+.scanline { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: space-between; border-top: 1px solid #2a3c32; padding: .8rem 1.4rem; color: #b3c4bb; font: .7rem var(--font-geist-mono), monospace; }
+.note { font-size: .72rem; line-height: 1.6; color: #adbbb2; margin: 0; padding: 0 1.4rem 1rem; }
+.empty { min-height: 215px; padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: .75rem; }
+.empty strong { font-size: 1.1rem; font-weight: 550; }
+.empty span { color: #adbbb2; max-width: 580px; line-height: 1.6; font-size: .85rem; }
+.paused .track, .viewport:hover .track, .viewport:focus-within .track { animation-play-state: paused; }
+.paused .card, .viewport:hover .card, .viewport:focus-within .card { animation-play-state: paused; }
+.ticker button:focus-visible, .viewport:focus-visible { outline: 2px solid #a4ee78; outline-offset: -3px; }
+.steering { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1.4rem; border-bottom: 1px solid #2a3c32; background: #14221b; }
+.steering strong { color: #ffcb75; font-size: 1rem; }
+.steering p { margin: .35rem 0 0; color: #bfcec5; line-height: 1.55; font-size: .875rem; }
+.wheel { position: relative; flex: 0 0 120px; width: 120px; height: 120px; border-radius: 50%; touch-action: none; user-select: none; cursor: grab; }
+.wheel:focus-visible { outline: 2px solid #ffc464; outline-offset: 5px; }
+.wheel[aria-disabled="true"] { opacity: .45; cursor: default; }
+.wheelDragging { cursor: grabbing; }
+.wheelRotor { position: absolute; inset: 8px; border: 7px solid #7d8b82; border-radius: 50%; box-shadow: inset 0 0 0 2px #263b30, 0 0 0 2px #263b30; }
+.spoke { position: absolute; width: 6px; height: 44px; background: #7d8b82; left: calc(50% - 3px); top: calc(50% - 44px); transform-origin: center bottom; border-radius: 4px; }
+.spokeLeft { transform: rotate(120deg); }
+.spokeRight { transform: rotate(240deg); }
+.wheelHandle { position: absolute; width: 26px; height: 26px; left: calc(50% - 13px); top: -15px; border: 3px solid #ffdf9e; border-radius: 50%; background: #ed9b21; box-shadow: 0 2px 5px #0008; }
+.bitcoinHub { pointer-events: none; position: absolute; width: 43px; height: 43px; left: calc(50% - 21.5px); top: calc(50% - 21.5px); display: grid; place-items: center; border-radius: 50%; border: 2px solid #ffd387; background: #b97715; color: #fff2d4; font: 700 29px Arial, sans-serif; }
+@keyframes travel { to { transform: translateX(-50%); } }
+@keyframes glow { 50% { box-shadow: inset 0 0 20px #ffffff0e; } }
+@media (prefers-reduced-motion: reduce) { .track, .card { animation: none; } .group[aria-hidden="true"] { display: none; } }
+@media (max-width: 640px) { .topline { align-items: flex-start; flex-direction: column; padding: 1rem; } .controls { justify-content: flex-start; } .breadth, .scanline { padding-inline: 1rem; } .card { width: 285px; flex-basis: 285px; } .note { padding-inline: 1rem; } }

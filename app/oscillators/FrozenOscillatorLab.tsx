@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import styles from "./oscillators.module.css";
+import CryptoSignalTicker from "./CryptoSignalTicker";
+import { isSnapshotFresh, millisecondsUntilNextScan } from "./signal-market";
 import { formatTimestamp, getTimeZoneState, initialTimeZoneState, isSignalToday, resolveTimeZone, TIME_ZONE_STORAGE_KEY } from "./timezones";
 
 type Entry = {
@@ -59,8 +61,7 @@ function matchesSelection(live: Live | null, asset: string, venue: Venue): live 
 
 function fresh(live: Live | null, asset: string, venue: Venue): boolean {
   if (!live || live.schemaVersion !== 1 || live.bundleId !== bundleId || live.asset !== asset || live.venue !== venue || live.quote !== venues[venue].quote || live.pair !== `${asset}/${venues[venue].quote}` || live.marketType !== "spot" || live.transferValidation !== (venue === "binance" ? "same_venue" : "not_validated") || live.status !== "available" || live.deploymentAllowed !== false || live.ordersSubmitted !== 0) return false;
-  const now = Date.now(), asOf = Date.parse(live.asOf), through = Date.parse(live.dataThrough);
-  return Number.isFinite(asOf) && Number.isFinite(through) && asOf <= now + 60_000 && now - asOf <= 180_000 && through <= now && now - through <= 17 * 60_000;
+  return isSnapshotFresh(live.asOf, live.dataThrough, Date.now());
 }
 
 /** Reject ambiguous/local timestamps before accepting a backend recency window. */
@@ -94,7 +95,7 @@ function signalAge(recent: RecentSignal, now: number): string {
 export default function FrozenOscillatorLab() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [catalogError, setCatalogError] = useState("");
-  const [asset, setAsset] = useState("ETH");
+  const [asset, setAsset] = useState("BTC");
   const [selectedId, setSelectedId] = useState("");
   const [live, setLive] = useState<Live | null>(null);
   const [liveError, setLiveError] = useState("");
@@ -156,8 +157,13 @@ export default function FrozenOscillatorLab() {
       finally { busy = false; if (!controller.signal.aborted) setLoading(false); }
     };
     void load();
-    const timer = setInterval(() => { void load(); }, 60_000);
-    return () => { controller.abort(); clearInterval(timer); };
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      timer = setTimeout(() => { void load(); schedule(); }, millisecondsUntilNextScan(Date.now()));
+    };
+    schedule();
+    document.addEventListener("visibilitychange", load);
+    return () => { controller.abort(); clearTimeout(timer); document.removeEventListener("visibilitychange", load); };
   }, [asset, venue, catalog, refresh]);
 
   const entries = catalog?.assets.find((item) => item.symbol === asset)?.entries ?? [];
@@ -195,14 +201,15 @@ export default function FrozenOscillatorLab() {
         {catalogError && <p role="alert" className={styles.notice}>{catalogError}. Run the dedicated frozen-catalog sync; existing market snapshots need not change.</p>}
         {!catalog && !catalogError && <p role="status">Loading the frozen catalog…</p>}
         {catalog && <>
+          <CryptoSignalTicker key={venue} catalog={catalog} venue={venue} venueName={venues[venue].name} timeZone={timeZone} now={now} onSelect={(nextAsset, entryId) => { if (nextAsset !== asset) { setAsset(nextAsset); setLive(null); setLiveError(""); setHistoryTf("all"); } setSelectedId(entryId); }} />
           <section className={styles.toolbar} aria-label="Asset and live inference controls">
-            <label>Asset<select value={asset} onChange={(event) => { setAsset(event.target.value); setSelectedId(""); setLive(null); setLiveError(""); setHistoryTf("all"); }}>{catalog.assets.map((item) => <option key={item.symbol}>{item.symbol}</option>)}</select></label>
+            <label>Asset<select value={asset} onChange={(event) => { setAsset(event.target.value); setSelectedId(""); setLive(null); setLiveError(""); setHistoryTf("all"); }}>{catalog.assets.map((item) => <option key={item.symbol} value={item.symbol}>{item.symbol}{venues[venue].quote}</option>)}</select></label>
             <label>Data venue<select value={venue} onChange={(event) => { setVenue(event.target.value as Venue); setLive(null); setLiveError(""); setSelectedId(""); }}>{Object.entries(venues).map(([key, value]) => <option key={key} value={key}>{value.name} · {value.quote} spot</option>)}</select></label>
             <label>Timezone<select aria-label="Display timezone" value={timeZoneState.preference} onChange={(event) => changeTimeZone(event.target.value)}><option value="auto">Automatic ({timeZoneState.browserTimeZone})</option>{timeZoneState.options.map((zone) => <option key={zone} value={zone}>{zone === "America/New_York" ? "Florida / New York — Eastern Time" : zone}</option>)}</select></label>
             <div><span className={styles.label}>Closed candles through</span><strong>{liveReady ? time(live?.dataThrough) : "Not verified"}</strong><small>{venues[venue].name} · {asset}/{venues[venue].quote} spot</small></div>
             <button className={styles.refresh} disabled={loading} onClick={() => setRefresh((value) => value + 1)}>{loading ? "Evaluating…" : "Refresh signals"}</button>
           </section>
-          <p className={styles.timezoneNote}>All timestamps shown in {timeZone}; each includes its UTC offset. Stored timestamps, signal ages and expiry windows are unchanged.</p>
+          <p className={styles.timezoneNote}>Signals recalculate every 15 minutes, just after each quarter-hour close. All timestamps shown in {timeZone}; each includes its UTC offset. Stored timestamps, signal ages and expiry windows are unchanged.</p>
           <p className={styles.notice} role="status">{liveReady ? "BUY/SELL marks an accepted entry on the latest closed 15m candle. Recent BUY/SELL retains an earlier accepted entry for the longer of 60 minutes or its oscillator timeframe, unless an opposite raw signal cancels it. Recency is display-only, not a new entry, position or order." : liveError || (loading ? "Checking completed candles and frozen models. No current or recent signal is asserted while evaluation is pending." : "Live evidence is stale or unavailable. Historical winners are not current or recent signals.")}</p>
           {venue !== "binance" && <p className={styles.transferNote}>Cross-venue observation: models and historical returns are from Binance USDT. Performance on {venues[venue].name} is not validated. Pairs or timeframes without enough same-venue history stay unavailable.</p>}
           {!!diagnosticRows.length && <p className={styles.diagnostics}>{diagnosticRows.filter((row) => !["unavailable", "ineligible_warmup_or_sigma"].includes(row.status)).length}/{entries.length} setups evaluated · {diagnosticRows.filter((row) => row.status === "unavailable").length} unavailable · {diagnosticRows.filter((row) => row.status === "ineligible_warmup_or_sigma").length} ineligible last events. Active entry badges: {latestCount + recentCount} ({latestCount} latest-close · {recentCount} recent). Historical rows below do not revive an expired or cancelled badge.</p>}
@@ -254,7 +261,7 @@ export default function FrozenOscillatorLab() {
                 <td>{time(row.signalTime)}</td><td>{time(row.evaluatedAt)}<small>{row.evaluationKind === "observed" ? "Observed" : "Reconstructed"}</small></td>
                 <td><strong>{row.marketCondition.trend ?? "unknown"}</strong> · price {row.marketCondition.close?.toLocaleString(undefined, { maximumSignificantDigits: 8 }) ?? "—"}<small>Bar {pct(row.marketCondition.bar_change_pct)} · 1h {pct(row.marketCondition.return_1h_pct)} · 24h {pct(row.marketCondition.return_24h_pct)}</small><small>ATR14 {pct(row.marketCondition.atr14_pct)} · σ96 {pct(row.marketCondition.volatility_24h_pct)} · volume {row.marketCondition.volume_ratio20 == null ? "—" : `${row.marketCondition.volume_ratio20.toFixed(2)}×`}</small></td></tr>)}
             </tbody></table></div> : <p className={styles.footnote}>No {historyFilter === "accepted" ? "accepted entries" : "raw signals"} saved for this selection yet. {histories.length ? "Try all raw signals or another timeframe." : "Unavailable data or insufficient warm-up does not mean the strategies never signalled."}</p>}
-            <p className={styles.footnote}>Latest 200 saved events for this asset and venue. Replay: up to seven days / 50 events per setup, constrained by available history. History accumulates when this asset is requested, not from an all-market background scan. Trend: close + EMA20/50 alignment. ATR14: Wilder percent of close. σ96: 15m return volatility over 24h, not annualized. Volume: current / preceding 20-bar mean. {trusted && live.historyPersistence === "available" ? "Saved on the inference server." : "Server persistence not confirmed."}</p>
+            <p className={styles.footnote}>Latest 200 saved events for this asset and venue. Replay: up to seven days / 50 events per setup, constrained by available history. The market scan requests every asset on Binance every 15 minutes; other venues scan while recently viewed. Trend: close + EMA20/50 alignment. ATR14: Wilder percent of close. σ96: 15m return volatility over 24h, not annualized. Volume: current / preceding 20-bar mean. {trusted && live.historyPersistence === "available" ? "Saved on the inference server." : "Server persistence not confirmed."}</p>
           </section>
           <details className={styles.footer}><summary>Research notes</summary><p>Retrospective selection, not fresh validation. Exact ties prefer raw. Drawdown uses 15m candle closes; funding, borrowing and liquidation are not modeled.</p><p>Live inference uses fold 3 on CPU. Frozen {time(catalog.frozenAt)} · {catalog.bundleId}</p><p>Williams %R excluded. All 23 assets retained; ENA removal applies only to the separate MFI 1h pooled sensitivity.</p></details>
         </>}
