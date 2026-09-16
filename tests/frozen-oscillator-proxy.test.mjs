@@ -37,6 +37,19 @@ test("wrong bundles, orders and malformed responses fail closed", async () => {
     assert.equal((await handler(request())).status, 503);
   }
 });
+
+test("market-scan shutdown propagates cancellation to the private upstream", async () => {
+  const controller = new AbortController();
+  let upstreamSignal;
+  const handler = createFrozenOscillatorHandler({ serviceUrl: "http://localhost:8766", fetchImpl: async (_url, config) => {
+    upstreamSignal = config.signal;
+    return new Promise((_resolve, reject) => config.signal.addEventListener("abort", () => reject(config.signal.reason), { once: true }));
+  } });
+  const pending = handler(new Request("http://ui/api/frozen-oscillators/live?asset=BTC&venue=kraken", { signal: controller.signal }));
+  controller.abort();
+  assert.equal(upstreamSignal.aborted, true);
+  assert.equal((await pending).status, 503);
+});
 test("provider errors never disclose exceptions or tokens", async () => {
   const handler = createFrozenOscillatorHandler({ serviceUrl: "http://localhost:8766", fetchImpl: async () => { throw new Error("secret and local model paths"); } });
   const result = await handler(request());

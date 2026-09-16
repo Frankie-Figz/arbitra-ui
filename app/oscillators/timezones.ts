@@ -55,18 +55,19 @@ export function resolveTimeZone(state: TimeZoneState): string {
   return state.preference === "auto" ? state.browserTimeZone : state.preference;
 }
 
-/** Include the date-specific UTC offset so DST's repeated wall times differ. */
-export function formatTimestamp(value: string | null | undefined, timeZone: string): string {
+/** Include the date-specific UTC offset; cards opt into AM/PM without changing table defaults. */
+export function formatTimestamp(value: string | null | undefined, timeZone: string, hourCycle: "h12" | "h23" = "h23"): string {
   if (!value || !/(?:Z|[+-]\d{2}:\d{2})$/i.test(value) || !Number.isFinite(Date.parse(value))) return "—";
   try {
     const parts = new Intl.DateTimeFormat("en-GB", {
       timeZone, year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle,
       timeZoneName: "longOffset",
     }).formatToParts(new Date(value));
     const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? "";
     const offset = part("timeZoneName").replace(/^GMT/, "UTC").replace(/^UTC[+-]00:00$/, "UTC");
-    return `${part("year")}-${part("month")}-${part("day")} ${part("hour")}:${part("minute")}:${part("second")} ${offset}`;
+    const period = hourCycle === "h12" ? ` ${part("dayPeriod").toUpperCase()}` : "";
+    return `${part("year")}-${part("month")}-${part("day")} ${part("hour")}:${part("minute")}:${part("second")}${period} ${offset}`;
   } catch {
     return "—";
   }

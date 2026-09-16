@@ -35,7 +35,7 @@ export function createFrozenOscillatorHandler({ serviceUrl = "", token = "", fet
     try {
       const result = await fetchImpl(`${upstream}/v1/oscillators/live?asset=${encodeURIComponent(asset)}&venue=${venue}`, {
         headers: token ? { authorization: `Bearer ${token}` } : {},
-        signal: AbortSignal.timeout(120_000), redirect: "error", cache: "no-store",
+        signal: AbortSignal.any([request.signal, AbortSignal.timeout(120_000)]), redirect: "error", cache: "no-store",
       });
       const text = await result.text();
       if (text.length > 1_000_000) return unavailable("Inference response exceeded its size limit");

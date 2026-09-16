@@ -205,6 +205,65 @@ It keeps historical rankings separate from live entry admission and shows exact
 parameters, ordered features, fold policies and model hashes. Native model files
 remain on the private Python service, not under `public/`.
 
+The scanner opens on **BTCUSDT via Binance**. The asset dropdown displays the
+pair including its quote, while internal asset identity stays `BTC`. Asset and venue selectors remain
+changeable; the API's legacy omitted-venue default remains Binance.
+
+### Market signal wire (36-hour feed)
+
+A ticker directly under the Crypto Scanner heading aggregates accepted signals
+from all 23 frozen assets and every timeframe represented in their 230 saved
+setups. This does not create new asset/timeframe models. Green LONG and red SHORT
+cards show asset/pair, oscillator, timeframe, price at the signal's candle close,
+signal time, and whether the event is active or historical. Clicking a card
+selects its asset and setup. Only signals within the inclusive trailing 36 hours
+are displayed; rejected, future and mismatched events are excluded. Historical
+cards never revive an expired or cancelled active signal. The source journal
+returns at most 200 events per asset, so this is a capped recent feed, not a claim
+of exhaustive signal history.
+
+The long-lived Node launcher owns `/api/frozen-oscillators/market?venue=binance`.
+It scans immediately at startup, then on UTC quarter-hours plus ten seconds for
+candle finalization. Binance runs while the server is running, even without an
+open browser. Other supported venues scan for 30 minutes after their last viewer
+request. All viewers share a single sequential upstream queue, capped to the four
+venues; browser cache/progress reads every 15 seconds do not trigger additional
+inference in the same scan cycle. Slow scans coalesce missed cycles rather than
+overlap; scan completion is not guaranteed within 15 minutes during provider
+timeouts. Coverage distinguishes pending, unavailable and stale assets from
+fresh results. Directional breadth counts distinct assets over the 36-hour feed,
+not committee votes, positions or the entire crypto market.
+
+The timezone selector sits beside the Crypto Scanner heading (below it on narrow
+screens), defaults to the browser's timezone, and retains saved preferences.
+Card times use AM/PM with the signal-date UTC offset; tables keep their existing
+24-hour format and stored UTC timestamps are unchanged.
+Cards use the selected timezone, support pause/hover/focus inspection and honor
+reduced-motion preferences. Pausing reveals a Bitcoin steering wheel: hold its
+gold handle and drag clockwise/counterclockwise to browse in either direction.
+Arrow keys and Page Up/Down are alternatives. Pointer capture and seam-aware
+angles prevent jumps; resuming retains the steered animation position. With
+reduced motion, the wheel scrolls the stationary cards normally.
+
+Price comes from the validated history event's `marketCondition.close`, whose
+`as_of_utc` must equal its signal time. A `marketSnapshot` quote is a fallback only
+when its candle close exactly equals the signal time. Older historical entries
+never receive a newer quote, and their signal-time prices remain visible even
+when the current feed is unavailable. Missing signal prices stay unavailable.
+The
+worker-only development/preview route returns an explicit unavailable response;
+use `npm start` for background scheduling. The scheduler/cache is process-local,
+so use the existing single UI replica. It does not replace the persistent signal
+journal or fix the separate candle-archive refresh requirement.
+
+Validation (no provider requests or training):
+
+```powershell
+node --test tests/frozen-oscillator-market.test.mjs tests/signal-market.test.mjs tests/crypto-signal-ticker-ui.test.mjs tests/ticker-wheel.test.mjs tests/frozen-oscillator-proxy.test.mjs tests/frozen-oscillator-ui.test.mjs
+```
+
+### Frozen catalog and live service setup
+
 The dedicated sync authenticates the fixed catalog and does not rewrite existing
 stock/crypto snapshots or the older oscillator-watch projection:
 
@@ -296,12 +355,14 @@ timeframe-derived lifetime and latest-close marker. An absent, null, malformed,
 future or expired `recent_signal` does not produce a recent badge. The historical
 list is never used to revive one. Neither an unavailable row nor a stale or
 unavailable feed can assert a latest or recent badge: the existing guards still
-require an evaluation no older than three minutes and candles through no more
-than 17 minutes ago. Freshness is distinct from signal age, so a longer recency
+require an evaluation and completed candles no older than 17 minutes, allowing
+the 15-minute scan cadence plus a small completion allowance. Freshness is distinct from signal age, so a longer recency
 window does not permit stale market data.
 
 The existing 15-second render tick advances age and removes expired badges;
-60-second polling receives cancellations and newly accepted entries. There is no
+quarter-hour polling (ten seconds after the close) receives cancellations and
+newly accepted entries. Selecting another asset/venue, resuming a visible tab,
+or pressing Refresh also requests the selected asset. There is no
 intrabar calculation. A cancellation appears after the next completed poll, and
 background-tab throttling can delay repainting. Active-entry counts include both
 latest-close and recent badges, split explicitly; saved history is counted
