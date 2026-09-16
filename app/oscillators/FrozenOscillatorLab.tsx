@@ -197,7 +197,10 @@ export default function FrozenOscillatorLab() {
     <div className={styles.shell}>
       <header className={styles.header}><a href="/" className={styles.brand}>A / ARBITRA</a><nav aria-label="Market sections"><a href="/">Stock Picker</a><a href="/oscillators" aria-current="page">Crypto Scanner</a></nav><span>Research only · no order execution</span></header>
       <main className={styles.main}>
-        <div className={styles.heading}><div><p className={styles.eyebrow}>Divergence oscillators · XGBoost enhancement</p><h1>Crypto Scanner</h1><p>Top 10 frozen setups per asset, with raw or XGBoost-filtered BUY/SELL signals.</p></div></div>
+        <div className={styles.heading}>
+          <div><p className={styles.eyebrow}>Oscillators</p><h1>Crypto Scanner</h1></div>
+          <label className={styles.timezoneControl}>Timezone<select aria-label="Display timezone" value={timeZoneState.preference} onChange={(event) => changeTimeZone(event.target.value)}><option value="auto">Automatic ({timeZoneState.browserTimeZone})</option>{timeZoneState.options.map((zone) => <option key={zone} value={zone}>{zone === "America/New_York" ? "Florida / New York — Eastern Time" : zone}</option>)}</select></label>
+        </div>
         {catalogError && <p role="alert" className={styles.notice}>{catalogError}. Run the dedicated frozen-catalog sync; existing market snapshots need not change.</p>}
         {!catalog && !catalogError && <p role="status">Loading the frozen catalog…</p>}
         {catalog && <>
@@ -205,7 +208,6 @@ export default function FrozenOscillatorLab() {
           <section className={styles.toolbar} aria-label="Asset and live inference controls">
             <label>Asset<select value={asset} onChange={(event) => { setAsset(event.target.value); setSelectedId(""); setLive(null); setLiveError(""); setHistoryTf("all"); }}>{catalog.assets.map((item) => <option key={item.symbol} value={item.symbol}>{item.symbol}{venues[venue].quote}</option>)}</select></label>
             <label>Data venue<select value={venue} onChange={(event) => { setVenue(event.target.value as Venue); setLive(null); setLiveError(""); setSelectedId(""); }}>{Object.entries(venues).map(([key, value]) => <option key={key} value={key}>{value.name} · {value.quote} spot</option>)}</select></label>
-            <label>Timezone<select aria-label="Display timezone" value={timeZoneState.preference} onChange={(event) => changeTimeZone(event.target.value)}><option value="auto">Automatic ({timeZoneState.browserTimeZone})</option>{timeZoneState.options.map((zone) => <option key={zone} value={zone}>{zone === "America/New_York" ? "Florida / New York — Eastern Time" : zone}</option>)}</select></label>
             <div><span className={styles.label}>Closed candles through</span><strong>{liveReady ? time(live?.dataThrough) : "Not verified"}</strong><small>{venues[venue].name} · {asset}/{venues[venue].quote} spot</small></div>
             <button className={styles.refresh} disabled={loading} onClick={() => setRefresh((value) => value + 1)}>{loading ? "Evaluating…" : "Refresh signals"}</button>
           </section>

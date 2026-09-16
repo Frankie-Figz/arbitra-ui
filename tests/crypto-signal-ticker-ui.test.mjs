@@ -179,16 +179,20 @@ test("ticker renders green LONG and red SHORT cards with exact asset, oscillator
   assert.match(rendered.html(), /green\/red indicates direction, not profit/);
 });
 
-test("signal and price timestamps use the selected timezone while UTC machine timestamps stay intact", () => {
+test("signal and price timestamps use AM/PM in the selected timezone while UTC machine timestamps stay intact", () => {
   const fixture = tickerFixtureSnapshot();
   const before = JSON.stringify(fixture);
   for (const zone of ["America/New_York", "Europe/Paris", "UTC"]) {
     const html = screen({ snapshot: fixture, timeZone: zone }).html();
-    assert.ok(html.includes(dependencies["./timezones"].formatTimestamp(iso(THROUGH), zone)));
+    assert.ok(html.includes(dependencies["./timezones"].formatTimestamp(iso(THROUGH), zone, "h12")));
     assert.match(html, /dateTime="2026-09-16T15:15:00\.000Z"/i);
     assert.ok(html.includes(`timestamps in ${zone}`));
   }
-  assert.match(screen().html(), /2026-09-16 11:15:00 UTC-04:00/);
+  assert.match(screen().html(), /2026-09-16 11:15:00 AM UTC-04:00/);
+  const paris = screen({ timeZone: "Europe/Paris" });
+  const buy = cards(paris.tree()).find((node) => node.props["aria-label"].startsWith("BTC LONG, CCI 15m"));
+  assert.match(buy.props["aria-label"], /2026-09-16 05:15:00 PM UTC\+02:00/);
+  assert.match(renderToStaticMarkup(buy), /Signal candle close · 2026-09-16 05:15:00 PM UTC\+02:00/);
   assert.equal(JSON.stringify(fixture), before);
 });
 

@@ -450,6 +450,19 @@ test("display timezone has an automatic browser option and can return to it", ()
   assert.equal(find(view.tree(), (node) => node.type === "select" && node.props["aria-label"] === "Display timezone").props.value, "auto");
 });
 
+test("the simplified heading contains the only timezone selector, above the ticker rather than in the toolbar", () => {
+  const view = screen();
+  const heading = find(view.tree(), (node) => node.props?.className === "heading");
+  const html = renderToStaticMarkup(heading);
+  assert.match(html, /<p class="eyebrow">Oscillators<\/p><h1>Crypto Scanner<\/h1>/);
+  assert.ok(find(heading, (node) => node.type === "label" && node.props.className === "timezoneControl"));
+  assert.ok(find(heading, (node) => node.type === "select" && node.props["aria-label"] === "Display timezone"));
+  const toolbar = find(view.tree(), (node) => node.props?.["aria-label"] === "Asset and live inference controls");
+  assert.equal(find(toolbar, (node) => node.props?.["aria-label"] === "Display timezone"), undefined);
+  assert.equal((view.html().match(/aria-label="Display timezone"/g) ?? []).length, 1);
+  assert.doesNotMatch(view.html(), /Top 10 frozen setups per asset, with raw or XGBoost-filtered BUY\/SELL signals\.|Divergence oscillators · XGBoost enhancement/);
+});
+
 test("timezone selection reformats all signal dates without changing age, admission or source JSON", (t) => {
   t.mock.method(Date, "now", () => Date.parse("2026-09-14T12:45:00Z"));
   const requestMock = t.mock.method(globalThis, "fetch", () => { assert.fail("Timezone changes must not fetch or reset market evidence"); });

@@ -89,6 +89,29 @@ test("UTC formatting preserves canonical text and invalid inputs stay unavailabl
   assert.equal(formatTimestamp("2026-09-14T12:00:00Z", "Not/A_Zone"), "—");
 });
 
+test("AM/PM card formatting preserves midnight, noon, local dates and explicit input offsets", () => {
+  for (const [value, zone, expected] of [
+    ["2026-09-14T00:00:00Z", "UTC", "2026-09-14 12:00:00 AM UTC"],
+    ["2026-09-14T12:00:00Z", "UTC", "2026-09-14 12:00:00 PM UTC"],
+    ["2026-09-14T03:59:59Z", "America/New_York", "2026-09-13 11:59:59 PM UTC-04:00"],
+    ["2026-09-14T04:00:00Z", "America/New_York", "2026-09-14 12:00:00 AM UTC-04:00"],
+    ["2026-09-14T20:45:00Z", "Asia/Kathmandu", "2026-09-15 02:30:00 AM UTC+05:45"],
+    ["2026-09-14T08:34:56-04:00", "UTC", "2026-09-14 12:34:56 PM UTC"],
+  ]) assert.equal(formatTimestamp(value, zone, "h12"), expected);
+  for (const value of [null, undefined, "", "not-a-timestamp", "2026-09-14T12:00:00"])
+    assert.equal(formatTimestamp(value, "UTC", "h12"), "—");
+  assert.equal(formatTimestamp("2026-09-14T12:00:00Z", "Not/A_Zone", "h12"), "—");
+});
+
+test("AM/PM preserves the date-specific offset through skipped and repeated DST hours", () => {
+  for (const [value, expected] of [
+    ["2026-03-08T06:59:59Z", "2026-03-08 01:59:59 AM UTC-05:00"],
+    ["2026-03-08T07:00:00Z", "2026-03-08 03:00:00 AM UTC-04:00"],
+    ["2026-11-01T05:30:00Z", "2026-11-01 01:30:00 AM UTC-04:00"],
+    ["2026-11-01T06:30:00Z", "2026-11-01 01:30:00 AM UTC-05:00"],
+  ]) assert.equal(formatTimestamp(value, "America/New_York", "h12"), expected);
+});
+
 test("New York uses the timestamp's DST offset on both transition boundaries", () => {
   for (const [value, expected] of [
     ["2026-03-08T06:59:59Z", "2026-03-08 01:59:59 UTC-05:00"],

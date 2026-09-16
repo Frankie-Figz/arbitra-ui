@@ -55,13 +55,13 @@ export default function CryptoSignalTicker({ catalog, venue, venueName, timeZone
   const card = (signal: SignalCard, duplicate: boolean) => <button key={signal.key} type="button"
     className={`${styles.card} ${signal.direction === "BUY" ? styles.long : styles.short} ${signal.isActive ? styles.active : styles.historical}`}
     tabIndex={duplicate ? -1 : 0} onClick={() => onSelect(signal.asset, signal.entryId)}
-    aria-label={`${signal.asset} ${signal.direction === "BUY" ? "LONG" : "SHORT"}, ${indicatorNames[signal.indicator] ?? signal.indicator} ${timeframe(signal.timeframeMinutes)}, ${signal.isActive ? "active" : "historical"}, ${formatTimestamp(signal.signalTime, timeZone)}`}>
+    aria-label={`${signal.asset} ${signal.direction === "BUY" ? "LONG" : "SHORT"}, ${indicatorNames[signal.indicator] ?? signal.indicator} ${timeframe(signal.timeframeMinutes)}, ${signal.isActive ? "active" : "historical"}, ${formatTimestamp(signal.signalTime, timeZone, "h12")}`}>
     <span className={styles.cardTop}><strong>{signal.asset}<small>/{signal.quote}</small></strong><span className={styles.direction}>{signal.direction === "BUY" ? "↗ LONG" : "↘ SHORT"}</span></span>
     <span className={styles.indicator}>{indicatorNames[signal.indicator] ?? signal.indicator}<b>{timeframe(signal.timeframeMinutes)}</b></span>
     <span className={styles.price}>{price(signal.price)}<small>{signal.price == null ? "signal price not verified" : `${signal.quote} · price at signal`}</small></span>
-    <span className={styles.cardTime}>Signal <time dateTime={signal.signalTime}>{formatTimestamp(signal.signalTime, timeZone)}</time></span>
+    <span className={styles.cardTime}>Signal <time dateTime={signal.signalTime}>{formatTimestamp(signal.signalTime, timeZone, "h12")}</time></span>
     <span className={styles.cardBottom}><span>{signal.isActive ? (signal.isLatest ? "● Active · latest close" : "● Active · recent") : "○ Historical · not active"}</span><span>{signal.mode === "raw" ? "RAW" : "XGB"}</span></span>
-    <span className={styles.priceTime}>Signal candle close · {signal.priceAsOf ? formatTimestamp(signal.priceAsOf, timeZone) : "price not verified"}</span>
+    <span className={styles.priceTime}>Signal candle close · {signal.priceAsOf ? formatTimestamp(signal.priceAsOf, timeZone, "h12") : "price not verified"}</span>
   </button>;
 
   return <section className={styles.ticker} aria-label="Crypto market signal ticker">

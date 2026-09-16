@@ -234,6 +234,10 @@ timeouts. Coverage distinguishes pending, unavailable and stale assets from
 fresh results. Directional breadth counts distinct assets over the 36-hour feed,
 not committee votes, positions or the entire crypto market.
 
+The timezone selector sits beside the Crypto Scanner heading (below it on narrow
+screens), defaults to the browser's timezone, and retains saved preferences.
+Card times use AM/PM with the signal-date UTC offset; tables keep their existing
+24-hour format and stored UTC timestamps are unchanged.
 Cards use the selected timezone, support pause/hover/focus inspection and honor
 reduced-motion preferences. Pausing reveals a Bitcoin steering wheel: hold its
 gold handle and drag clockwise/counterclockwise to browse in either direction.
